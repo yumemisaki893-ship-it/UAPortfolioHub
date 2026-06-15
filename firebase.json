@@ -1,0 +1,11 @@
+{
+  "auth": {
+    "providers": {
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "UAPortfolioHub",
+        "supportEmail": "yumemisaki893@gmail.com"
+      }
+    }
+  }
+}
