@@ -185,12 +185,12 @@ export const Auth = ({ navigateTo, onLoginSuccess }) => {
           {/* Email Input */}
           <div className="form-group">
             <label className="form-label" htmlFor="auth-email">Email Address</label>
-            <span className="form-hint" id="email-hint">Format: student@university.edu</span>
+            <span className="form-hint" id="email-hint">Format: student@gmail.com</span>
             <input
               type="email"
               id="auth-email"
               className="form-control"
-              placeholder="you@university.edu"
+              placeholder="you@gmail.com"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -436,7 +436,7 @@ export const Auth = ({ navigateTo, onLoginSuccess }) => {
                   <input
                     type="email"
                     className="form-control"
-                    placeholder="student@university.edu"
+                    placeholder="student@gmail.com"
                     required
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
