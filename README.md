@@ -6,7 +6,7 @@ Live Demo: **[uaportfoliohub.vercel.app](https://uaportfoliohub.vercel.app)**
 
 ---
 
-## 🌟 Key Features
+##  Key Features
 
 ### 1. Interactive Student Directory
 - **Advanced Search & Filtering**: Real-time search across student names, bios, and specific tags. Filter by academic major.
