@@ -165,6 +165,10 @@ export const signUp = (name, email, password) => {
     github: "",
     linkedin: "",
     website: "",
+    facebook: "",
+    instagram: "",
+    twitter: "",
+    contactNumber: "",
     photos: [],
     projects: []
   };

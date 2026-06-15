@@ -18,6 +18,10 @@ export const ProfileEditor = ({ currentUser, params, navigateTo, onProfileUpdate
   const [github, setGithub] = useState('');
   const [linkedin, setLinkedin] = useState('');
   const [website, setWebsite] = useState('');
+  const [facebook, setFacebook] = useState('');
+  const [instagram, setInstagram] = useState('');
+  const [twitter, setTwitter] = useState('');
+  const [contactNumber, setContactNumber] = useState('');
   const [projects, setProjects] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [isPublic, setIsPublic] = useState(true);
@@ -60,6 +64,10 @@ export const ProfileEditor = ({ currentUser, params, navigateTo, onProfileUpdate
       setGithub(profile.github || '');
       setLinkedin(profile.linkedin || '');
       setWebsite(profile.website || '');
+      setFacebook(profile.facebook || '');
+      setInstagram(profile.instagram || '');
+      setTwitter(profile.twitter || '');
+      setContactNumber(profile.contactNumber || '');
       setProjects(profile.projects || []);
       setPhotos(profile.photos || []);
       setIsPublic(profile.isPublic !== false);
@@ -264,6 +272,10 @@ export const ProfileEditor = ({ currentUser, params, navigateTo, onProfileUpdate
         github,
         linkedin,
         website,
+        facebook,
+        instagram,
+        twitter,
+        contactNumber,
         projects,
         photos,
         isPublic
@@ -756,6 +768,57 @@ export const ProfileEditor = ({ currentUser, params, navigateTo, onProfileUpdate
                   onChange={(e) => setWebsite(e.target.value)}
                 />
                 <div className="form-error-msg">Please enter a valid URL (including https://).</div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="edit-facebook">Facebook Profile Link (URL)</label>
+                <input
+                  type="url"
+                  id="edit-facebook"
+                  className="form-control"
+                  placeholder="https://facebook.com/username"
+                  value={facebook}
+                  onChange={(e) => setFacebook(e.target.value)}
+                />
+                <div className="form-error-msg">Please enter a valid URL (including https://).</div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="edit-instagram">Instagram Profile Link (URL)</label>
+                <input
+                  type="url"
+                  id="edit-instagram"
+                  className="form-control"
+                  placeholder="https://instagram.com/username"
+                  value={instagram}
+                  onChange={(e) => setInstagram(e.target.value)}
+                />
+                <div className="form-error-msg">Please enter a valid URL (including https://).</div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="edit-twitter">Twitter / X Profile Link (URL)</label>
+                <input
+                  type="url"
+                  id="edit-twitter"
+                  className="form-control"
+                  placeholder="https://x.com/username"
+                  value={twitter}
+                  onChange={(e) => setTwitter(e.target.value)}
+                />
+                <div className="form-error-msg">Please enter a valid URL (including https://).</div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="edit-contact">Contact Number / Mobile</label>
+                <input
+                  type="text"
+                  id="edit-contact"
+                  className="form-control"
+                  placeholder="E.g., +63 912 345 6789"
+                  value={contactNumber}
+                  onChange={(e) => setContactNumber(e.target.value)}
+                />
               </div>
             </div>
 

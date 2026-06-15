@@ -1836,3 +1836,95 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
   color: var(--accent);
   font-weight: bold;
 }
+
+/* Social Media & Contact Logo Widgets */
+.social-widgets-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+}
+
+.social-widget-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.social-widget-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.social-widget-btn svg {
+  display: block;
+}
+
+/* Specific brand hover effects */
+.social-widget-btn.email:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.35);
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
+}
+
+.social-widget-btn.github:hover {
+  background: rgba(0, 0, 0, 0.55);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.social-widget-btn.linkedin:hover {
+  background: rgba(10, 102, 194, 0.15);
+  color: #0a66c2;
+  border-color: rgba(10, 102, 194, 0.35);
+  box-shadow: 0 4px 10px rgba(10, 102, 194, 0.2);
+}
+
+.social-widget-btn.website:hover {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.35);
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+}
+
+.social-widget-btn.facebook:hover {
+  background: rgba(24, 119, 242, 0.15);
+  color: #1877f2;
+  border-color: rgba(24, 119, 242, 0.35);
+  box-shadow: 0 4px 10px rgba(24, 119, 242, 0.2);
+}
+
+.social-widget-btn.instagram:hover {
+  background: rgba(225, 48, 108, 0.12);
+  color: #e1306c;
+  border-color: rgba(225, 48, 108, 0.3);
+  box-shadow: 0 4px 10px rgba(225, 48, 108, 0.2);
+}
+
+.social-widget-btn.twitter:hover {
+  background: rgba(0, 0, 0, 0.65);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.social-widget-btn.phone:hover {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+  border-color: rgba(59, 130, 246, 0.35);
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+}
