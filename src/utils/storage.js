@@ -34,6 +34,20 @@ const STORAGE_KEYS = {
   SESSION: 'student_portfolio_session'
 };
 
+// Memory cache for student profiles to reduce read latency
+let cachedStudentsList = null;
+let lastFetchTime = 0;
+const cachedStudentsMap = {};
+const cachedStudentTimes = {};
+
+const invalidateCache = (ids = []) => {
+  cachedStudentsList = null;
+  ids.forEach(id => {
+    delete cachedStudentsMap[id];
+    delete cachedStudentTimes[id];
+  });
+};
+
 // Helper: Initialize Database if not already present
 export const initStorage = () => {
   const idsToPurge = ['alice-vance', 'bob-chen', 'chloe-smith', 'david-kim'];
@@ -104,10 +118,15 @@ export const initStorage = () => {
 initStorage();
 
 // Retrieve all students
-export const getStudents = async () => {
+export const getStudents = async (forceRefresh = false) => {
   if (!isConfigured) {
     const data = localStorage.getItem(STORAGE_KEYS.STUDENTS);
     return data ? JSON.parse(data) : [];
+  }
+  
+  const now = Date.now();
+  if (cachedStudentsList && !forceRefresh && (now - lastFetchTime < 10000)) { // 10s TTL
+    return cachedStudentsList;
   }
   
   try {
@@ -116,6 +135,8 @@ export const getStudents = async () => {
     querySnapshot.forEach((doc) => {
       list.push({ id: doc.id, ...doc.data() });
     });
+    cachedStudentsList = list;
+    lastFetchTime = now;
     return list;
   } catch (e) {
     console.error("Error loading students from Firestore: ", e);
@@ -124,17 +145,25 @@ export const getStudents = async () => {
 };
 
 // Retrieve a single student profile by ID
-export const getStudentById = async (id) => {
+export const getStudentById = async (id, forceRefresh = false) => {
   if (!isConfigured) {
     const students = await getStudents();
     return students.find(s => s.id === id) || null;
+  }
+  
+  const now = Date.now();
+  if (cachedStudentsMap[id] && !forceRefresh && (now - (cachedStudentTimes[id] || 0) < 10000)) { // 10s TTL
+    return cachedStudentsMap[id];
   }
   
   try {
     const docRef = doc(db, 'students', id);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      return { id: docSnap.id, ...docSnap.data() };
+      const studentData = { id: docSnap.id, ...docSnap.data() };
+      cachedStudentsMap[id] = studentData;
+      cachedStudentTimes[id] = now;
+      return studentData;
     }
     return null;
   } catch (e) {
@@ -401,6 +430,7 @@ export const signOut = async () => {
 
 // Mutate: Update Student Profile details
 export const updateStudentProfile = async (studentId, updatedFields) => {
+  invalidateCache([studentId]);
   if (!isConfigured) {
     const students = await getStudents();
     const index = students.findIndex(s => s.id === studentId);
@@ -429,6 +459,7 @@ export const updateStudentProfile = async (studentId, updatedFields) => {
 
 // Mutate: Delete student profile and associated account credentials
 export const deleteStudentProfileAndAccount = async (studentId) => {
+  invalidateCache([studentId]);
   if (!isConfigured) {
     const students = await getStudents();
     const filteredStudents = students.filter(s => s.id !== studentId);
@@ -604,6 +635,7 @@ const getArrayField = (obj, field) => {
 
 // Mutate: Send friend request
 export const sendFriendRequest = async (fromId, toId) => {
+  invalidateCache([fromId, toId]);
   if (!isConfigured) {
     const students = await getStudents();
     const fromIndex = students.findIndex(s => s.id === fromId);
@@ -632,6 +664,7 @@ export const sendFriendRequest = async (fromId, toId) => {
 
 // Mutate: Accept friend request
 export const acceptFriendRequest = async (fromId, toId) => {
+  invalidateCache([fromId, toId]);
   if (!isConfigured) {
     const students = await getStudents();
     const fromIndex = students.findIndex(s => s.id === fromId); // sender
@@ -674,6 +707,7 @@ export const acceptFriendRequest = async (fromId, toId) => {
 
 // Mutate: Decline friend request
 export const declineFriendRequest = async (fromId, toId) => {
+  invalidateCache([fromId, toId]);
   if (!isConfigured) {
     const students = await getStudents();
     const fromIndex = students.findIndex(s => s.id === fromId);
@@ -695,6 +729,7 @@ export const declineFriendRequest = async (fromId, toId) => {
 
 // Mutate: Remove friend
 export const removeFriend = async (fromId, toId) => {
+  invalidateCache([fromId, toId]);
   if (!isConfigured) {
     const students = await getStudents();
     const fromIndex = students.findIndex(s => s.id === fromId);
@@ -716,6 +751,7 @@ export const removeFriend = async (fromId, toId) => {
 
 // Mutate: Poke user
 export const pokeUser = async (fromId, toId) => {
+  invalidateCache([fromId, toId]);
   if (!isConfigured) {
     const students = await getStudents();
     const toIndex = students.findIndex(s => s.id === toId);
@@ -738,6 +774,7 @@ export const pokeUser = async (fromId, toId) => {
 
 // Mutate: Clear poke
 export const clearPoke = async (studentId, pokerId) => {
+  invalidateCache([studentId, pokerId]);
   if (!isConfigured) {
     const students = await getStudents();
     const index = students.findIndex(s => s.id === studentId);
@@ -756,6 +793,7 @@ export const clearPoke = async (studentId, pokerId) => {
 
 // Mutate: Block user
 export const blockUser = async (fromId, toId) => {
+  invalidateCache([fromId, toId]);
   if (!isConfigured) {
     const students = await getStudents();
     const fromIndex = students.findIndex(s => s.id === fromId);
@@ -798,6 +836,7 @@ export const blockUser = async (fromId, toId) => {
 
 // Mutate: Unblock user
 export const unblockUser = async (fromId, toId) => {
+  invalidateCache([fromId, toId]);
   if (!isConfigured) {
     const students = await getStudents();
     const fromIndex = students.findIndex(s => s.id === fromId);
@@ -1024,6 +1063,7 @@ export const listenToMessages = (chatId, callback) => {
 // ==========================================
 
 export const createNotification = async (toId, type, fromId) => {
+  invalidateCache([toId, fromId]);
   const notif = {
     id: `notif-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
     type, // 'friend_request' | 'friend_accept' | 'poke' | 'message'
@@ -1065,6 +1105,7 @@ export const createNotification = async (toId, type, fromId) => {
 };
 
 export const markNotificationsAsRead = async (studentId) => {
+  invalidateCache([studentId]);
   if (!isConfigured) {
     const students = await getStudents();
     const index = students.findIndex(s => s.id === studentId);
@@ -1091,6 +1132,7 @@ export const markNotificationsAsRead = async (studentId) => {
 };
 
 export const clearNotifications = async (studentId) => {
+  invalidateCache([studentId]);
   if (!isConfigured) {
     const students = await getStudents();
     const index = students.findIndex(s => s.id === studentId);
