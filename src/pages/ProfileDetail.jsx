@@ -25,9 +25,6 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
   const [isEditingAboutMe, setIsEditingAboutMe] = useState(false);
   const [aboutMeText, setAboutMeText] = useState(initialStudent?.aboutMe || '');
   const [savingAboutMe, setSavingAboutMe] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState('');
   const [loading, setLoading] = useState(!student);
   const [bannerDismissed, setBannerDismissed] = useState(() => {
     if (!studentId) return true;
@@ -137,29 +134,24 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
   const isAdminPanel = currentUser?.isAdmin && currentUser.studentId !== student.id;
   const showManagementBanner = isAdminPanel || showWelcomeBanner;
 
-  const handleDeleteProfile = () => {
-    setShowDeleteModal(true);
-  };
-
-  const executeDeleteProfile = async () => {
-    setIsDeleting(true);
-    setDeleteError('');
-    try {
-      await deleteStudentProfileAndAccount(student.id);
+  const handleDeleteProfile = async () => {
+    const confirmMessage = currentUser?.isAdmin && currentUser.studentId !== student.id
+      ? `WARNING: You are about to permanently delete ${student.name}'s portfolio and user account. This action cannot be undone. Do you wish to proceed?`
+      : "Are you sure you want to permanently delete your portfolio profile and user account? This will sign you out and cannot be undone.";
       
-      if (currentUser?.isAdmin && currentUser.studentId !== student.id) {
-        alert(`${student.name}'s portfolio was successfully deleted.`);
-        setIsDeleting(false);
-        setShowDeleteModal(false);
-        navigateTo('directory');
-      } else {
-        await signOut();
-        if (onLogoutSuccess) onLogoutSuccess();
-        navigateTo('home');
+    if (window.confirm(confirmMessage)) {
+      if (window.confirm("FINAL CONFIRMATION: Are you absolutely certain you want to proceed?")) {
+        await deleteStudentProfileAndAccount(student.id);
+        
+        if (currentUser?.isAdmin && currentUser.studentId !== student.id) {
+          alert(`${student.name}'s portfolio was successfully deleted.`);
+          navigateTo('directory');
+        } else {
+          await signOut();
+          if (onLogoutSuccess) onLogoutSuccess();
+          navigateTo('home');
+        }
       }
-    } catch (err) {
-      setDeleteError(err.message || 'Failed to delete portfolio and account.');
-      setIsDeleting(false);
     }
   };
 
@@ -1315,93 +1307,6 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                 {viewerCaption}
               </div>
             )}
-          </div>
-        </div>
-      )}
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div 
-          className="auth-modal-overlay animate-fade-in" 
-          onClick={() => { if (!isDeleting) setShowDeleteModal(false); }}
-          style={{ zIndex: 10001 }}
-        >
-          <div 
-            className="auth-modal animate-slide-up" 
-            onClick={(e) => e.stopPropagation()}
-            style={{ 
-              borderLeft: '4px solid var(--danger)', 
-              boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-              padding: '2.5rem'
-            }}
-          >
-            <div className="auth-modal-header" style={{ textAlign: 'left', marginBottom: '1.5rem' }}>
-              <h2 style={{ color: 'var(--danger)', fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '22px', height: '22px', color: 'var(--danger)' }}>
-                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                  <line x1="12" y1="9" x2="12" y2="13" />
-                  <line x1="12" y1="17" x2="12.01" y2="17" />
-                </svg>
-                Delete Student Portfolio?
-              </h2>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                {currentUser?.isAdmin && currentUser.studentId !== student.id
-                  ? `Are you sure you want to permanently delete the portfolio and user account of ${student.name}?`
-                  : "Are you sure you want to permanently delete your student portfolio profile and user account?"
-                }
-              </p>
-            </div>
-
-            {deleteError && (
-              <div 
-                className="glass" 
-                style={{ 
-                  padding: '0.75rem 1rem', 
-                  borderRadius: 'var(--border-radius-sm)', 
-                  background: 'var(--danger-bg)', 
-                  color: 'var(--danger)', 
-                  fontSize: '0.8rem', 
-                  fontWeight: 600, 
-                  marginBottom: '1.5rem' 
-                }}
-              >
-                Error: {deleteError}
-              </div>
-            )}
-
-            <div 
-              style={{ 
-                background: 'var(--bg-secondary)', 
-                padding: '1rem', 
-                borderRadius: 'var(--border-radius-sm)', 
-                marginBottom: '2rem',
-                border: '1px solid var(--border-color)'
-              }}
-            >
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: '1.4', margin: 0 }}>
-                <strong>WARNING:</strong> This action is completely irreversible. All stored projects, experience records, certificates, and registered login credentials will be immediately wiped from the system.
-              </p>
-            </div>
-
-            <div className="auth-modal-actions" style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-              <button 
-                type="button" 
-                className="btn btn-secondary" 
-                onClick={() => setShowDeleteModal(false)}
-                disabled={isDeleting}
-                style={{ minHeight: '38px' }}
-              >
-                No, Keep Account
-              </button>
-              <button 
-                type="button" 
-                className="btn btn-danger" 
-                onClick={executeDeleteProfile}
-                disabled={isDeleting}
-                style={{ minHeight: '38px', padding: '0.5rem 1.5rem' }}
-              >
-                {isDeleting ? "Deleting..." : "Yes, Delete Account"}
-              </button>
-            </div>
           </div>
         </div>
       )}

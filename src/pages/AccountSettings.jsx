@@ -83,8 +83,6 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
   // Profile Save Status
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   // Account Security states
   const [newEmail, setNewEmail] = useState(initialProfile?.email || '');
@@ -442,19 +440,21 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
 
   // Delete profile
   const handleDeleteProfile = async () => {
-    setIsDeleting(true);
-    setErrorMessage('');
-    try {
-      await deleteStudentProfileAndAccount(student.id);
-      await signOut();
-      if (onProfileUpdate) {
-        onProfileUpdate();
+    const confirmMessage = "Are you sure you want to permanently delete your portfolio profile and user account? This will sign you out and cannot be undone.";
+
+    if (window.confirm(confirmMessage)) {
+      if (window.confirm("FINAL CONFIRMATION: Are you absolutely certain you want to proceed?")) {
+        try {
+          await deleteStudentProfileAndAccount(student.id);
+          await signOut();
+          if (onProfileUpdate) {
+            onProfileUpdate();
+          }
+          navigateTo('home');
+        } catch (err) {
+          alert(err.message || 'Failed to delete portfolio and account.');
+        }
       }
-      navigateTo('home');
-    } catch (err) {
-      setErrorMessage(err.message || 'Failed to delete portfolio and account.');
-      setIsDeleting(false);
-      setShowDeleteConfirm(false);
     }
   };
 
@@ -1674,55 +1674,14 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
                 Permanently delete your entire student portfolio profile and registered user account. This operation is irreversible and will immediately sign you out.
               </p>
 
-              {!showDeleteConfirm ? (
-                <button 
-                  type="button" 
-                  className="btn btn-danger" 
-                  style={{ minHeight: '38px', padding: '0.5rem 1.25rem' }}
-                  onClick={() => setShowDeleteConfirm(true)}
-                >
-                  Delete Portfolio & Account
-                </button>
-              ) : (
-                <div 
-                  className="glass animate-slide-up"
-                  style={{ 
-                    padding: '1.25rem', 
-                    borderRadius: 'var(--border-radius-md)', 
-                    background: 'var(--danger-bg)', 
-                    border: '1px solid var(--danger-border)',
-                    marginTop: '1rem',
-                    textAlign: 'left'
-                  }}
-                >
-                  <h4 style={{ color: 'var(--danger)', marginBottom: '0.5rem', fontSize: '0.95rem', fontWeight: 700 }}>
-                    Are you absolutely sure you want to delete your profile?
-                  </h4>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--danger)', marginBottom: '1.25rem', opacity: 0.9 }}>
-                    All of your custom profile details, uploaded certifications, experience milestones, and credentials will be deleted forever.
-                  </p>
-                  <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                    <button 
-                      type="button" 
-                      className="btn btn-danger btn-sm"
-                      onClick={handleDeleteProfile}
-                      disabled={isDeleting}
-                      style={{ minHeight: '32px' }}
-                    >
-                      {isDeleting ? "Deleting..." : "Yes, Delete Account"}
-                    </button>
-                    <button 
-                      type="button" 
-                      className="btn btn-secondary btn-sm"
-                      onClick={() => setShowDeleteConfirm(false)}
-                      disabled={isDeleting}
-                      style={{ minHeight: '32px' }}
-                    >
-                      No, Keep Account
-                    </button>
-                  </div>
-                </div>
-              )}
+              <button 
+                type="button" 
+                className="btn btn-danger" 
+                style={{ minHeight: '38px', padding: '0.5rem 1.25rem' }}
+                onClick={handleDeleteProfile}
+              >
+                Delete Portfolio & Account
+              </button>
             </div>
 
           </div>
