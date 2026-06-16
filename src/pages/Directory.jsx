@@ -10,9 +10,10 @@ export const Directory = ({ navigateTo, currentUser, params }) => {
 
   // Load students on mount
   useEffect(() => {
-    // Allow public browsing; no redirect for unauthenticated users
-    // (currentUser may be null; isPublic filter will restrict private profiles)
-    // No return here
+    if (!currentUser) {
+      navigateTo('auth');
+      return;
+    }
     const loadData = async () => {
       const list = await getStudents();
       setStudents(list);
@@ -248,4 +249,5 @@ export const Directory = ({ navigateTo, currentUser, params }) => {
     </div>
   );
 };
+
 export default Directory;
