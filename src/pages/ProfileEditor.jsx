@@ -1,37 +1,80 @@
 import React, { useState, useEffect } from 'react';
-import { getStudentById, updateStudentProfile } from '../utils/storage';
+import { getStudentById, getStudentByIdSync, updateStudentProfile } from '../utils/storage';
 import { AvatarPicker, AvatarImage } from '../components/AvatarPicker';
 import { ProjectManager } from '../components/ProjectManager';
 
 export const ProfileEditor = ({ currentUser, params, navigateTo, onProfileUpdate }) => {
-  const [student, setStudent] = useState(null);
+  const targetStudentId = (currentUser?.isAdmin && params?.id) 
+    ? params.id 
+    : currentUser?.studentId;
+
+  // Optimistic fast initialization from cache
+  const initialProfile = (currentUser?.student && currentUser.student.id === targetStudentId)
+    ? currentUser.student
+    : getStudentByIdSync(targetStudentId);
+
+  const [student, setStudent] = useState(initialProfile);
   
   // Form states
-  const [name, setName] = useState('');
-  const [major, setMajor] = useState('');
-  const [avatarId, setAvatarId] = useState('avatar-1');
-  const [coverPhotoUrl, setCoverPhotoUrl] = useState('');
-  const [shortBio, setShortBio] = useState('');
-  const [aboutMe, setAboutMe] = useState('');
-  const [skills, setSkills] = useState([]);
+  const [name, setName] = useState(initialProfile?.name || '');
+  const [major, setMajor] = useState(initialProfile?.major || '');
+  const [avatarId, setAvatarId] = useState(initialProfile?.avatarId || 'avatar-1');
+  const [coverPhotoUrl, setCoverPhotoUrl] = useState(initialProfile?.coverPhotoUrl || '');
+  const [shortBio, setShortBio] = useState(initialProfile?.shortBio || '');
+  const [aboutMe, setAboutMe] = useState(initialProfile?.aboutMe || '');
+  const [skills, setSkills] = useState(initialProfile?.skills || []);
   const [skillInput, setSkillInput] = useState('');
-  const [github, setGithub] = useState('');
-  const [linkedin, setLinkedin] = useState('');
-  const [website, setWebsite] = useState('');
-  const [facebook, setFacebook] = useState('');
-  const [instagram, setInstagram] = useState('');
-  const [twitter, setTwitter] = useState('');
-  const [contactNumber, setContactNumber] = useState('');
-  const [projects, setProjects] = useState([]);
-  const [photos, setPhotos] = useState([]);
-  const [isPublic, setIsPublic] = useState(true);
+  const [github, setGithub] = useState(initialProfile?.github || '');
+  const [linkedin, setLinkedin] = useState(initialProfile?.linkedin || '');
+  const [website, setWebsite] = useState(initialProfile?.website || '');
+  const [facebook, setFacebook] = useState(initialProfile?.facebook || '');
+  const [instagram, setInstagram] = useState(initialProfile?.instagram || '');
+  const [twitter, setTwitter] = useState(initialProfile?.twitter || '');
+  const [contactNumber, setContactNumber] = useState(initialProfile?.contactNumber || '');
+  const [projects, setProjects] = useState(initialProfile?.projects || []);
+  const [photos, setPhotos] = useState(initialProfile?.photos || []);
+  const [isPublic, setIsPublic] = useState(initialProfile?.isPublic !== false);
+  const [resume, setResume] = useState(initialProfile?.resume || null);
 
-  const [resume, setResume] = useState(null);
-  
+  // New states: Educational Background
+  const initialEdu = initialProfile?.education || {};
+  const [elemenSchool, setElemenSchool] = useState(initialEdu.elementary?.school || '');
+  const [elemenYears, setElemenYears] = useState(initialEdu.elementary?.years || '');
+  const [jhsSchool, setJhsSchool] = useState(initialEdu.juniorHigh?.school || '');
+  const [jhsYears, setJhsYears] = useState(initialEdu.juniorHigh?.years || '');
+  const [shsSchool, setShsSchool] = useState(initialEdu.seniorHigh?.school || '');
+  const [shsStrand, setShsStrand] = useState(initialEdu.seniorHigh?.strand || '');
+  const [shsYears, setShsYears] = useState(initialEdu.seniorHigh?.years || '');
+  const [collegeSchool, setCollegeSchool] = useState(initialEdu.college?.school || '');
+  const [collegeDegree, setCollegeDegree] = useState(initialEdu.college?.degree || '');
+  const [collegeYears, setCollegeYears] = useState(initialEdu.college?.years || '');
+
+  // New states: Work Experience List
+  const [experiences, setExperiences] = useState(initialProfile?.experience || []);
+  // Inputs for adding new experience
+  const [expTitle, setExpTitle] = useState('');
+  const [expCompany, setExpCompany] = useState('');
+  const [expPeriod, setExpPeriod] = useState('');
+  const [expDesc, setExpDesc] = useState('');
+
+  // New states: Seminars & Trainings List
+  const [seminars, setSeminars] = useState(initialProfile?.seminars || []);
+  // Inputs for adding new seminar
+  const [semTitle, setSemTitle] = useState('');
+  const [semOrganizer, setSemOrganizer] = useState('');
+  const [semDate, setSemDate] = useState('');
+  const [semDesc, setSemDesc] = useState('');
+
+  // New states: Certificates List
+  const [certificates, setCertificates] = useState(initialProfile?.certificates || []);
+  // Inputs for adding new certificate
+  const [certName, setCertName] = useState('');
+  const [certIssuer, setCertIssuer] = useState('');
+  const [certDate, setCertDate] = useState('');
+  const [certUrl, setCertUrl] = useState('');
+
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-
-
 
   // Load student profile details on mount
   useEffect(() => {
@@ -41,37 +84,84 @@ export const ProfileEditor = ({ currentUser, params, navigateTo, onProfileUpdate
     }
     
     const loadProfile = async () => {
-      const targetStudentId = (currentUser.isAdmin && params?.id) 
-        ? params.id 
-        : currentUser.studentId;
-        
-      const profile = await getStudentById(targetStudentId);
+      let profile = null;
+      if (currentUser.student && currentUser.student.id === targetStudentId) {
+        profile = currentUser.student;
+      } else {
+        profile = await getStudentById(targetStudentId);
+      }
+      
+      if (!profile) {
+        // Auto-recreate missing profile if deleted
+        const namePart = currentUser.email.split('@')[0];
+        const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+        profile = {
+          id: targetStudentId,
+          name: formattedName,
+          major: "Undeclared",
+          avatarId: `avatar-${Math.floor(Math.random() * 8) + 1}`,
+          shortBio: "Welcome to my new student portfolio! Click edit to fill in details.",
+          aboutMe: "I haven't written my bio yet. Stay tuned!",
+          skills: [],
+          email: currentUser.email,
+          isPublic: true,
+          github: "",
+          linkedin: "",
+          website: "",
+          facebook: "",
+          instagram: "",
+          twitter: "",
+          contactNumber: "",
+          photos: [],
+          projects: [],
+          resume: null
+        };
+        await updateStudentProfile(targetStudentId, profile);
+      }
+      
       if (profile) {
+        const isStudentSwitched = !student || student.id !== profile.id;
         setStudent(profile);
-        setName(profile.name || '');
-        setMajor(profile.major || '');
-        setAvatarId(profile.avatarId || 'avatar-1');
-        setCoverPhotoUrl(profile.coverPhotoUrl || '');
-        setShortBio(profile.shortBio || '');
-        setAboutMe(profile.aboutMe || '');
-        setSkills(profile.skills || []);
-        setGithub(profile.github || '');
-        setLinkedin(profile.linkedin || '');
-        setWebsite(profile.website || '');
-        setFacebook(profile.facebook || '');
-        setInstagram(profile.instagram || '');
-        setTwitter(profile.twitter || '');
-        setContactNumber(profile.contactNumber || '');
-        setProjects(profile.projects || []);
-        setPhotos(profile.photos || []);
-        setIsPublic(profile.isPublic !== false);
+        if (isStudentSwitched) {
+          setName(profile.name || '');
+          setMajor(profile.major || '');
+          setAvatarId(profile.avatarId || 'avatar-1');
+          setCoverPhotoUrl(profile.coverPhotoUrl || '');
+          setShortBio(profile.shortBio || '');
+          setAboutMe(profile.aboutMe || '');
+          setSkills(profile.skills || []);
+          setGithub(profile.github || '');
+          setLinkedin(profile.linkedin || '');
+          setWebsite(profile.website || '');
+          setFacebook(profile.facebook || '');
+          setInstagram(profile.instagram || '');
+          setTwitter(profile.twitter || '');
+          setContactNumber(profile.contactNumber || '');
+          setProjects(profile.projects || []);
+          setPhotos(profile.photos || []);
+          setIsPublic(profile.isPublic !== false);
+          setResume(profile.resume || null);
 
-        setResume(profile.resume || null);
+          const edu = profile.education || {};
+          setElemenSchool(edu.elementary?.school || '');
+          setElemenYears(edu.elementary?.years || '');
+          setJhsSchool(edu.juniorHigh?.school || '');
+          setJhsYears(edu.juniorHigh?.years || '');
+          setShsSchool(edu.seniorHigh?.school || '');
+          setShsStrand(edu.seniorHigh?.strand || '');
+          setShsYears(edu.seniorHigh?.years || '');
+          setCollegeSchool(edu.college?.school || '');
+          setCollegeDegree(edu.college?.degree || '');
+          setCollegeYears(edu.college?.years || '');
 
+          setExperiences(profile.experience || []);
+          setSeminars(profile.seminars || []);
+          setCertificates(profile.certificates || []);
+        }
       }
     };
     loadProfile();
-  }, [currentUser]);
+  }, [currentUser, targetStudentId]);
 
   if (!currentUser || !student) {
     return (
@@ -252,8 +342,16 @@ export const ProfileEditor = ({ currentUser, params, navigateTo, onProfileUpdate
         projects,
         photos,
         isPublic,
-
-        resume
+        resume,
+        education: {
+          elementary: { school: elemenSchool, years: elemenYears },
+          juniorHigh: { school: jhsSchool, years: jhsYears },
+          seniorHigh: { school: shsSchool, strand: shsStrand, years: shsYears },
+          college: { school: collegeSchool, degree: collegeDegree, years: collegeYears }
+        },
+        experience: experiences,
+        seminars: seminars,
+        certificates: certificates
       });
 
       onProfileUpdate(updatedProfile);
@@ -536,6 +634,7 @@ export const ProfileEditor = ({ currentUser, params, navigateTo, onProfileUpdate
                     <option value="Bachelor of Science in Information Technology" />
                     <option value="Bachelor of Science in Computer Science" />
                     <option value="Bachelor of Science in Business Administration" />
+                    <option value="Bachelor of Science in Office Administration" />
                     <option value="Bachelor of Science in Hospitality Management" />
                     <option value="Bachelor of Science in Tourism Management" />
                     <option value="Bachelor of Science in Nursing" />
@@ -581,6 +680,480 @@ export const ProfileEditor = ({ currentUser, params, navigateTo, onProfileUpdate
                   onChange={(e) => setAboutMe(e.target.value)}
                 />
                 <div className="form-error-msg">About Me description is required.</div>
+              </div>
+            </div>
+
+            {/* Educational Background Card */}
+            <div className="editor-form-card glass">
+              <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Educational Background</h2>
+              <p style={{ fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+                Fill in details about your academic progress across all stages.
+              </p>
+
+              {/* College */}
+              <div style={{ borderBottom: '1px dashed var(--border-color)', paddingBottom: '1.25rem', marginBottom: '1.25rem' }}>
+                <h3 style={{ fontSize: '1.05rem', marginBottom: '0.75rem', color: 'var(--primary)' }}>College / University</h3>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="edu-college-school">School / University Name</label>
+                    <input
+                      type="text"
+                      id="edu-college-school"
+                      className="form-control"
+                      placeholder="e.g. University of Antique"
+                      value={collegeSchool}
+                      onChange={(e) => setCollegeSchool(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group" style={{ maxWidth: '180px' }}>
+                    <label className="form-label" htmlFor="edu-college-years">Years / Period</label>
+                    <input
+                      type="text"
+                      id="edu-college-years"
+                      className="form-control"
+                      placeholder="e.g. 2022 - Present"
+                      value={collegeYears}
+                      onChange={(e) => setCollegeYears(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="form-group" style={{ marginTop: '0.75rem' }}>
+                  <label className="form-label" htmlFor="edu-college-degree">Degree / Course Name</label>
+                  <input
+                    type="text"
+                    id="edu-college-degree"
+                    className="form-control"
+                    placeholder="e.g. Bachelor of Science in Office Administration"
+                    value={collegeDegree}
+                    onChange={(e) => setCollegeDegree(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Senior High School */}
+              <div style={{ borderBottom: '1px dashed var(--border-color)', paddingBottom: '1.25rem', marginBottom: '1.25rem' }}>
+                <h3 style={{ fontSize: '1.05rem', marginBottom: '0.75rem', color: 'var(--primary)' }}>High School (Senior High)</h3>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="edu-shs-school">School Name</label>
+                    <input
+                      type="text"
+                      id="edu-shs-school"
+                      className="form-control"
+                      placeholder="e.g. Antique National School"
+                      value={shsSchool}
+                      onChange={(e) => setShsSchool(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group" style={{ maxWidth: '180px' }}>
+                    <label className="form-label" htmlFor="edu-shs-years">Years / Period</label>
+                    <input
+                      type="text"
+                      id="edu-shs-years"
+                      className="form-control"
+                      placeholder="e.g. 2020 - 2022"
+                      value={shsYears}
+                      onChange={(e) => setShsYears(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="form-group" style={{ marginTop: '0.75rem' }}>
+                  <label className="form-label" htmlFor="edu-shs-strand">Track / Strand</label>
+                  <input
+                    type="text"
+                    id="edu-shs-strand"
+                    className="form-control"
+                    placeholder="e.g. TVL - Information and Communications Technology"
+                    value={shsStrand}
+                    onChange={(e) => setShsStrand(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Junior High School */}
+              <div style={{ borderBottom: '1px dashed var(--border-color)', paddingBottom: '1.25rem', marginBottom: '1.25rem' }}>
+                <h3 style={{ fontSize: '1.05rem', marginBottom: '0.75rem', color: 'var(--primary)' }}>High School (Junior High)</h3>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="edu-jhs-school">School Name</label>
+                    <input
+                      type="text"
+                      id="edu-jhs-school"
+                      className="form-control"
+                      placeholder="e.g. Antique National School"
+                      value={jhsSchool}
+                      onChange={(e) => setJhsSchool(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group" style={{ maxWidth: '180px' }}>
+                    <label className="form-label" htmlFor="edu-jhs-years">Years / Period</label>
+                    <input
+                      type="text"
+                      id="edu-jhs-years"
+                      className="form-control"
+                      placeholder="e.g. 2016 - 2020"
+                      value={jhsYears}
+                      onChange={(e) => setJhsYears(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Elementary */}
+              <div>
+                <h3 style={{ fontSize: '1.05rem', marginBottom: '0.75rem', color: 'var(--primary)' }}>Elementary School</h3>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="edu-elem-school">School Name</label>
+                    <input
+                      type="text"
+                      id="edu-elem-school"
+                      className="form-control"
+                      placeholder="e.g. San Jose Elementary School"
+                      value={elemenSchool}
+                      onChange={(e) => setElemenSchool(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group" style={{ maxWidth: '180px' }}>
+                    <label className="form-label" htmlFor="edu-elem-years">Years / Period</label>
+                    <input
+                      type="text"
+                      id="edu-elem-years"
+                      className="form-control"
+                      placeholder="e.g. 2010 - 2016"
+                      value={elemenSchool ? elemenYears : ''}
+                      onChange={(e) => setElemenYears(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Work Experience Card */}
+            <div className="editor-form-card glass">
+              <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Work Experience</h2>
+              <p style={{ fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+                Add relevant internships, part-time jobs, or freelance project roles.
+              </p>
+
+              {/* List of existing experiences */}
+              <div style={{ marginBottom: '1.5rem' }}>
+                {experiences.length === 0 ? (
+                  <p style={{ fontStyle: 'italic', color: 'var(--text-muted)', fontSize: '0.875rem' }}>No work experiences added yet.</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {experiences.map((exp, idx) => (
+                      <div key={exp.id || idx} className="project-editor-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '1rem', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--border-radius-sm)' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', textAlign: 'left' }}>
+                          <span style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.95rem' }}>{exp.title}</span>
+                          <span style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 600 }}>{exp.company} | <span style={{ color: 'var(--text-secondary)', fontWeight: 400 }}>{exp.period}</span></span>
+                          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0.5rem 0 0', whiteSpace: 'pre-wrap', lineHeight: '1.4' }}>{exp.description}</p>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-danger"
+                          style={{ minHeight: '28px', padding: '0 0.5rem', fontSize: '0.75rem' }}
+                          onClick={() => setExperiences(prev => prev.filter(item => item.id !== exp.id))}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Add New Experience Panel */}
+              <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Add Work Experience</h3>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="new-exp-title">Job Title / Role *</label>
+                    <input
+                      type="text"
+                      id="new-exp-title"
+                      className="form-control"
+                      placeholder="e.g. Intern Developer"
+                      value={expTitle}
+                      onChange={(e) => setExpTitle(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="new-exp-company">Company / Organization *</label>
+                    <input
+                      type="text"
+                      id="new-exp-company"
+                      className="form-control"
+                      placeholder="e.g. Tech Solutions Inc."
+                      value={expCompany}
+                      onChange={(e) => setExpCompany(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="form-group" style={{ marginTop: '0.75rem' }}>
+                  <label className="form-label" htmlFor="new-exp-period">Period / Duration *</label>
+                  <input
+                    type="text"
+                    id="new-exp-period"
+                    className="form-control"
+                    placeholder="e.g. Jun 2025 - Aug 2025 or 3 Months"
+                    value={expPeriod}
+                    onChange={(e) => setExpPeriod(e.target.value)}
+                  />
+                </div>
+                <div className="form-group" style={{ marginTop: '0.75rem' }}>
+                  <label className="form-label" htmlFor="new-exp-desc">Description of Duties</label>
+                  <textarea
+                    id="new-exp-desc"
+                    className="form-control"
+                    placeholder="Briefly describe what you did or achieved in this role..."
+                    rows="3"
+                    value={expDesc}
+                    onChange={(e) => setExpDesc(e.target.value)}
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ width: '100%', marginTop: '0.75rem' }}
+                  onClick={() => {
+                    if (!expTitle.trim() || !expCompany.trim() || !expPeriod.trim()) return;
+                    setExperiences(prev => [...prev, {
+                      id: `exp-${Date.now()}`,
+                      title: expTitle.trim(),
+                      company: expCompany.trim(),
+                      period: expPeriod.trim(),
+                      description: expDesc.trim()
+                    }]);
+                    setExpTitle('');
+                    setExpCompany('');
+                    setExpPeriod('');
+                    setExpDesc('');
+                  }}
+                  disabled={!expTitle.trim() || !expCompany.trim() || !expPeriod.trim()}
+                >
+                  Add Experience
+                </button>
+              </div>
+            </div>
+
+            {/* Seminars & Trainings Card */}
+            <div className="editor-form-card glass">
+              <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Seminars & Trainings</h2>
+              <p style={{ fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+                Add academic seminars, workshops, bootcamps, or technology summits you attended.
+              </p>
+
+              {/* List of existing seminars */}
+              <div style={{ marginBottom: '1.5rem' }}>
+                {seminars.length === 0 ? (
+                  <p style={{ fontStyle: 'italic', color: 'var(--text-muted)', fontSize: '0.875rem' }}>No seminars added yet.</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {seminars.map((sem, idx) => (
+                      <div key={sem.id || idx} className="project-editor-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '1rem', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--border-radius-sm)' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', textAlign: 'left' }}>
+                          <span style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.95rem' }}>{sem.title}</span>
+                          <span style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 600 }}>Organized by {sem.organizer} | <span style={{ color: 'var(--text-secondary)', fontWeight: 400 }}>{sem.date}</span></span>
+                          {sem.description && <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0.5rem 0 0', lineHeight: '1.4' }}>{sem.description}</p>}
+                        </div>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-danger"
+                          style={{ minHeight: '28px', padding: '0 0.5rem', fontSize: '0.75rem' }}
+                          onClick={() => setSeminars(prev => prev.filter(item => item.id !== sem.id))}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Add New Seminar Panel */}
+              <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Add Seminar / Workshop</h3>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="new-sem-title">Seminar / Topic Title *</label>
+                    <input
+                      type="text"
+                      id="new-sem-title"
+                      className="form-control"
+                      placeholder="e.g. National IT Summit 2025"
+                      value={semTitle}
+                      onChange={(e) => setSemTitle(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="new-sem-org">Organizer / Host *</label>
+                    <input
+                      type="text"
+                      id="new-sem-org"
+                      className="form-control"
+                      placeholder="e.g. DICT Antique"
+                      value={semOrganizer}
+                      onChange={(e) => setSemOrganizer(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="form-group" style={{ marginTop: '0.75rem' }}>
+                  <label className="form-label" htmlFor="new-sem-date">Date Attended *</label>
+                  <input
+                    type="text"
+                    id="new-sem-date"
+                    className="form-control"
+                    placeholder="e.g. October 15, 2025"
+                    value={semDate}
+                    onChange={(e) => setSemDate(e.target.value)}
+                  />
+                </div>
+                <div className="form-group" style={{ marginTop: '0.75rem' }}>
+                  <label className="form-label" htmlFor="new-sem-desc">Short Description / Key Learnings</label>
+                  <textarea
+                    id="new-sem-desc"
+                    className="form-control"
+                    placeholder="What did you learn or earn in this training?"
+                    rows="2"
+                    value={semDesc}
+                    onChange={(e) => setSemDesc(e.target.value)}
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ width: '100%', marginTop: '0.75rem' }}
+                  onClick={() => {
+                    if (!semTitle.trim() || !semOrganizer.trim() || !semDate.trim()) return;
+                    setSeminars(prev => [...prev, {
+                      id: `sem-${Date.now()}`,
+                      title: semTitle.trim(),
+                      organizer: semOrganizer.trim(),
+                      date: semDate.trim(),
+                      description: semDesc.trim()
+                    }]);
+                    setSemTitle('');
+                    setSemOrganizer('');
+                    setSemDate('');
+                    setSemDesc('');
+                  }}
+                  disabled={!semTitle.trim() || !semOrganizer.trim() || !semDate.trim()}
+                >
+                  Add Seminar
+                </button>
+              </div>
+            </div>
+
+            {/* Certificates Card */}
+            <div className="editor-form-card glass">
+              <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Certificates & Credentials</h2>
+              <p style={{ fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+                Add certifications, course achievements, or professional badges you have earned.
+              </p>
+
+              {/* List of existing certificates */}
+              <div style={{ marginBottom: '1.5rem' }}>
+                {certificates.length === 0 ? (
+                  <p style={{ fontStyle: 'italic', color: 'var(--text-muted)', fontSize: '0.875rem' }}>No certificates added yet.</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {certificates.map((cert, idx) => (
+                      <div key={cert.id || idx} className="project-editor-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '1rem', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--border-radius-sm)' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', textAlign: 'left' }}>
+                          <span style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.95rem' }}>{cert.name}</span>
+                          <span style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 600 }}>Issued by {cert.issuer} | <span style={{ color: 'var(--text-secondary)', fontWeight: 400 }}>{cert.date}</span></span>
+                          {cert.url && (
+                            <a href={cert.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.8rem', display: 'block', marginTop: '0.25rem' }}>
+                              View Credential &rarr;
+                            </a>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-danger"
+                          style={{ minHeight: '28px', padding: '0 0.5rem', fontSize: '0.75rem' }}
+                          onClick={() => setCertificates(prev => prev.filter(item => item.id !== cert.id))}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Add New Certificate Panel */}
+              <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Add Certification / Course Badge</h3>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="new-cert-name">Certificate Name *</label>
+                    <input
+                      type="text"
+                      id="new-cert-name"
+                      className="form-control"
+                      placeholder="e.g. AWS Certified Cloud Practitioner"
+                      value={certName}
+                      onChange={(e) => setCertName(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="new-cert-issuer">Issuing Organization *</label>
+                    <input
+                      type="text"
+                      id="new-cert-issuer"
+                      className="form-control"
+                      placeholder="e.g. Amazon Web Services"
+                      value={certIssuer}
+                      onChange={(e) => setCertIssuer(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="form-group" style={{ marginTop: '0.75rem' }}>
+                  <label className="form-label" htmlFor="new-cert-date">Date Issued *</label>
+                  <input
+                    type="text"
+                    id="new-cert-date"
+                    className="form-control"
+                    placeholder="e.g. January 2026"
+                    value={certDate}
+                    onChange={(e) => setCertDate(e.target.value)}
+                  />
+                </div>
+                <div className="form-group" style={{ marginTop: '0.75rem' }}>
+                  <label className="form-label" htmlFor="new-cert-url">Credential URL (Link)</label>
+                  <input
+                    type="url"
+                    id="new-cert-url"
+                    className="form-control"
+                    placeholder="https://credly.com/your-badge-url"
+                    value={certUrl}
+                    onChange={(e) => setCertUrl(e.target.value)}
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ width: '100%', marginTop: '0.75rem' }}
+                  onClick={() => {
+                    if (!certName.trim() || !certIssuer.trim() || !certDate.trim()) return;
+                    setCertificates(prev => [...prev, {
+                      id: `cert-${Date.now()}`,
+                      name: certName.trim(),
+                      issuer: certIssuer.trim(),
+                      date: certDate.trim(),
+                      url: certUrl.trim()
+                    }]);
+                    setCertName('');
+                    setCertIssuer('');
+                    setCertDate('');
+                    setCertUrl('');
+                  }}
+                  disabled={!certName.trim() || !certIssuer.trim() || !certDate.trim()}
+                >
+                  Add Certificate
+                </button>
               </div>
             </div>
 

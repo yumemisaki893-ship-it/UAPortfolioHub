@@ -6,6 +6,8 @@ import Auth from './pages/Auth';
 import ProfileEditor from './pages/ProfileEditor';
 import Home from './pages/Home';
 import SecuritySettings from './pages/SecuritySettings';
+import { OfficeAdmin } from './pages/OfficeAdmin';
+import { OfficePromotion } from './pages/OfficePromotion';
 import { getCurrentSession, getSessionData, getStudentById } from './utils/storage';
 import { auth, isConfigured } from './utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -118,7 +120,7 @@ function App() {
       case 'home':
         return <Home navigateTo={navigateTo} currentUser={currentUser} />;
       case 'directory':
-        return <Directory navigateTo={navigateTo} currentUser={currentUser} />;
+        return <Directory navigateTo={navigateTo} currentUser={currentUser} params={route.params} />;
       case 'profile-detail':
         return (
           <ProfileDetail 
@@ -152,6 +154,20 @@ function App() {
             onProfileUpdate={handleProfileUpdate}
           />
         );
+      case 'office-admin':
+        return (
+          <OfficeAdmin 
+            currentUser={currentUser} 
+            navigateTo={navigateTo} 
+          />
+        );
+      case 'office-promotion':
+        return (
+          <OfficePromotion 
+            currentUser={currentUser} 
+            navigateTo={navigateTo} 
+          />
+        );
       default:
         return <Home navigateTo={navigateTo} currentUser={currentUser} />;
     }
@@ -167,6 +183,20 @@ function App() {
         navigateTo={navigateTo}
         onLogoutSuccess={handleLogoutSuccess}
       />
+
+      {route.page === 'profile-detail' && (
+        <button 
+          className="btn-back-directory" 
+          onClick={() => navigateTo('directory')}
+          aria-label="Back to Directory"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+          Back to Directory
+        </button>
+      )}
 
       {/* Main Page Area */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative' }}>

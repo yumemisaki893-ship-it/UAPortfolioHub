@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { 
   getStudentById, 
+  getStudentByIdSync,
   deleteStudentProfileAndAccount, 
   signOut,
   updateStudentProfile
@@ -8,17 +9,33 @@ import {
 import { AvatarImage } from '../components/AvatarPicker';
 
 export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess }) => {
-  const [student, setStudent] = useState(null);
   const studentId = params?.id;
+  const initialStudent = getStudentByIdSync(studentId);
+  const [student, setStudent] = useState(initialStudent);
 
   // Lightbox Modal States
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
 
+  // States for in-place About Me editing
+  const [isEditingAboutMe, setIsEditingAboutMe] = useState(false);
+  const [aboutMeText, setAboutMeText] = useState(initialStudent?.aboutMe || '');
+  const [savingAboutMe, setSavingAboutMe] = useState(false);
+  const [loading, setLoading] = useState(!student);
+
   const loadAllData = async () => {
     if (studentId) {
+      if (!student) {
+        setLoading(true);
+      }
       const profile = await getStudentById(studentId);
       setStudent(profile);
+      if (profile) {
+        if (!isEditingAboutMe) {
+          setAboutMeText(profile.aboutMe || '');
+        }
+      }
+      setLoading(false);
     }
   };
 
@@ -59,6 +76,14 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [lightboxOpen, student?.photos]);
+
+  if (loading && !student) {
+    return (
+      <div className="container" style={{ padding: '6rem 2rem', textAlign: 'center' }}>
+        <h2>Loading Profile...</h2>
+      </div>
+    );
+  }
 
   if (!student) {
     return (
@@ -306,18 +331,6 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
 
   return (
     <div className="profile-detail-page" style={{ position: 'relative' }}>
-      <button 
-        className="btn-back-directory" 
-        onClick={() => navigateTo('directory')}
-        aria-label="Back to Directory"
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
-          <line x1="19" y1="12" x2="5" y2="12" />
-          <polyline points="12 19 5 12 12 5" />
-        </svg>
-        Back to Directory
-      </button>
-
       {/* Full Width Cover Photo */}
       <div style={{ position: 'relative', width: '100%' }}>
         <div 
@@ -605,17 +618,272 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
         <div>
           {/* About Me Section */}
           <div className="profile-section glass">
-            <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-              About Me
+            <h2 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', width: '100%' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                About Me
+              </div>
+              {canEdit && !isEditingAboutMe && (
+                <button 
+                  className="btn btn-secondary" 
+                  onClick={() => setIsEditingAboutMe(true)}
+                  style={{ padding: '0.2rem 0.6rem', fontSize: '0.75rem', minHeight: '28px', display: 'flex', alignItems: 'center', gap: '4px', border: '1px solid var(--border-color)' }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ width: '11px', height: '11px' }}>
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                  </svg>
+                  Edit About Me
+                </button>
+              )}
             </h2>
-            <p className="about-text">{student.aboutMe || "No detailed description written yet."}</p>
+            {isEditingAboutMe ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.75rem' }}>
+                <textarea
+                  className="form-control"
+                  rows="6"
+                  style={{ width: '100%', resize: 'vertical', fontSize: '0.925rem', lineHeight: '1.5', padding: '0.75rem' }}
+                  value={aboutMeText}
+                  onChange={(e) => setAboutMeText(e.target.value)}
+                  placeholder="Tell us about yourself..."
+                  disabled={savingAboutMe}
+                />
+                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                  <button 
+                    className="btn btn-secondary" 
+                    onClick={() => {
+                      setIsEditingAboutMe(false);
+                      setAboutMeText(student.aboutMe || '');
+                    }}
+                    style={{ padding: '0.3rem 0.8rem', fontSize: '0.8rem', minHeight: '32px' }}
+                    disabled={savingAboutMe}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={async () => {
+                      setSavingAboutMe(true);
+                      try {
+                        const updated = await updateStudentProfile(student.id, { aboutMe: aboutMeText });
+                        setStudent(updated);
+                        setIsEditingAboutMe(false);
+                      } catch (error) {
+                        console.error('Error saving about me:', error);
+                        alert('Failed to save changes. Please try again.');
+                      } finally {
+                        setSavingAboutMe(false);
+                      }
+                    }}
+                    style={{ padding: '0.3rem 0.8rem', fontSize: '0.8rem', minHeight: '32px' }}
+                    disabled={savingAboutMe}
+                  >
+                    {savingAboutMe ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="about-text" style={{ whiteSpace: 'pre-wrap' }}>{student.aboutMe || "No detailed description written yet."}</p>
+            )}
           </div>
 
+          {/* Educational Background Section */}
+          {(student.education?.elementary?.school || student.education?.juniorHigh?.school || student.education?.seniorHigh?.school || student.education?.college?.school) && (
+            <div className="profile-section glass">
+              <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                  <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
+                </svg>
+                Educational Background
+              </h2>
+              
+              <div className="education-timeline" style={{ position: 'relative', paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {/* Timeline vertical bar */}
+                <div style={{ position: 'absolute', left: '4px', top: '8px', bottom: '8px', width: '2px', background: 'var(--border-color)' }}></div>
 
+                {/* College */}
+                {student.education?.college?.school && (
+                  <div style={{ position: 'relative' }}>
+                    {/* Circle Node */}
+                    <div style={{ position: 'absolute', left: '-23px', top: '5px', width: '10px', height: '10px', borderRadius: '50%', background: 'var(--primary)', border: '2px solid var(--bg-card)' }}></div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      {student.education.college.years || "College"}
+                    </div>
+                    <div style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-primary)', marginTop: '0.15rem' }}>
+                      {student.education.college.school}
+                    </div>
+                    {student.education.college.degree && (
+                      <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '0.1rem' }}>
+                        {student.education.college.degree}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Senior High School */}
+                {student.education?.seniorHigh?.school && (
+                  <div style={{ position: 'relative' }}>
+                    {/* Circle Node */}
+                    <div style={{ position: 'absolute', left: '-23px', top: '5px', width: '10px', height: '10px', borderRadius: '50%', background: 'var(--accent)', border: '2px solid var(--bg-card)' }}></div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      {student.education.seniorHigh.years || "High School (Senior High)"}
+                    </div>
+                    <div style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-primary)', marginTop: '0.15rem' }}>
+                      {student.education.seniorHigh.school}
+                    </div>
+                    {student.education.seniorHigh.strand && (
+                      <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '0.1rem' }}>
+                        Track / Strand: {student.education.seniorHigh.strand}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Junior High School */}
+                {student.education?.juniorHigh?.school && (
+                  <div style={{ position: 'relative' }}>
+                    {/* Circle Node */}
+                    <div style={{ position: 'absolute', left: '-23px', top: '5px', width: '10px', height: '10px', borderRadius: '50%', background: 'var(--logo-gold)', border: '2px solid var(--bg-card)' }}></div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--logo-gold)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      {student.education.juniorHigh.years || "High School (Junior High)"}
+                    </div>
+                    <div style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-primary)', marginTop: '0.15rem' }}>
+                      {student.education.juniorHigh.school}
+                    </div>
+                  </div>
+                )}
+
+                {/* Elementary */}
+                {student.education?.elementary?.school && (
+                  <div style={{ position: 'relative' }}>
+                    {/* Circle Node */}
+                    <div style={{ position: 'absolute', left: '-23px', top: '5px', width: '10px', height: '10px', borderRadius: '50%', background: 'var(--text-muted)', border: '2px solid var(--bg-card)' }}></div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      {student.education.elementary.years || "Elementary School"}
+                    </div>
+                    <div style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-primary)', marginTop: '0.15rem' }}>
+                      {student.education.elementary.school}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Work Experience Section */}
+          {student.experience && student.experience.length > 0 && (
+            <div className="profile-section glass">
+              <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                </svg>
+                Work Experience
+              </h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {student.experience.map((exp, idx) => (
+                  <div key={exp.id || idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <h3 style={{ fontSize: '1.1rem', margin: 0, fontWeight: 700, color: 'var(--text-primary)' }}>{exp.title}</h3>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>{exp.period}</span>
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'var(--primary)', fontWeight: 600 }}>{exp.company}</div>
+                    {exp.description && (
+                      <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', margin: '0.5rem 0 0', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>
+                        {exp.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Seminars & Trainings Section */}
+          {student.seminars && student.seminars.length > 0 && (
+            <div className="profile-section glass">
+              <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                Seminars & Workshops
+              </h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+                {student.seminars.map((sem, idx) => (
+                  <div key={sem.id || idx} className="glass" style={{ padding: '1.25rem', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--border-color)', background: 'rgba(255, 255, 255, 0.01)' }}>
+                    <h3 style={{ fontSize: '1rem', margin: '0 0 0.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>{sem.title}</h3>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600, marginBottom: '0.5rem' }}>
+                      Host: {sem.organizer} | <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>{sem.date}</span>
+                    </div>
+                    {sem.description && <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.4' }}>{sem.description}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Certificates Section */}
+          {student.certificates && student.certificates.length > 0 && (
+            <div className="profile-section glass">
+              <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+                  <circle cx="12" cy="8" r="7" />
+                  <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+                </svg>
+                Certifications & Achievements
+              </h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+                {student.certificates.map((cert, idx) => (
+                  <div key={cert.id || idx} className="glass" style={{ padding: '1.25rem', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--border-color)', background: 'rgba(255, 255, 255, 0.01)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <h3 style={{ fontSize: '1rem', margin: '0 0 0.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>{cert.name}</h3>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                        Issuer: <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{cert.issuer}</span> | <span style={{ color: 'var(--text-muted)' }}>{cert.date}</span>
+                      </div>
+                    </div>
+                    {cert.url && (
+                      <a 
+                        href={cert.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="btn btn-secondary btn-sm"
+                        style={{ marginTop: '1rem', display: 'inline-flex', alignItems: 'center', gap: '4px', minHeight: '30px', justifyContent: 'center', textDecoration: 'none', fontSize: '0.8rem' }}
+                      >
+                        View Credential ↗
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {/* Skills Section */}
+          <div className="profile-section glass">
+            <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '15px', height: '15px' }}>
+                <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
+              Specialized Skills
+            </h2>
+            {student.skills && student.skills.length > 0 ? (
+              <div className="detail-skills-list">
+                {student.skills.map((skill, index) => (
+                  <span key={index} className="badge badge-primary" style={{ padding: '0.4rem 1rem', fontSize: '0.8rem' }}>
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p style={{ fontStyle: 'italic', color: 'var(--text-muted)' }}>No skills listed.</p>
+            )}
+          </div>
 
           {/* CV / Resume Section (Default) */}
           <div className="profile-section glass">
@@ -910,30 +1178,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
         </div>
 
         {/* Sidebar Column */}
-        <div>
-          {/* Skills Section */}
-          <div className="profile-section glass">
-            <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '15px', height: '15px' }}>
-                <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-              </svg>
-              Specialized Skills
-            </h2>
-            {student.skills && student.skills.length > 0 ? (
-              <div className="detail-skills-list">
-                {student.skills.map((skill, index) => (
-                  <span key={index} className="badge badge-primary" style={{ padding: '0.4rem 1rem', fontSize: '0.8rem' }}>
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <p style={{ fontStyle: 'italic', color: 'var(--text-muted)' }}>No skills listed.</p>
-            )}
-          </div>
-
-
-
+        <div className="profile-sidebar">
           {/* Contact Cards Sidebar */}
           <div className="profile-section glass">
             <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

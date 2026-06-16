@@ -99,7 +99,7 @@ export const initStorage = () => {
   if (session) {
     try {
       const sessionData = JSON.parse(session);
-      if (idsToPurge.includes(sessionData.studentId)) {
+      if (sessionData && idsToPurge.includes(sessionData.studentId)) {
         localStorage.removeItem(STORAGE_KEYS.SESSION);
       }
     } catch (e) {
@@ -127,7 +127,10 @@ export const getStudents = async (forceRefresh = false) => {
     const querySnapshot = await getDocs(collection(db, 'students'));
     const list = [];
     querySnapshot.forEach((doc) => {
-      list.push({ id: doc.id, ...doc.data() });
+      const studentData = { id: doc.id, ...doc.data() };
+      list.push(studentData);
+      cachedStudentsMap[doc.id] = studentData;
+      cachedStudentTimes[doc.id] = now;
     });
     cachedStudentsList = list;
     lastFetchTime = now;
@@ -136,6 +139,22 @@ export const getStudents = async (forceRefresh = false) => {
     console.error("Error loading students from Firestore: ", e);
     return [];
   }
+};
+
+// Retrieve a single student profile by ID synchronously if cached
+export const getStudentByIdSync = (id) => {
+  if (!id) return null;
+  if (!isConfigured) {
+    const data = localStorage.getItem(STORAGE_KEYS.STUDENTS);
+    if (!data) return null;
+    try {
+      const students = JSON.parse(data);
+      return students.find(s => s.id === id) || null;
+    } catch (e) {
+      return null;
+    }
+  }
+  return cachedStudentsMap[id] || null;
 };
 
 // Retrieve a single student profile by ID
@@ -185,6 +204,7 @@ export const getCurrentSession = () => {
   
   try {
     const sessionData = JSON.parse(session);
+    if (!sessionData) return null;
     // Since local storage is synchronous, we fetch local mock data
     const data = localStorage.getItem(STORAGE_KEYS.STUDENTS);
     const students = data ? JSON.parse(data) : [];
@@ -232,7 +252,19 @@ export const signIn = async (email, password) => {
   if (cleanEmail === 'admin@university.edu' && password === 'Admin123!') {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, cleanEmail, password);
-      const sessionData = await getSessionData(userCredential.user);
+      let sessionData = await getSessionData(userCredential.user);
+      
+      // Auto-provision admin user document in Firestore if it was cleared
+      if (!sessionData) {
+        sessionData = {
+          email: cleanEmail,
+          studentId: 'admin-user',
+          isAdmin: true,
+          createdAt: new Date().toISOString()
+        };
+        await setDoc(doc(db, 'users', userCredential.user.uid), sessionData);
+      }
+      
       const student = await getStudentById(sessionData.studentId);
       return { user: sessionData, student };
     } catch (err) {

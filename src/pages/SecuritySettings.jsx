@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { getStudentById, updateUserEmail, updateUserPassword, deleteStudentProfileAndAccount, signOut } from '../utils/storage';
+import { getStudentById, updateUserEmail, updateUserPassword, deleteStudentProfileAndAccount, signOut, updateStudentProfile } from '../utils/storage';
 
 export const SecuritySettings = ({ currentUser, navigateTo, onProfileUpdate }) => {
-  const [student, setStudent] = useState(null);
+  const [student, setStudent] = useState(currentUser?.student || null);
   
   // Account Security States
-  const [newEmail, setNewEmail] = useState('');
+  const [newEmail, setNewEmail] = useState(currentUser?.student?.email || '');
   const [emailSuccess, setEmailSuccess] = useState(false);
   const [emailError, setEmailError] = useState('');
   
@@ -23,10 +23,40 @@ export const SecuritySettings = ({ currentUser, navigateTo, onProfileUpdate }) =
     }
     
     const loadProfile = async () => {
-      const profile = await getStudentById(currentUser.studentId);
+      let profile = await getStudentById(currentUser.studentId);
+      if (!profile) {
+        // Auto-recreate missing profile if deleted
+        const namePart = currentUser.email.split('@')[0];
+        const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+        profile = {
+          id: currentUser.studentId,
+          name: formattedName,
+          major: "Undeclared",
+          avatarId: `avatar-${Math.floor(Math.random() * 8) + 1}`,
+          shortBio: "Welcome to my new student portfolio! Click edit to fill in details.",
+          aboutMe: "I haven't written my bio yet. Stay tuned!",
+          skills: [],
+          email: currentUser.email,
+          isPublic: true,
+          github: "",
+          linkedin: "",
+          website: "",
+          facebook: "",
+          instagram: "",
+          twitter: "",
+          contactNumber: "",
+          photos: [],
+          projects: [],
+          resume: null
+        };
+        await updateStudentProfile(currentUser.studentId, profile);
+      }
+      
       if (profile) {
         setStudent(profile);
-        setNewEmail(profile.email || '');
+        if (!student || student.email !== profile.email) {
+          setNewEmail(profile.email || '');
+        }
       }
     };
     loadProfile();

@@ -110,28 +110,45 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
               >
                 Browse Portfolios
               </a>
+              <a 
+                href="#" 
+                onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo('office-promotion'); }}
+                className="flyout-link"
+              >
+                BS Office Administration
+              </a>
               
               {currentUser ? (
                 <>
                   {currentUser.isAdmin ? (
-                    <div 
-                      style={{ 
-                        padding: '0.4rem 0.75rem', 
-                        fontSize: '0.75rem', 
-                        fontWeight: 700, 
-                        color: 'var(--accent)', 
-                        background: 'var(--danger-bg)', 
-                        border: '1px solid var(--danger-border)',
-                        borderRadius: 'var(--border-radius-sm)', 
-                        marginBottom: '1rem', 
-                        display: 'inline-block',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.05em',
-                        textAlign: 'center'
-                      }}
-                    >
-                      Admin Maintenance Mode
-                    </div>
+                    <>
+                      <div 
+                        style={{ 
+                          padding: '0.4rem 0.75rem', 
+                          fontSize: '0.75rem', 
+                          fontWeight: 700, 
+                          color: 'var(--accent)', 
+                          background: 'var(--danger-bg)', 
+                          border: '1px solid var(--danger-border)',
+                          borderRadius: 'var(--border-radius-sm)', 
+                          marginBottom: '0.75rem', 
+                          display: 'block',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                          textAlign: 'center'
+                        }}
+                      >
+                        Admin Maintenance Mode
+                      </div>
+                      <a 
+                        href="#" 
+                        onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo('office-admin'); }}
+                        className="flyout-link"
+                        style={{ color: 'var(--primary)', fontWeight: '600', marginBottom: '0.75rem' }}
+                      >
+                        Office Administration
+                      </a>
+                    </>
                   ) : (
                     <>
                       <a 

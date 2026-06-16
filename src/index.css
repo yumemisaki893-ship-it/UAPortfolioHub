@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   /* Colors - University of Antique Logo Theme */
@@ -33,6 +33,7 @@
 
   /* Fonts */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-heading: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   
   /* Transitions */
   --transition-fast: 0.12s ease;
@@ -144,12 +145,13 @@ input, textarea, select,
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
-  line-height: 1.2;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-}
+ h1, h2, h3, h4, h5, h6 {
+   font-family: var(--font-family-heading);
+   font-weight: 600;
+   line-height: 1.2;
+   color: var(--text-primary);
+   letter-spacing: -0.02em;
+ }
 
 h1 {
   font-size: 2.25rem;
@@ -655,6 +657,18 @@ a:hover {
 @media (max-width: 992px) {
   .profile-layout {
     grid-template-columns: 1fr;
+  }
+}
+
+.profile-sidebar {
+  position: sticky;
+  top: 6.5rem;
+  align-self: start;
+}
+
+@media (max-width: 992px) {
+  .profile-sidebar {
+    position: static;
   }
 }
 
@@ -2180,116 +2194,198 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
 /* ClickUp Clone Login Page */
 .clickup-auth-container {
   display: flex;
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
   width: 100%;
-  background-color: #ffffff;
-  overflow: hidden;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  position: relative;
+  overflow-x: hidden;
+  font-family: var(--font-family);
+  background: radial-gradient(circle at top left, rgba(255, 113, 175, 0.08) 0%, transparent 40%),
+              radial-gradient(circle at top right, rgba(102, 71, 240, 0.08) 0%, transparent 45%),
+              linear-gradient(to bottom, #ffffff 0%, #fafbfe 100%);
+  background-color: #fafbfe;
 }
 
-/* Left Panel */
-.clickup-auth-left {
-  flex: 0 0 480px;
-  position: relative;
+[data-theme="dark"] .clickup-auth-container {
+  background: radial-gradient(circle at top left, rgba(255, 2, 240, 0.04) 0%, transparent 35%),
+              radial-gradient(circle at top right, rgba(102, 71, 240, 0.04) 0%, transparent 40%),
+              linear-gradient(to bottom, #0c0d12 0%, #08090d 100%);
+  background-color: #0c0d12;
+}
+
+.clickup-auth-centered-wrapper {
   display: flex;
   flex-direction: column;
-  background-color: #ffffff;
-  z-index: 2;
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.04);
-}
-
-[data-theme="dark"] .clickup-auth-left {
-  background-color: var(--bg-primary);
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
-}
-
-.clickup-auth-logo {
-  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 2.5rem 3rem;
+  width: 100%;
+  max-width: 400px;
+  padding: 2.5rem 1rem;
+  z-index: 2;
+}
+
+.clickup-auth-centered-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
   cursor: pointer;
 }
 
-.clickup-auth-logo img {
-  height: 32px;
-  width: auto;
+.clickup-logo-svg {
+  transition: transform 0.2s ease;
 }
 
-.clickup-auth-logo span {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: #333333;
-  letter-spacing: -0.02em;
-}
-
-[data-theme="dark"] .clickup-auth-logo span {
-  color: var(--text-primary);
+.clickup-auth-centered-logo:hover .clickup-logo-svg {
+  transform: scale(1.05);
 }
 
 /* Form Wrapper */
 .clickup-auth-form-wrapper {
-  flex: 1;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: 0 4rem 4rem 4rem;
-  max-width: 480px;
-  width: 100%;
-  margin: 0 auto;
+}
+
+.clickup-auth-header-section {
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
 .clickup-auth-form-wrapper h1 {
-  font-size: 2rem;
+  font-family: var(--font-family-heading);
+  font-size: 2.125rem;
   font-weight: 800;
-  color: #292d34;
-  margin-bottom: 2rem;
+  color: #1b1e22;
+  margin-bottom: 0.3rem;
   text-align: center;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.025em;
 }
 
 [data-theme="dark"] .clickup-auth-form-wrapper h1 {
   color: var(--text-primary);
 }
 
+.clickup-auth-subtitle {
+  font-size: 0.875rem;
+  color: #7c828d;
+  font-weight: 500;
+  text-align: center;
+}
+
+.clickup-auth-subtitle a {
+  color: #6647F0;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.clickup-auth-subtitle a:hover {
+  text-decoration: underline;
+}
+
+/* SSO Group */
+.clickup-sso-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* SSO Buttons */
+.clickup-btn-sso {
+  height: 48px;
+  width: 100%;
+  border-radius: 9px;
+  background-color: #ffffff;
+  color: #2b2f3a;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: 1px solid #d9dce1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+[data-theme="dark"] .clickup-btn-sso {
+  background-color: #16171d;
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.clickup-btn-sso:hover {
+  background-color: #f7f8f9;
+  border-color: #c5c7ce;
+}
+
+[data-theme="dark"] .clickup-btn-sso:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: #555;
+}
+
+.clickup-btn-sso svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Divider */
+.clickup-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.25rem 0;
+  color: #7c828d;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.clickup-divider::before,
+.clickup-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e9ebeef0;
+}
+
+[data-theme="dark"] .clickup-divider::before,
+[data-theme="dark"] .clickup-divider::after {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.clickup-divider span {
+  padding: 0 0.75rem;
+  text-transform: lowercase;
+  font-weight: 500;
+  color: #a0a6b2;
+}
+
 /* Inputs */
 .clickup-form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.85rem;
 }
 
 .clickup-input-group {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-}
-
-.clickup-input-group label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #7c828d;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-[data-theme="dark"] .clickup-input-group label {
-  color: var(--text-secondary);
 }
 
 .clickup-input-group input {
-  height: 44px;
+  height: 48px;
   padding: 0 1rem;
   border: 1px solid #d9dce1;
-  border-radius: 4px;
+  border-radius: 9px;
   font-size: 0.875rem;
   color: #292d34;
   background-color: #ffffff;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  width: 100%;
 }
 
 [data-theme="dark"] .clickup-input-group input {
-  background-color: var(--bg-secondary);
+  background-color: #16171d;
   border-color: var(--border-color);
   color: var(--text-primary);
 }
@@ -2298,21 +2394,31 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
   border-color: #b5b9c1;
 }
 
+[data-theme="dark"] .clickup-input-group input:hover {
+  border-color: #555;
+}
+
 .clickup-input-group input:focus {
   outline: none;
-  border-color: #7b68ee;
-  box-shadow: 0 0 0 3px rgba(123, 104, 238, 0.15);
+  border-color: #6647F0;
+  box-shadow: 0 0 0 3px rgba(102, 71, 240, 0.15);
+}
+
+.clickup-input-group input::placeholder {
+  color: #a0a6b2;
+  opacity: 1;
 }
 
 .clickup-password-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .clickup-password-wrapper input {
   width: 100%;
-  padding-right: 2.5rem;
+  padding-right: 2.75rem;
 }
 
 .clickup-password-toggle {
@@ -2320,7 +2426,7 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
   right: 0.75rem;
   background: none;
   border: none;
-  color: #7c828d;
+  color: #a0a6b2;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -2335,121 +2441,79 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
 
 /* Buttons */
 .clickup-btn-primary {
-  height: 44px;
-  border-radius: 4px;
-  background-color: #7b68ee;
+  height: 48px;
+  border-radius: 9px;
+  background-color: #6647F0;
   color: #ffffff;
   font-weight: 600;
   font-size: 0.875rem;
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
   margin-top: 0.5rem;
-}
-
-.clickup-btn-primary:hover {
-  background-color: #6a5acd;
-}
-
-.clickup-btn-primary:active {
-  transform: scale(0.98);
-}
-
-/* Divider */
-.clickup-divider {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  margin: 1.5rem 0;
-  color: #7c828d;
-  font-size: 0.75rem;
-}
-
-.clickup-divider::before,
-.clickup-divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid #e1e3e6;
-}
-
-[data-theme="dark"] .clickup-divider::before,
-[data-theme="dark"] .clickup-divider::after {
-  border-bottom: 1px solid var(--border-color);
-}
-
-.clickup-divider span {
-  padding: 0 1rem;
-}
-
-/* SSO Buttons */
-.clickup-btn-sso {
-  height: 44px;
   width: 100%;
-  border-radius: 4px;
-  background-color: #ffffff;
-  color: #333333;
-  font-weight: 600;
-  font-size: 0.875rem;
-  border: 1px solid #d9dce1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-[data-theme="dark"] .clickup-btn-sso {
-  background-color: var(--bg-secondary);
-  border-color: var(--border-color);
-  color: var(--text-primary);
+.clickup-btn-primary:hover:not(:disabled) {
+  background-color: #5433d6;
 }
 
-.clickup-btn-sso:hover {
-  background-color: #f7f8f9;
+.clickup-btn-primary:active:not(:disabled) {
+  transform: scale(0.985);
 }
 
-[data-theme="dark"] .clickup-btn-sso:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+.clickup-btn-primary:disabled {
+  background-color: #c2c6cf;
+  color: #ffffff;
+  cursor: not-allowed;
+  opacity: 0.85;
 }
 
-.clickup-btn-sso svg {
-  width: 18px;
-  height: 18px;
+[data-theme="dark"] .clickup-btn-primary:disabled {
+  background-color: #2d2e35;
+  color: #63666d;
 }
 
-/* Footer & Forgot Pass */
-.clickup-forgot-password {
+/* Centered Forgot Password */
+.clickup-forgot-password-centered {
   text-align: center;
-  margin-top: 1rem;
+  margin-top: 1.25rem;
 }
 
-.clickup-forgot-password a {
-  color: #7b68ee;
-  font-size: 0.75rem;
+.clickup-forgot-password-centered a {
+  color: #6647F0;
+  font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
 }
 
-.clickup-forgot-password a:hover {
+.clickup-forgot-password-centered a:hover {
   text-decoration: underline;
 }
 
-.clickup-auth-footer {
-  text-align: center;
-  margin-top: 2.5rem;
+/* Bottom help link */
+.clickup-auth-bottom-help {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 0.875rem;
+  text-align: center;
+}
+
+.clickup-auth-bottom-help a {
   color: #7c828d;
-}
-
-.clickup-auth-footer a {
-  color: #7b68ee;
-  font-weight: 600;
   text-decoration: none;
+  font-weight: 500;
 }
 
-.clickup-auth-footer a:hover {
+.clickup-auth-bottom-help a:hover {
   text-decoration: underline;
+  color: #2b2f3a;
+}
+
+[data-theme="dark"] .clickup-auth-bottom-help a:hover {
+  color: var(--text-primary);
 }
 
 /* Error Messages */
@@ -2457,7 +2521,7 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
   background-color: #fff0f0;
   color: #e53935;
   padding: 0.75rem 1rem;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid #ffcdd2;
   font-size: 0.8rem;
   font-weight: 500;
@@ -2465,11 +2529,16 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
   text-align: center;
 }
 
+[data-theme="dark"] .clickup-error-msg {
+  background-color: rgba(229, 57, 53, 0.1);
+  border-color: rgba(229, 57, 53, 0.3);
+}
+
 .clickup-success-msg {
   background-color: #e8f5e9;
   color: #43a047;
   padding: 0.75rem 1rem;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid #c8e6c9;
   font-size: 0.8rem;
   font-weight: 500;
@@ -2477,41 +2546,9 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
   text-align: center;
 }
 
-/* Right Panel Background (ClickUp Abstract Style) */
-.clickup-auth-right {
-  flex: 1;
-  position: relative;
-  background-color: #f7f8f9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.clickup-bg-illustration {
-  width: 100%;
-  height: 100%;
-  background: 
-    radial-gradient(circle at 10% 20%, rgba(123, 104, 238, 0.4) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(255, 105, 180, 0.4) 0%, transparent 40%),
-    radial-gradient(circle at 50% 50%, rgba(0, 212, 255, 0.3) 0%, transparent 60%);
-  background-color: #f0f3fb;
-  filter: blur(40px);
-  transform: scale(1.2);
-  animation: bgPulse 10s infinite alternate ease-in-out;
-}
-
-[data-theme="dark"] .clickup-bg-illustration {
-  background-color: #0b0c10;
-  background: 
-    radial-gradient(circle at 10% 20%, rgba(123, 104, 238, 0.15) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(255, 105, 180, 0.15) 0%, transparent 40%),
-    radial-gradient(circle at 50% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 60%);
-}
-
-@keyframes bgPulse {
-  0% { transform: scale(1.2) translate(0, 0); }
-  100% { transform: scale(1.3) translate(-20px, 20px); }
+[data-theme="dark"] .clickup-success-msg {
+  background-color: rgba(67, 160, 71, 0.1);
+  border-color: rgba(67, 160, 71, 0.3);
 }
 
 /* Modals */
@@ -2539,7 +2576,7 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
 }
 
 [data-theme="dark"] .clickup-modal {
-  background-color: var(--bg-primary);
+  background-color: #0c0d12;
   border: 1px solid var(--border-color);
 }
 
@@ -2548,9 +2585,10 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
 }
 
 .clickup-modal-header h2 {
+  font-family: var(--font-family-heading);
   font-size: 1.5rem;
   font-weight: 800;
-  color: #292d34;
+  color: #1b1e22;
   margin-bottom: 0.5rem;
 }
 
@@ -2573,14 +2611,14 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
 .clickup-btn-secondary {
   height: 44px;
   padding: 0 1.5rem;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: transparent;
   color: #7c828d;
   font-weight: 600;
   font-size: 0.875rem;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: color 0.2s ease, background-color 0.2s ease;
+  transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .clickup-btn-secondary:hover {
@@ -2595,12 +2633,178 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
 
 /* Responsive */
 @media (max-width: 900px) {
-  .clickup-auth-left {
-    flex: 1;
-    width: 100%;
-  }
-  .clickup-auth-right {
-    display: none;
+  .clickup-auth-centered-wrapper {
+    padding: 1.5rem 1rem;
   }
 }
 
+/* ==========================================
+   Office Administration Dashboard Styles
+   ========================================== */
+
+.admin-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.admin-metric-card {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-metric-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-hover);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.admin-metric-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.admin-metric-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.admin-metric-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.admin-metric-value {
+  font-family: var(--font-family-heading);
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.admin-metric-label {
+  font-size: 0.725rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin-tabs-nav {
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.admin-tab-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border: none;
+  background: transparent;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex: 1;
+}
+
+.admin-tab-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="light"] .admin-tab-btn:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.admin-tab-btn.active {
+  color: #ffffff !important;
+  background: var(--primary);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+  min-width: 800px;
+}
+
+.admin-table th {
+  padding: 0.85rem 1rem;
+  font-weight: 700;
+  font-size: 0.725rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.01);
+}
+
+[data-theme="light"] .admin-table th {
+  background: rgba(0, 0, 0, 0.015);
+}
+
+.admin-table td {
+  padding: 0.95rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+  color: var(--text-secondary);
+  transition: background-color 0.15s ease;
+}
+
+.admin-table tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.015);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .admin-table tbody tr:hover td {
+  background: rgba(0, 0, 0, 0.008);
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.analytics-bar-item {
+  margin-bottom: 0.5rem;
+}
+
+@keyframes slideIn {
+  from {
+    width: 0%;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .admin-tabs-nav {
+    flex-direction: column;
+  }
+  
+  .admin-tab-btn {
+    padding: 0.5rem;
+  }
+}

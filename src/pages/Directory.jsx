@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { StudentCard } from '../components/StudentCard';
 import { getStudents, deleteStudentProfileAndAccount } from '../utils/storage';
 
-export const Directory = ({ navigateTo, currentUser }) => {
+export const Directory = ({ navigateTo, currentUser, params }) => {
   const [students, setStudents] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedMajor, setSelectedMajor] = useState('All');
+  const [selectedMajor, setSelectedMajor] = useState(params?.major || 'All');
   const [sortBy, setSortBy] = useState('name-asc');
 
   // Load students on mount
@@ -20,6 +20,15 @@ export const Directory = ({ navigateTo, currentUser }) => {
     };
     loadData();
   }, [currentUser]);
+
+  // Sync selectedMajor if navigation params change
+  useEffect(() => {
+    if (params?.major) {
+      setSelectedMajor(params.major);
+    } else {
+      setSelectedMajor('All');
+    }
+  }, [params]);
 
   const handleDelete = async (student) => {
     const confirmMessage = `WARNING: You are about to permanently delete ${student.name}'s portfolio and user account. This action cannot be undone. Do you wish to proceed?`;
