@@ -2808,3 +2808,189 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
     padding: 0.5rem;
   }
 }
+
+/* BSOA Promotion Page Redesign Styles */
+.office-promo-container {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-image: url('/office-backdrop.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  padding-bottom: 5rem;
+  transition: background-image 0.5s ease;
+}
+
+.office-promo-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(14, 27, 132, 0.06) 0%, transparent 45%),
+    radial-gradient(circle at 90% 80%, rgba(244, 180, 0, 0.08) 0%, transparent 50%),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0.94) 70%, var(--bg-primary) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+[data-theme="dark"] .office-promo-container::before {
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(92, 112, 255, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 90% 80%, rgba(255, 200, 0, 0.12) 0%, transparent 50%),
+    linear-gradient(to bottom, rgba(10, 10, 10, 0.85) 0%, rgba(10, 10, 10, 0.97) 70%, var(--bg-primary) 100%);
+}
+
+.office-content-wrapper {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.office-hero {
+  padding: 6rem 2rem 4rem;
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.office-hero-title {
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin: 1rem 0 1.5rem;
+  font-family: var(--font-family-heading);
+}
+
+.office-card {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: var(--border-radius-lg);
+  padding: 2.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.3s ease;
+  height: 100%;
+}
+
+[data-theme="dark"] .office-card {
+  background: rgba(10, 10, 10, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.office-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border-color: var(--primary);
+}
+
+[data-theme="dark"] .office-card:hover {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-color: var(--primary);
+}
+
+.office-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--border-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.office-card:hover .office-icon-box {
+  transform: scale(1.08) rotate(3deg);
+}
+
+.office-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.office-list-item {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.office-list-bullet {
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.office-career-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.office-career-card {
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
+  height: 100%;
+}
+
+.office-career-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--primary);
+  opacity: 0.8;
+}
+
+.office-career-card.accent-gold::before {
+  background: var(--logo-gold);
+}
+
+.office-career-card.accent-red::before {
+  background: var(--accent);
+}
+
+.office-career-title {
+  font-family: var(--font-family-heading);
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+}
+
+.office-cta-panel {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .office-hero {
+    padding: 4rem 1rem 2.5rem;
+  }
+  .office-card {
+    padding: 1.75rem;
+  }
+}
