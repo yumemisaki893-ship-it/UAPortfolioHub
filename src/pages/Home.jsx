@@ -205,18 +205,21 @@ const Home = ({ navigateTo, currentUser }) => {
               <button 
                 className={`lang-tab ${activeLang === 'en' ? 'active' : ''}`}
                 onClick={() => setActiveLang('en')}
+                onMouseEnter={() => setActiveLang('en')}
               >
                 English
               </button>
               <button 
                 className={`lang-tab ${activeLang === 'fil' ? 'active' : ''}`}
                 onClick={() => setActiveLang('fil')}
+                onMouseEnter={() => setActiveLang('fil')}
               >
                 Filipino
               </button>
               <button 
                 className={`lang-tab ${activeLang === 'kr' ? 'active' : ''}`}
                 onClick={() => setActiveLang('kr')}
+                onMouseEnter={() => setActiveLang('kr')}
               >
                 Kinaray-a
               </button>
