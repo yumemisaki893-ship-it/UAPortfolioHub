@@ -146,7 +146,7 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
                         className="flyout-link"
                         style={{ color: 'var(--primary)', fontWeight: '600', marginBottom: '0.75rem' }}
                       >
-                        Office Administration
+                        Maintenance Room
                       </a>
                     </>
                   ) : (

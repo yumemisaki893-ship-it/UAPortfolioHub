@@ -162,10 +162,10 @@ export const OfficeAdmin = ({ currentUser, navigateTo }) => {
         <div className="hero-glow"></div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.75rem' }}>
           <span className="badge" style={{ backgroundColor: 'var(--accent-glow)', color: 'var(--accent)', borderColor: 'var(--accent)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '0.2rem 0.6rem' }}>
-            Office Console
+            Maintenance Console
           </span>
         </div>
-        <h1 style={{ fontSize: '2.5rem', margin: '0 0 0.5rem' }}>Office of <span>Administration</span></h1>
+        <h1 style={{ fontSize: '2.5rem', margin: '0 0 0.5rem' }}>Maintenance <span>Room</span></h1>
         <p style={{ maxWidth: '650px', fontSize: '1rem', color: 'var(--text-secondary)', margin: 0 }}>
           Manage student portfolios, evaluate system-wide statistics, toggle public discoverability, and review uploaded resumes.
         </p>
