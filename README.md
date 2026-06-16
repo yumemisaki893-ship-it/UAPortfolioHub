@@ -2,7 +2,7 @@
 
 A premium, state-of-the-art Student Portfolio Registry and Directory platform designed for the **University of Antique**. Built with a sleek, glassmorphic UI, modern layouts, dynamic client-side state persistence, and full administrator controls.
 
-Live Demo: **[uaportfoliohub.vercel.app](https://uaportfoliohub.vercel.app)**
+Live Demo: **[https://agustin-lovely-jane.vercel.app](https://agustin-lovely-jane.vercel.app)**
 
 ---
 
