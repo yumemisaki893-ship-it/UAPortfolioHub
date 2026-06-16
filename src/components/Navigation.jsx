@@ -50,7 +50,6 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
         </div>
       </div>
 
-      {/* Main Navigation */}
       <nav className="navbar glass ust-navbar">
         <div className="container navbar-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           
@@ -66,37 +65,32 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
             </div>
           </a>
 
-          {/* Desktop Navigation Links */}
-          <div className="desktop-menu" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-            <a href="#" onClick={(e) => { e.preventDefault(); navigateTo('home'); }} className="nav-link">Home</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); navigateTo('programs-offered'); }} className="nav-link">Academics</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); navigateTo(currentUser ? 'directory' : 'auth'); }} className="nav-link">Admissions</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); navigateTo('home'); }} className="nav-link">Research</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); navigateTo('home'); }} className="nav-link">Campus Life</a>
-            
+          {/* Menu Items: Minimalist Hamburger Button (Flyout Trigger) */}
+          <div className="navbar-menu" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
             {currentUser && (
               <div className="user-profile-btn" onClick={() => setFlyoutOpen(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', padding: '0.3rem 0.6rem', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
                 <div style={{ width: '28px', height: '28px', borderRadius: '50%', overflow: 'hidden' }}>
                   <AvatarImage avatarId={student.avatarId || 'avatar-1'} id="nav-avatar" />
                 </div>
-                <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Portal</span>
               </div>
             )}
-            
-            {!currentUser && (
-               <button className="user-menu-btn hamburger-btn" onClick={() => setFlyoutOpen(true)} aria-label="Open Menu">
-                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px' }}>
-                   <line x1="4" y1="12" x2="20" y2="12" />
-                   <line x1="4" y1="6" x2="20" y2="6" />
-                   <line x1="4" y1="18" x2="20" y2="18" />
-                 </svg>
-               </button>
-            )}
+            <button 
+              className="user-menu-btn hamburger-btn"
+              onClick={() => setFlyoutOpen(true)}
+              aria-label="Open Menu"
+              style={{ width: '40px', height: '40px', justifyContent: 'center', padding: 0 }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '22px', height: '22px' }}>
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
           </div>
         </div>
       </nav>
 
-      {/* Flyout Side Menu for Mobile or Profile */}
+      {/* Flyout Side Menu */}
       <div 
         className={`flyout-overlay ${flyoutOpen ? 'open' : ''}`} 
         onClick={() => setFlyoutOpen(false)}
@@ -116,6 +110,7 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
           </div>
 
           <div className="flyout-content">
+            {/* User Profile Info Card inside Flyout */}
             {currentUser && (
               <div className="flyout-user-info-card" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', padding: '1rem', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--border-color)', marginBottom: '1.5rem', background: 'rgba(255, 255, 255, 0.02)', textAlign: 'left' }}>
                 <div style={{ width: '42px', height: '42px', borderRadius: '50%', overflow: 'hidden', border: '2px solid var(--border-color)', background: 'var(--bg-secondary)', display: 'flex', flexShrink: 0 }}>
@@ -133,13 +128,32 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
             )}
 
             <div className="flyout-nav-links" style={{ textAlign: 'left' }}>
+              <a href="#" onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo('home'); }} className="flyout-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', flexShrink: 0 }}>
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                Home
+              </a>
               
-              <div className="mobile-only-links" style={{ display: 'none' }}>
-                <a href="#" onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo('home'); }} className="flyout-link">Home</a>
-                <a href="#" onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo('programs-offered'); }} className="flyout-link">Academics</a>
-                <a href="#" onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo(currentUser ? 'directory' : 'auth'); }} className="flyout-link">Admissions</a>
-              </div>
+              <a href="#" onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo('programs-offered'); }} className="flyout-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', flexShrink: 0 }}>
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                  <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
+                </svg>
+                Academics
+              </a>
 
+              <a href="#" onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo(currentUser ? 'directory' : 'auth'); }} className="flyout-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', flexShrink: 0 }}>
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                Admissions
+              </a>
+              
               {currentUser ? (
                  <>
                    {currentUser.isAdmin ? (
@@ -150,24 +164,57 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
                          Registrar Staff Mode
                        </div>
                        <a href="#" onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo('office-admin'); }} className="flyout-link" style={{ color: 'var(--primary)', fontWeight: '600' }}>
+                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', flexShrink: 0 }}>
+                           <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                           <line x1="9" y1="3" x2="9" y2="21" />
+                           <line x1="15" y1="3" x2="15" y2="21" />
+                           <line x1="3" y1="9" x2="21" y2="9" />
+                           <line x1="3" y1="15" x2="21" y2="15" />
+                         </svg>
                          Registrar Dashboard
                        </a>
                      </>
                    ) : (
                      <>
                        <a href="#" onClick={(e) => { e.preventDefault(); handleMyProfile(); }} className="flyout-link">
+                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', flexShrink: 0 }}>
+                           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                           <circle cx="12" cy="7" r="4" />
+                         </svg>
                          My Record Profile
                        </a>
                        <a href="#" onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo('registrar-portal'); }} className="flyout-link" style={{ color: 'var(--primary)', fontWeight: '600' }}>
+                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', flexShrink: 0 }}>
+                           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                           <polyline points="14 2 14 8 20 8" />
+                           <line x1="16" y1="13" x2="8" y2="13" />
+                           <line x1="16" y1="17" x2="8" y2="17" />
+                         </svg>
                          Registrar Portal
                        </a>
                      </>
                    )}
-                   <a href="#" onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo('edit-profile'); }} className="flyout-link">Settings</a>
-                   <a href="#" onClick={(e) => { e.preventDefault(); handleLogout(); }} className="flyout-link" style={{ color: 'var(--danger)' }}>Sign Out</a>
+                   <a href="#" onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo('edit-profile'); }} className="flyout-link">
+                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', flexShrink: 0 }}>
+                       <circle cx="12" cy="12" r="3" />
+                       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                     </svg>
+                     Settings
+                   </a>
+                   <a href="#" onClick={(e) => { e.preventDefault(); handleLogout(); }} className="flyout-link" style={{ color: 'var(--danger)' }}>
+                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', flexShrink: 0 }}>
+                       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+                     </svg>
+                     Sign Out
+                   </a>
                  </>
               ) : (
-                <a href="#" onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo('auth'); }} className="flyout-link" style={{ color: 'var(--primary)' }}>Join / Sign In</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo('auth'); }} className="flyout-link" style={{ color: 'var(--primary)' }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', flexShrink: 0 }}>
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" />
+                  </svg>
+                  Join / Sign In
+                </a>
               )}
             </div>
 
@@ -192,6 +239,10 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
                 </div>
               </button>
             </div>
+          </div>
+          <div className="flyout-footer" style={{ textAlign: 'left' }}>
+            <p>University of Antique</p>
+            <span>Transforming lives, building sustainable communities.</span>
           </div>
         </div>
       </div>
