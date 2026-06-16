@@ -241,9 +241,14 @@ a:hover {
 }
 
 .badge-primary {
-  background: var(--primary-glow);
+  background: var(--logo-gold-glow);
   color: var(--text-primary);
-  border-color: var(--border-color);
+  border-color: rgba(244, 180, 0, 0.3);
+}
+
+[data-theme="dark"] .badge-primary {
+  background: var(--logo-gold-glow);
+  border-color: rgba(255, 200, 0, 0.2);
 }
 
 /* Form Styles & Native Validation Feedback */
@@ -458,16 +463,20 @@ a:hover {
   flex-direction: column;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
+  border-left: 3px solid var(--border-color);
 }
 
 .student-card:hover {
-  border-color: var(--accent);
+  border-color: var(--logo-gold);
+  border-left-color: var(--accent);
   transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 12px 24px var(--logo-gold-glow);
 }
 
 [data-theme="dark"] .student-card:hover {
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+  border-color: var(--logo-gold);
+  border-left-color: var(--accent);
+  box-shadow: 0 12px 24px var(--logo-gold-glow);
 }
 
 .card-header {
@@ -534,6 +543,14 @@ a:hover {
   display: flex;
   gap: 2rem;
   align-items: center;
+  border: 1px solid rgba(244, 180, 0, 0.2) !important;
+  border-left: 4px solid var(--logo-gold) !important;
+  box-shadow: 0 8px 30px var(--logo-gold-glow) !important;
+}
+
+[data-theme="dark"] .profile-header-card {
+  border: 1px solid rgba(255, 200, 0, 0.1) !important;
+  border-left: 4px solid var(--logo-gold) !important;
 }
 
 @media (max-width: 768px) {
@@ -620,6 +637,13 @@ a:hover {
   border-radius: var(--border-radius-md);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  border-left: 3px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.profile-section:hover {
+  border-left-color: var(--logo-gold);
+  box-shadow: 0 4px 16px var(--logo-gold-glow);
 }
 
 .profile-section h2 {
@@ -627,6 +651,7 @@ a:hover {
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
+  color: var(--accent);
 }
 
 .about-text {
@@ -646,7 +671,15 @@ a:hover {
   padding: 1rem;
   border-radius: var(--border-radius-sm);
   border: 1px solid var(--border-color);
+  border-left: 3px solid var(--accent);
   background: var(--bg-secondary);
+  transition: all 0.3s ease;
+}
+
+.project-item:hover {
+  border-color: var(--logo-gold);
+  border-left-color: var(--logo-gold);
+  box-shadow: 0 4px 12px var(--logo-gold-glow);
 }
 
 .project-item h3 {
@@ -793,8 +826,15 @@ a:hover {
   width: 100%;
   max-width: 400px;
   border-radius: var(--border-radius-lg);
-  padding: 2rem;
+  padding: 2.5rem 2rem;
   text-align: center;
+  border: 1px solid var(--border-color);
+  border-top: 3px solid var(--logo-gold);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .auth-card {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 
 .auth-header {
@@ -832,11 +872,13 @@ a:hover {
   border-radius: var(--border-radius-md);
   padding: 1.5rem;
   height: fit-content;
+  border-left: 3px solid var(--accent);
 }
 
 .editor-form-card {
   border-radius: var(--border-radius-md);
   padding: 1.5rem;
+  border-left: 3px solid var(--logo-gold);
 }
 
 .form-row {
