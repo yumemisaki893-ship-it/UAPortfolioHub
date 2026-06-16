@@ -26,6 +26,10 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
   const [aboutMeText, setAboutMeText] = useState(initialStudent?.aboutMe || '');
   const [savingAboutMe, setSavingAboutMe] = useState(false);
   const [loading, setLoading] = useState(!student);
+  const [bannerDismissed, setBannerDismissed] = useState(() => {
+    if (!studentId) return true;
+    return localStorage.getItem(`portfolio_welcome_dismissed_${studentId}`) === 'true';
+  });
 
   const loadAllData = async () => {
     if (studentId) {
@@ -117,6 +121,18 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
   // Check if the current viewed page belongs to the logged-in student
   const isOwnProfile = currentUser && currentUser.studentId === student.id;
   const canEdit = isOwnProfile || (currentUser && currentUser.isAdmin);
+
+  const isNewAccount = (() => {
+    if (!student.createdAt) return false;
+    const createdDate = new Date(student.createdAt);
+    const now = new Date();
+    // 24 hours threshold
+    return (now - createdDate) < 24 * 60 * 60 * 1000;
+  })();
+
+  const showWelcomeBanner = isOwnProfile && isNewAccount && !bannerDismissed;
+  const isAdminPanel = currentUser?.isAdmin && currentUser.studentId !== student.id;
+  const showManagementBanner = isAdminPanel || showWelcomeBanner;
 
   const handleDeleteProfile = async () => {
     const confirmMessage = currentUser?.isAdmin && currentUser.studentId !== student.id
@@ -419,9 +435,9 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
       <div className="container profile-detail" style={{ marginTop: '-80px' }}>
 
         {/* Owner / Admin Management Banner */}
-        {canEdit && (
+        {showManagementBanner && (
           <div 
-            className="glass"
+            className="glass animate-fade-in"
             style={{
               padding: '1rem 1.25rem',
               borderRadius: 'var(--border-radius-md)',
@@ -437,18 +453,18 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
               zIndex: 20
             }}
           >
-            <div style={{ textAlign: 'left' }}>
+            <div style={{ textAlign: 'left', flex: 1 }}>
               <h4 style={{ color: 'var(--text-primary)', fontSize: '0.95rem', marginBottom: '0.1rem', fontWeight: 600 }}>
-                {currentUser?.isAdmin && currentUser.studentId !== student.id ? "Admin Management Panel" : "This is your public portfolio"}
+                {isAdminPanel ? "Admin Management Panel" : "This is your public portfolio"}
               </h4>
               <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                {currentUser?.isAdmin && currentUser.studentId !== student.id 
+                {isAdminPanel 
                   ? "As an administrator, you have full permissions to edit or delete this student portfolio."
                   : "You can edit these details, upload cover/profile photos, add projects, and update tags at any time."
                 }
               </p>
             </div>
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
               <button 
                 className="btn btn-primary btn-sm" 
                 style={{ minHeight: '32px' }}
@@ -456,13 +472,37 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
               >
                 Edit Portfolio
               </button>
-              {currentUser?.isAdmin && currentUser.studentId !== student.id && (
+              {isAdminPanel && (
                 <button 
                   className="btn btn-danger btn-sm" 
                   style={{ minHeight: '32px' }}
                   onClick={handleDeleteProfile}
                 >
                   Delete Portfolio
+                </button>
+              )}
+              {showWelcomeBanner && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    localStorage.setItem(`portfolio_welcome_dismissed_${student.id}`, 'true');
+                    setBannerDismissed(true);
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-muted)',
+                    cursor: 'pointer',
+                    fontSize: '1.4rem',
+                    padding: '0.15rem 0.4rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'color var(--transition-fast)'
+                  }}
+                  aria-label="Dismiss banner"
+                >
+                  &times;
                 </button>
               )}
             </div>
