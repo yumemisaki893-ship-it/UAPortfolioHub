@@ -1,16 +1,50 @@
 import React from 'react';
 import { AvatarImage } from './AvatarPicker';
 
-export const StudentCard = ({ student, currentUser, onClick, onDelete }) => {
-  // Show up to 4 skills, and list a "+X more" badge if there are more
-  const maxSkillsToShow = 4;
-  const visibleSkills = student.skills ? student.skills.slice(0, maxSkillsToShow) : [];
-  const extraSkillsCount = student.skills && student.skills.length > maxSkillsToShow 
-    ? student.skills.length - maxSkillsToShow 
-    : 0;
+export const StudentCard = ({ student, courses = [], currentUser, onClick, onDelete }) => {
+  const status = student.registrationStatus || 'Draft';
+  
+  // Calculate academic units and tuition details
+  const enrolledIds = student.enrolledCourses || [];
+  const enrolledCoursesList = (courses || []).filter(c => enrolledIds.includes(c.id || c.code));
+  const totalUnits = enrolledCoursesList.reduce((sum, c) => sum + (c.units || 0), 0);
+  
+  const baseFee = 500;
+  const pricePerUnit = 150;
+  const totalAssessed = baseFee + (totalUnits * pricePerUnit);
+  const totalPaid = (student.transactions || []).reduce((sum, tx) => sum + tx.amount, 0);
+  const balance = Math.max(0, totalAssessed - totalPaid);
+
+  const getYearLevel = () => {
+    if (student.yearLevel) return student.yearLevel;
+    const hash = student.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const years = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+    return years[hash % 4];
+  };
+
+  const getStatusBadgeClass = () => {
+    switch (status) {
+      case 'Approved': return 'badge-success';
+      case 'Pending': return 'badge-warning';
+      default: return 'badge-secondary';
+    }
+  };
 
   return (
-    <div className="student-card glass" onClick={onClick} style={{ padding: 0, overflow: 'hidden', position: 'relative' }}>
+    <div 
+      className="student-card glass" 
+      onClick={onClick} 
+      style={{ 
+        padding: 0, 
+        overflow: 'hidden', 
+        position: 'relative', 
+        cursor: 'pointer',
+        textAlign: 'left',
+        border: '1px solid var(--border-color)',
+        transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)'
+      }}
+    >
+      {/* Delete Record action for Staff */}
       {currentUser?.isAdmin && (
         <button
           className="btn btn-danger"
@@ -34,198 +68,88 @@ export const StudentCard = ({ student, currentUser, onClick, onDelete }) => {
             if (onDelete) onDelete();
           }}
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '11px', height: '11px' }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ width: '11px', height: '11px' }}>
             <polyline points="3 6 5 6 21 6" />
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
           </svg>
           Delete
         </button>
       )}
+
+      {/* Decorative header gradient */}
       <div 
         className="card-banner"
         style={{
           width: '100%',
-          height: '90px',
-          background: student.coverPhotoUrl ? `url(${student.coverPhotoUrl}) center/cover no-repeat` : 'linear-gradient(135deg, var(--primary-glow) 0%, var(--accent-glow) 100%)',
-          borderBottom: '1px solid var(--border-color)'
+          height: '75px',
+          background: 'linear-gradient(135deg, var(--primary-glow) 0%, var(--accent-glow) 100%)',
+          borderBottom: '1px solid var(--border-color)',
+          opacity: 0.8
         }}
       />
       
       <div style={{ padding: '1.25rem' }}>
-        <div className="card-header" style={{ marginTop: '-42px', alignItems: 'flex-end', marginBottom: '0.85rem' }}>
+        {/* Avatar and Name */}
+        <div className="card-header" style={{ marginTop: '-42px', alignItems: 'flex-end', marginBottom: '1rem', display: 'flex', gap: '0.75rem' }}>
           <div style={{ 
-            width: '60px', 
-            height: '60px', 
+            width: '56px', 
+            height: '56px', 
             borderRadius: '50%', 
             overflow: 'hidden', 
             border: '4px solid var(--bg-card)',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-            background: 'var(--bg-card)'
+            boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+            background: 'var(--bg-card)',
+            flexShrink: 0
           }}>
             <AvatarImage avatarId={student.avatarId} id={`card-${student.id}`} />
           </div>
-          <div className="card-title-group" style={{ paddingBottom: '0.15rem' }}>
-            <div className="card-name" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div className="card-title-group" style={{ paddingBottom: '0.1rem', flex: 1, minWidth: 0 }}>
+            <div className="card-name" style={{ fontWeight: '700', fontSize: '1.05rem', color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {student.name}
-              {student.isPublic === false && currentUser?.isAdmin && (
-                <span 
-                  className="badge" 
-                  style={{ 
-                    backgroundColor: 'var(--danger-bg)', 
-                    color: 'var(--danger)', 
-                    borderColor: 'var(--danger-border)', 
-                    fontSize: '0.65rem', 
-                    padding: '0.1rem 0.35rem', 
-                    fontWeight: 600,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.03em',
-                    lineHeight: '1.2'
-                  }}
-                >
-                  Private
-                </span>
-              )}
             </div>
-            <div className="card-major">{student.major}</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+              {getYearLevel()} • {student.email}
+            </div>
           </div>
-        </div>
-        
-        <p className="card-bio">{student.shortBio}</p>
-        
-        <div className="card-skills" style={{ marginBottom: student.email || student.github || student.linkedin || student.website || student.facebook || student.instagram || student.twitter || student.contactNumber ? '0.5rem' : '0' }}>
-          {visibleSkills.map((skill, index) => (
-            <span key={index} className="badge badge-primary">{skill}</span>
-          ))}
-          {extraSkillsCount > 0 && (
-            <span className="badge">+{extraSkillsCount} more</span>
-          )}
-          {visibleSkills.length === 0 && (
-            <span className="badge" style={{ fontStyle: 'italic', color: 'var(--text-muted)' }}>No skills added</span>
-          )}
         </div>
 
-        {/* Social / Contact logo widgets */}
-        {(student.email || student.github || student.linkedin || student.website || student.facebook || student.instagram || student.twitter || student.contactNumber) && (
-          <div className="social-widgets-row" style={{ display: 'flex', gap: '0.45rem', marginTop: '0.85rem', flexWrap: 'wrap' }}>
-            {student.email && (
-              <a 
-                href={`mailto:${student.email}`}
-                className="social-widget-btn email"
-                title={`Email: ${student.email}`}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '13px', height: '13px' }}>
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                  <polyline points="22,6 12,13 2,6" />
-                </svg>
-              </a>
-            )}
-            {student.github && (
-              <a 
-                href={student.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-widget-btn github"
-                title="GitHub Profile"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '13px', height: '13px' }}>
-                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
-                </svg>
-              </a>
-            )}
-            {student.linkedin && (
-              <a 
-                href={student.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-widget-btn linkedin"
-                title="LinkedIn Profile"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '13px', height: '13px' }}>
-                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                  <rect x="2" y="9" width="4" height="12" />
-                  <circle cx="4" cy="4" r="2" />
-                </svg>
-              </a>
-            )}
-            {student.website && (
-              <a 
-                href={student.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-widget-btn website"
-                title="Personal Website"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '13px', height: '13px' }}>
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="2" y1="12" x2="22" y2="12" />
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                </svg>
-              </a>
-            )}
-            {student.facebook && (
-              <a 
-                href={student.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-widget-btn facebook"
-                title="Facebook Profile"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '13px', height: '13px' }}>
-                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-                </svg>
-              </a>
-            )}
-            {student.instagram && (
-              <a 
-                href={student.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-widget-btn instagram"
-                title="Instagram Profile"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '13px', height: '13px' }}>
-                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                </svg>
-              </a>
-            )}
-            {student.twitter && (
-              <a 
-                href={student.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-widget-btn twitter"
-                title="Twitter / X Profile"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '13px', height: '13px' }}>
-                  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
-                </svg>
-              </a>
-            )}
-            {student.contactNumber && (
-              <a 
-                href={`tel:${student.contactNumber.replace(/[^\d+]/g, '')}`}
-                className="social-widget-btn phone"
-                title={`Call: ${student.contactNumber}`}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '13px', height: '13px' }}>
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                </svg>
-              </a>
-            )}
+        {/* Academic Program */}
+        <div style={{ marginBottom: '1rem' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block', fontWeight: 600 }}>Degree Program</span>
+          <span style={{ fontSize: '0.9rem', color: '#ffffff', fontWeight: 500 }}>{student.major || 'Undeclared'}</span>
+        </div>
+        
+        {/* Registrar assessment grids */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', borderTop: '1px solid var(--border-color)', paddingTop: '0.75rem', marginBottom: '1rem' }}>
+          <div>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'block' }}>Registration Status</span>
+            <span className={`badge ${getStatusBadgeClass()}`} style={{ fontSize: '0.75rem', marginTop: '0.2rem', padding: '0.2rem 0.5rem' }}>
+              {status === 'Approved' ? 'Enrolled' : status === 'Pending' ? 'Pending Approval' : 'Draft'}
+            </span>
           </div>
-        )}
+          <div>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'block' }}>Enrolled Credits</span>
+            <strong style={{ fontSize: '0.9rem', color: '#ffffff', display: 'block', marginTop: '0.2rem' }}>{totalUnits} Units</strong>
+          </div>
+        </div>
+
+        {/* Billing assessment info */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', borderTop: '1px solid var(--border-color)', paddingTop: '0.75rem' }}>
+          <div>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'block' }}>Total Assessed Fees</span>
+            <span style={{ fontSize: '0.85rem', color: '#ffffff', fontWeight: 500 }}>${totalAssessed.toFixed(2)}</span>
+          </div>
+          <div>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'block' }}>Outstanding Balance</span>
+            <strong style={{ fontSize: '0.85rem', color: balance > 0 ? 'var(--logo-gold)' : 'var(--success)' }}>
+              ${balance.toFixed(2)}
+            </strong>
+          </div>
+        </div>
+
       </div>
     </div>
   );
 };
+
 export default StudentCard;

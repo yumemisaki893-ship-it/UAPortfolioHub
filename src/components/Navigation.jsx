@@ -49,7 +49,7 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
               alt="University of Antique Logo" 
               style={{ width: '34px', height: '34px', objectFit: 'contain' }} 
             />
-            <span>PortfolioHub</span>
+            <span>Registrar Portal</span>
           </a>
 
           {/* Menu Items: Minimalist Hamburger Button */}
@@ -83,7 +83,7 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
                 alt="University of Antique Logo" 
                 style={{ width: '34px', height: '34px', objectFit: 'contain' }} 
               />
-              <span>PortfolioHub</span>
+              <span>Registrar Portal</span>
             </div>
             <button 
               className="flyout-close" 
@@ -108,7 +108,7 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
                 onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo(currentUser ? 'directory' : 'auth'); }}
                 className="flyout-link"
               >
-                Browse Portfolios
+                Student Roster
               </a>
               <a 
                 href="#" 
