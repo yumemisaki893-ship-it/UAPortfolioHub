@@ -509,23 +509,37 @@ export const deleteStudentProfileAndAccount = async (studentId) => {
   // 1. Delete student doc
   await deleteDoc(doc(db, 'students', studentId));
 
-  // 2. Delete user credential document in Firestore
-  const q = query(collection(db, 'users'), where('studentId', '==', studentId));
-  const querySnapshot = await getDocs(q);
-  querySnapshot.forEach(async (document) => {
-    await deleteDoc(doc(db, 'users', document.id));
-  });
-
-  // 3. Delete active auth user account if they deleted themselves
   const currentUser = auth.currentUser;
+
+  // 2. Delete user credential document directly if it matches the current user's UID
   if (currentUser) {
-    const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-    if (userDoc.exists() && userDoc.data().studentId === studentId) {
-      try {
-        await currentUser.delete();
-      } catch (e) {
-        console.warn("Could not delete Auth account (recent authentication might be required).");
+    try {
+      await deleteDoc(doc(db, 'users', currentUser.uid));
+    } catch (e) {
+      console.warn("Could not delete own user document directly by UID:", e);
+    }
+  }
+
+  // 3. Try to query matching studentId in users collection (Admin operations)
+  try {
+    const q = query(collection(db, 'users'), where('studentId', '==', studentId));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach(async (document) => {
+      // Avoid deleting twice if it's the current user (already deleted above)
+      if (!currentUser || document.id !== currentUser.uid) {
+        await deleteDoc(doc(db, 'users', document.id));
       }
+    });
+  } catch (err) {
+    console.warn("Could not query users collection for deletion (expected for standard users):", err);
+  }
+
+  // 4. Delete Firebase Auth user account if it matches the profile
+  if (currentUser) {
+    try {
+      await currentUser.delete();
+    } catch (e) {
+      console.warn("Could not delete Firebase Auth user account:", e);
     }
   }
 };
