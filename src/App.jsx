@@ -6,7 +6,7 @@ import Auth from './pages/Auth';
 import { AccountSettings } from './pages/AccountSettings';
 import Home from './pages/Home';
 import { OfficeAdmin } from './pages/OfficeAdmin';
-import { OfficePromotion } from './pages/OfficePromotion';
+import { ProgramsOffered } from './pages/ProgramsOffered';
 import { RegistrarPortal } from './pages/RegistrarPortal';
 import { getCurrentSession, getSessionData, getStudentById } from './utils/storage';
 import { auth, isConfigured } from './utils/firebase';
@@ -172,9 +172,9 @@ function App() {
             navigateTo={navigateTo} 
           />
         );
-      case 'office-promotion':
+      case 'programs-offered':
         return (
-          <OfficePromotion 
+          <ProgramsOffered 
             currentUser={currentUser} 
             navigateTo={navigateTo} 
           />
@@ -199,13 +199,13 @@ function App() {
         <button 
           className="btn-back-directory" 
           onClick={() => navigateTo('directory')}
-          aria-label="Browse Portfolios"
+          aria-label="Back to Directory"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
             <line x1="19" y1="12" x2="5" y2="12" />
             <polyline points="12 19 5 12 12 5" />
           </svg>
-          Browse Portfolios
+          Back to Directory
         </button>
       )}
 
@@ -219,7 +219,7 @@ function App() {
       {/* Footer */}
       <footer className="footer">
         <div className="container">
-          <p>© {new Date().getFullYear()} PortfolioHub. Designed for student projects and connections.</p>
+          <p>© {new Date().getFullYear()} University of Antique. Student Registrar & Academic Portal.</p>
         </div>
       </footer>
     </>

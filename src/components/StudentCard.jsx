@@ -131,20 +131,38 @@ export const StudentCard = ({ student, courses = [], currentUser, onClick, onDel
             <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'block' }}>Enrolled Credits</span>
             <strong style={{ fontSize: '0.9rem', color: '#ffffff', display: 'block', marginTop: '0.2rem' }}>{totalUnits} Units</strong>
           </div>
-        </div>
-
-        {/* Billing assessment info */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', borderTop: '1px solid var(--border-color)', paddingTop: '0.75rem' }}>
-          <div>
-            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'block' }}>Total Assessed Fees</span>
-            <span style={{ fontSize: '0.85rem', color: '#ffffff', fontWeight: 500 }}>${totalAssessed.toFixed(2)}</span>
-          </div>
-          <div>
-            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'block' }}>Outstanding Balance</span>
-            <strong style={{ fontSize: '0.85rem', color: balance > 0 ? 'var(--logo-gold)' : 'var(--success)' }}>
-              ${balance.toFixed(2)}
-            </strong>
-          </div>
+        </div>        {/* Tuition Payment status indicator */}
+        <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '0.75rem', marginTop: '0.2rem' }}>
+          <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.25rem' }}>Tuition Payment Status</span>
+          <span 
+            className={`badge ${student.paymentStatus === 'Paid' ? 'badge-success' : 'badge-danger'}`} 
+            style={{ 
+              fontSize: '0.72rem', 
+              padding: '0.25rem 0.5rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              fontWeight: '700',
+              textTransform: 'uppercase'
+            }}
+          >
+            {student.paymentStatus === 'Paid' ? (
+              <>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ width: '10px', height: '10px' }}>
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Paid / Settled
+              </>
+            ) : (
+              <>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ width: '10px', height: '10px' }}>
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+                Unpaid
+              </>
+            )}
+          </span>
         </div>
 
       </div>

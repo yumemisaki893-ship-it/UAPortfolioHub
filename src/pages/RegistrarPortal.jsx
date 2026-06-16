@@ -14,7 +14,6 @@ export const RegistrarPortal = ({ currentUser, navigateTo, onProfileUpdate }) =>
 
   // Local state for courses selection
   const [selectedCourseIds, setSelectedCourseIds] = useState(enrolledIds);
-  const [payAmount, setPayAmount] = useState('');
   const [payMethod, setPayMethod] = useState('GCash');
   const [cardNumber, setCardNumber] = useState('');
   const [showPayModal, setShowPayModal] = useState(false);
@@ -35,17 +34,9 @@ export const RegistrarPortal = ({ currentUser, navigateTo, onProfileUpdate }) =>
     setSelectedCourseIds(enrolledIds);
   }, [enrolledIds]);
 
-  // Billing Calculations
-  const baseFee = 500;
-  const pricePerUnit = 150;
-  
+  // Billing Calculations (Removed monetary details)
   const enrolledCoursesList = courses.filter(c => selectedCourseIds.includes(c.id || c.code));
   const totalUnits = enrolledCoursesList.reduce((sum, c) => sum + (c.units || 0), 0);
-  const tuitionCost = totalUnits * pricePerUnit;
-  const totalAssessed = baseFee + tuitionCost;
-  
-  const totalPaid = transactions.reduce((sum, tx) => sum + tx.amount, 0);
-  const outstandingBalance = Math.max(0, totalAssessed - totalPaid);
 
   const handleToggleCourse = (courseId) => {
     if (regStatus !== 'Draft') {
@@ -99,32 +90,24 @@ export const RegistrarPortal = ({ currentUser, navigateTo, onProfileUpdate }) =>
 
   const handleSimulatePayment = async (e) => {
     e.preventDefault();
-    const parsedAmount = parseFloat(payAmount);
-    if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      alert("Please enter a valid payment amount.");
-      return;
-    }
-    if (parsedAmount > outstandingBalance) {
-      alert(`The amount entered exceeds your outstanding balance of $${outstandingBalance.toFixed(2)}.`);
-      return;
-    }
 
     const newTx = {
       id: `TX-${Math.floor(100000 + Math.random() * 900000)}`,
       date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
-      amount: parsedAmount,
+      amount: 0,
       method: payMethod,
-      refNum: Math.random().toString(36).substring(2, 10).toUpperCase()
+      refNum: Math.random().toString(36).substring(2, 10).toUpperCase(),
+      status: 'SETTLED'
     };
 
     try {
       const updated = await updateStudentProfile(student.id, {
-        transactions: [newTx, ...transactions]
+        transactions: [newTx, ...transactions],
+        paymentStatus: 'Paid'
       });
       if (onProfileUpdate) onProfileUpdate(updated);
       
-      setPaymentSuccessMsg(`Payment of $${parsedAmount.toFixed(2)} recorded successfully! Ref: ${newTx.refNum}`);
-      setPayAmount('');
+      setPaymentSuccessMsg(`Tuition settlement recorded successfully! Ref: ${newTx.refNum}`);
       setCardNumber('');
       setTimeout(() => {
         setPaymentSuccessMsg('');
@@ -359,7 +342,7 @@ export const RegistrarPortal = ({ currentUser, navigateTo, onProfileUpdate }) =>
                           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                             <span><strong>Instructor:</strong> {course.instructor}</span>
                             <span><strong>Credits:</strong> {course.units} Units</span>
-                            <span><strong>Tuition:</strong> ${course.units * (course.feePerUnit || pricePerUnit)} (${course.feePerUnit || pricePerUnit}/unit)</span>
+                            <span><strong>Academic Year:</strong> 2026-2027</span>
                           </div>
                         </div>
 
@@ -392,42 +375,58 @@ export const RegistrarPortal = ({ currentUser, navigateTo, onProfileUpdate }) =>
             
             {/* Left Column: Account Statement */}
             <div className="glass" style={{ padding: '2rem', borderRadius: 'var(--border-radius-lg)', textAlign: 'left' }}>
-              <h2 style={{ fontSize: '1.4rem', marginBottom: '1.25rem', color: '#ffffff', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Account Statement</h2>
+              <h2 style={{ fontSize: '1.4rem', marginBottom: '1.25rem', color: '#ffffff', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Assessment Checklist</h2>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>Base Registration Fee</span>
-                  <span style={{ color: '#ffffff' }}>${baseFee.toFixed(2)}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.95rem' }}>
+                  <span style={{ color: 'var(--success)', display: 'flex', alignItems: 'center' }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ width: '16px', height: '16px' }}>
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </span>
+                  <span style={{ color: 'var(--text-secondary)' }}>Base Tuition Fee: <strong>Assessed</strong></span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>Tuition ({totalUnits} credits @ ${pricePerUnit}/unit)</span>
-                  <span style={{ color: '#ffffff' }}>${tuitionCost.toFixed(2)}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.95rem' }}>
+                  <span style={{ color: 'var(--success)', display: 'flex', alignItems: 'center' }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ width: '16px', height: '16px' }}>
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </span>
+                  <span style={{ color: 'var(--text-secondary)' }}>Registration Fee: <strong>Assessed</strong></span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem', fontWeight: 'bold', borderTop: '1px solid var(--border-color)', paddingTop: '0.75rem', marginTop: '0.5rem' }}>
-                  <span style={{ color: '#ffffff' }}>Total Assessed Fees</span>
-                  <span style={{ color: '#ffffff' }}>${totalAssessed.toFixed(2)}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.95rem' }}>
+                  <span style={{ color: 'var(--success)', display: 'flex', alignItems: 'center' }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ width: '16px', height: '16px' }}>
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </span>
+                  <span style={{ color: 'var(--text-secondary)' }}>Miscellaneous Fee: <strong>Waived</strong></span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem', color: 'var(--success)' }}>
-                  <span>Total Payments Made</span>
-                  <span>-${totalPaid.toFixed(2)}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.25rem', fontWeight: 'bold', borderTop: '2px solid var(--primary)', paddingTop: '0.75rem', color: 'var(--logo-gold)' }}>
-                  <span>Outstanding Balance</span>
-                  <span>${outstandingBalance.toFixed(2)}</span>
+                
+                <hr style={{ border: 0, borderTop: '1px solid var(--border-color)', margin: '0.5rem 0' }} />
+                
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '1rem', color: 'var(--text-secondary)' }}>Payment Status:</span>
+                  <span 
+                    className={`badge ${student.paymentStatus === 'Paid' ? 'badge-success' : 'badge-danger'}`} 
+                    style={{ fontSize: '0.95rem', padding: '0.3rem 0.8rem', borderRadius: '4px', textTransform: 'uppercase', fontWeight: 'bold' }}
+                  >
+                    {student.paymentStatus === 'Paid' ? 'Paid / Settled' : 'Unpaid'}
+                  </span>
                 </div>
               </div>
 
-              {outstandingBalance > 0 ? (
+              {student.paymentStatus !== 'Paid' ? (
                 <button 
                   onClick={() => setShowPayModal(true)} 
                   className="btn btn-primary"
                   style={{ width: '100%', padding: '0.8rem', fontWeight: 600 }}
                 >
-                  Pay Outstanding Balance
+                  Settle Tuition Fees
                 </button>
               ) : (
-                <div className="glass" style={{ padding: '1rem', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--success)', backgroundColor: 'var(--success-bg)', textAlign: 'center', color: 'var(--success)' }}>
-                  Account Fully Paid. No outstanding balance.
+                <div className="glass" style={{ padding: '1rem', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--success)', backgroundColor: 'var(--success-bg)', textAlign: 'center', color: 'var(--success)', fontWeight: 'bold' }}>
+                  Account Fully Settled. No outstanding balance.
                 </div>
               )}
             </div>
@@ -443,11 +442,11 @@ export const RegistrarPortal = ({ currentUser, navigateTo, onProfileUpdate }) =>
                   {transactions.map((tx) => (
                     <div key={tx.id} className="glass" style={{ padding: '0.75rem 1rem', borderRadius: 'var(--border-radius-md)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div>
-                        <div style={{ fontWeight: '600', color: '#ffffff', fontSize: '0.95rem' }}>{tx.method} Payment</div>
+                        <div style={{ fontWeight: '600', color: '#ffffff', fontSize: '0.95rem' }}>{tx.method} Settlement</div>
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{tx.date} • Ref: {tx.refNum || tx.id}</span>
                       </div>
-                      <span style={{ fontWeight: 'bold', color: 'var(--success)', fontSize: '1.05rem' }}>
-                        +${tx.amount.toFixed(2)}
+                      <span className="badge badge-success" style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem', textTransform: 'uppercase', fontWeight: 'bold' }}>
+                        Settled
                       </span>
                     </div>
                   ))}
@@ -471,7 +470,7 @@ export const RegistrarPortal = ({ currentUser, navigateTo, onProfileUpdate }) =>
             >
               &times;
             </button>
-            <h3 style={{ fontSize: '1.3rem', marginBottom: '1.25rem', color: '#ffffff' }}>Tuition Payment Portal</h3>
+            <h3 style={{ fontSize: '1.3rem', marginBottom: '1.25rem', color: '#ffffff' }}>Tuition Settlement</h3>
             
             {paymentSuccessMsg ? (
               <div className="glass" style={{ padding: '1.5rem', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--success)', backgroundColor: 'var(--success-bg)', color: 'var(--success)', textAlign: 'center' }}>
@@ -510,21 +509,16 @@ export const RegistrarPortal = ({ currentUser, navigateTo, onProfileUpdate }) =>
                   </div>
                 )}
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>Payment Amount ($)</label>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginTop: '0.5rem' }}>
                   <input 
-                    type="number" 
-                    required
-                    min="1"
-                    max={outstandingBalance}
-                    placeholder={`Max: $${outstandingBalance.toFixed(2)}`}
-                    value={payAmount}
-                    onChange={(e) => setPayAmount(e.target.value)}
-                    style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: 'var(--border-radius-md)', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: '#ffffff' }}
+                    type="checkbox" 
+                    id="confirm-settlement" 
+                    required 
+                    style={{ marginTop: '0.2rem' }}
                   />
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.25rem', display: 'block' }}>
-                    Outstanding: <strong>${outstandingBalance.toFixed(2)}</strong>
-                  </span>
+                  <label htmlFor="confirm-settlement" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
+                    I confirm that I authorize the simulated settlement of all assessed tuition fees for this semester.
+                  </label>
                 </div>
 
                 <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
@@ -541,7 +535,7 @@ export const RegistrarPortal = ({ currentUser, navigateTo, onProfileUpdate }) =>
                     className="btn btn-primary"
                     style={{ flex: 1 }}
                   >
-                    Simulate Pay
+                    Confirm Settlement
                   </button>
                 </div>
               </form>

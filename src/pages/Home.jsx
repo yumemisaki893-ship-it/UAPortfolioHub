@@ -222,29 +222,28 @@ export const Home = ({ navigateTo, currentUser }) => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="var(--logo-gold)" strokeWidth="2" style={{ width: '20px', height: '20px' }}>
                   <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="16" />
-                  <line x1="8" y1="12" x2="16" y2="12" />
+                  <polyline points="12 6 12 12 16 14" />
                 </svg>
-                <h2 style={{ fontSize: '1.2rem', margin: 0, color: '#ffffff' }}>Tuition & Fees Schedule</h2>
+                <h2 style={{ fontSize: '1.2rem', margin: 0, color: '#ffffff' }}>Registrar Fee Guidelines</h2>
               </div>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0 0 1rem' }}>
-                Tuition fee assessments are calculated automatically based on enrolled units plus the base registration charge.
+                Tuition fee assessments are updated on the student portal upon official registration approval.
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.9rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.4rem' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>Base Registration Fee</span>
-                  <strong style={{ color: '#ffffff' }}>$500.00 / sem</strong>
+                  <span style={{ color: 'var(--text-secondary)' }}>Base Tuition Rate</span>
+                  <strong style={{ color: '#ffffff' }}>Assessed Per Unit</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.4rem' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>Tuition (Per Unit/Credit)</span>
-                  <strong style={{ color: '#ffffff' }}>$150.00 / unit</strong>
+                  <span style={{ color: 'var(--text-secondary)' }}>Registration Fee</span>
+                  <strong style={{ color: '#ffffff' }}>Standard Rate</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.4rem' }}>
                   <span style={{ color: 'var(--text-secondary)' }}>Miscellaneous Fees</span>
-                  <strong style={{ color: '#ffffff' }}>$0.00 (Waived)</strong>
+                  <strong style={{ color: 'var(--success)' }}>Fully Waived</strong>
                 </div>
                 <div style={{ padding: '0.5rem', background: 'var(--bg-secondary)', borderRadius: 'var(--border-radius-sm)', fontSize: '0.8rem', color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>
-                  * Maximum allowable units for regular semesters is capped at 18 credit hours.
+                  * Regular term enrollment load is capped at 18 credit units maximum.
                 </div>
               </div>
             </div>

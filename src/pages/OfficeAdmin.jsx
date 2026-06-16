@@ -21,10 +21,7 @@ export const OfficeAdmin = ({ currentUser, navigateTo }) => {
   const [courseFormError, setCourseFormError] = useState('');
 
   // Payment Recording states
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
-  const [recordPayAmount, setRecordPayAmount] = useState('');
-  const [recordPayMethod, setRecordPayMethod] = useState('Cash');
 
   // Load students & courses on mount and updates
   const loadData = async () => {
@@ -153,40 +150,43 @@ export const OfficeAdmin = ({ currentUser, navigateTo }) => {
     }
   };
 
-  // Manual payment recorder
-  const handleOpenRecordPayment = (student) => {
-    setSelectedStudent(student);
-    setRecordPayAmount('');
-    setRecordPayMethod('Cash');
-    setShowPaymentModal(true);
+  // Tuition settlement recorders
+  const handleRecordSettlement = async (student) => {
+    if (window.confirm(`Are you sure you want to mark ${student.name}'s tuition as Settled / Paid?`)) {
+      const newTx = {
+        id: `TX-MAN-${Math.floor(100000 + Math.random() * 900000)}`,
+        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+        amount: 0,
+        method: 'Cash (Manual)',
+        refNum: `REF-M-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+        status: 'SETTLED'
+      };
+
+      const currentTxs = student.transactions || [];
+      try {
+        await updateStudentProfile(student.id, {
+          transactions: [newTx, ...currentTxs],
+          paymentStatus: 'Paid'
+        });
+        alert(`Tuition marked as Settled for ${student.name}.`);
+        loadData();
+      } catch (err) {
+        alert("Failed to update settlement status.");
+      }
+    }
   };
 
-  const handleRecordPayment = async (e) => {
-    e.preventDefault();
-    const amount = parseFloat(recordPayAmount);
-    if (isNaN(amount) || amount <= 0) {
-      alert("Please enter a valid positive payment amount.");
-      return;
-    }
-
-    const newTx = {
-      id: `TX-MAN-${Math.floor(100000 + Math.random() * 900000)}`,
-      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
-      amount: amount,
-      method: recordPayMethod + ' (Manual)',
-      refNum: `REF-M-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
-    };
-
-    const currentTxs = selectedStudent.transactions || [];
-    try {
-      await updateStudentProfile(selectedStudent.id, {
-        transactions: [newTx, ...currentTxs]
-      });
-      alert(`Manual payment of $${amount.toFixed(2)} recorded for ${selectedStudent.name}.`);
-      setShowPaymentModal(false);
-      loadData();
-    } catch (err) {
-      alert("Failed to record manual payment.");
+  const handleResetSettlement = async (student) => {
+    if (window.confirm(`Are you sure you want to mark ${student.name}'s tuition as Unpaid?`)) {
+      try {
+        await updateStudentProfile(student.id, {
+          paymentStatus: 'Unpaid'
+        });
+        alert(`Tuition marked as Unpaid for ${student.name}.`);
+        loadData();
+      } catch (err) {
+        alert("Failed to update settlement status.");
+      }
     }
   };
 
@@ -198,23 +198,10 @@ export const OfficeAdmin = ({ currentUser, navigateTo }) => {
   const baseFee = 500;
   const pricePerUnit = 150;
 
-  // Global Financial Totals
-  const overallBillingInfo = students.reduce((acc, student) => {
-    const enrolledIds = student.enrolledCourses || [];
-    const studentEnrolledCourses = courses.filter(c => enrolledIds.includes(c.id || c.code));
-    const totalUnits = studentEnrolledCourses.reduce((sum, c) => sum + (c.units || 0), 0);
-    const tuitionCost = totalUnits * pricePerUnit;
-    const assessed = baseFee + tuitionCost;
-    const paid = (student.transactions || []).reduce((sum, tx) => sum + tx.amount, 0);
-    
-    acc.assessed += assessed;
-    acc.collected += paid;
-    return acc;
-  }, { assessed: 0, collected: 0 });
-
-  const totalAssessed = overallBillingInfo.assessed;
-  const totalCollected = overallBillingInfo.collected;
-  const totalOutstanding = Math.max(0, totalAssessed - totalCollected);
+  // Global Financial Totals (No monetary figures)
+  const paidCount = students.filter(s => s.paymentStatus === 'Paid').length;
+  const unpaidCount = students.filter(s => s.paymentStatus !== 'Paid').length;
+  const settlementRate = totalCount > 0 ? Math.round((paidCount / totalCount) * 100) : 0;
 
   // Extract unique majors
   const uniqueMajors = Array.from(new Set(students.map(s => s.major).filter(Boolean)));
@@ -305,27 +292,28 @@ export const OfficeAdmin = ({ currentUser, navigateTo }) => {
           <div className="glass" style={{ padding: '1.25rem', borderRadius: 'var(--border-radius-md)', display: 'flex', alignItems: 'center', gap: '1rem', textAlign: 'left' }}>
             <div style={{ padding: '0.75rem', borderRadius: 'var(--border-radius-sm)', background: 'var(--logo-gold-glow)', color: 'var(--logo-gold)', display: 'flex' }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ width: '22px', height: '22px' }}>
-                <line x1="12" y1="1" x2="12" y2="23" />
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
               </svg>
             </div>
             <div>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block' }}>Total Fees Billed</span>
-              <strong style={{ fontSize: '1.3rem', color: '#ffffff' }}>${totalAssessed.toFixed(2)}</strong>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block' }}>Paid Students</span>
+              <strong style={{ fontSize: '1.3rem', color: '#ffffff' }}>{paidCount} / {totalCount}</strong>
             </div>
           </div>
 
           <div className="glass" style={{ padding: '1.25rem', borderRadius: 'var(--border-radius-md)', display: 'flex', alignItems: 'center', gap: '1rem', textAlign: 'left' }}>
             <div style={{ padding: '0.75rem', borderRadius: 'var(--border-radius-sm)', background: 'rgba(46, 204, 113, 0.15)', color: '#2ecc71', display: 'flex' }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ width: '22px', height: '22px' }}>
-                <rect x="2" y="4" width="20" height="16" rx="2" ry="2" />
-                <line x1="12" y1="4" x2="12" y2="20" />
-                <line x1="2" y1="12" x2="22" y2="12" />
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
               </svg>
             </div>
             <div>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block' }}>Total Revenue Collected</span>
-              <strong style={{ fontSize: '1.3rem', color: '#ffffff' }}>${totalCollected.toFixed(2)}</strong>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block' }}>Settlement Rate</span>
+              <strong style={{ fontSize: '1.3rem', color: '#ffffff' }}>{settlementRate}%</strong>
             </div>
           </div>
         </div>
@@ -363,7 +351,7 @@ export const OfficeAdmin = ({ currentUser, navigateTo }) => {
               <line x1="12" y1="20" x2="12" y2="4" />
               <line x1="6" y1="20" x2="6" y2="14" />
             </svg>
-            Billing Reports
+            Financials & Payments
           </button>
         </div>
 
@@ -437,7 +425,7 @@ export const OfficeAdmin = ({ currentUser, navigateTo }) => {
                           <th style={{ padding: '0.75rem 1rem' }}>Major / Program</th>
                           <th style={{ padding: '0.75rem 1rem' }}>Status</th>
                           <th style={{ padding: '0.75rem 1rem' }}>Credits</th>
-                          <th style={{ padding: '0.75rem 1rem' }}>Tuition / Balance</th>
+                          <th style={{ padding: '0.75rem 1rem' }}>Payment Status</th>
                           <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Actions</th>
                         </tr>
                       </thead>
@@ -464,10 +452,9 @@ export const OfficeAdmin = ({ currentUser, navigateTo }) => {
                               </td>
                               <td style={{ padding: '1rem', fontWeight: 600 }}>{billing.totalUnits} Units</td>
                               <td style={{ padding: '1rem' }}>
-                                <div>Total: ${billing.assessed.toFixed(2)}</div>
-                                <div style={{ fontSize: '0.75rem', color: billing.balance > 0 ? 'var(--logo-gold)' : 'var(--success)' }}>
-                                  Bal: ${billing.balance.toFixed(2)}
-                                </div>
+                                <span className={`badge ${student.paymentStatus === 'Paid' ? 'badge-success' : 'badge-danger'}`} style={{ fontSize: '0.75rem' }}>
+                                  {student.paymentStatus === 'Paid' ? 'Paid / Settled' : 'Unpaid'}
+                                </span>
                               </td>
                               <td style={{ padding: '1rem', textAlign: 'right' }}>
                                 <div style={{ display: 'inline-flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
@@ -489,13 +476,21 @@ export const OfficeAdmin = ({ currentUser, navigateTo }) => {
                                       Reset Draft
                                     </button>
                                   )}
-                                  {billing.balance > 0 && (
+                                  {student.paymentStatus !== 'Paid' ? (
                                     <button 
-                                      onClick={() => handleOpenRecordPayment(student)} 
-                                      className="btn btn-primary" 
+                                      onClick={() => handleRecordSettlement(student)} 
+                                      className="btn btn-success" 
                                       style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
                                     >
-                                      Record Pay
+                                      Settle
+                                    </button>
+                                  ) : (
+                                    <button 
+                                      onClick={() => handleResetSettlement(student)} 
+                                      className="btn" 
+                                      style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem', borderColor: 'var(--border-color)' }}
+                                    >
+                                      Unpay
                                     </button>
                                   )}
                                   <button 
@@ -576,25 +571,25 @@ export const OfficeAdmin = ({ currentUser, navigateTo }) => {
                 
                 {/* Financial Summary */}
                 <div className="glass" style={{ padding: '2rem', borderRadius: 'var(--border-radius-lg)', textAlign: 'left' }}>
-                  <h2 style={{ fontSize: '1.3rem', marginBottom: '1.25rem', color: '#ffffff', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Billing Summary Report</h2>
+                  <h2 style={{ fontSize: '1.3rem', marginBottom: '1.25rem', color: '#ffffff', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Financials & Payments Report</h2>
                   
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
                     <div>
-                      <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Total Tuition Invoiced</span>
-                      <strong style={{ fontSize: '1.5rem', color: '#ffffff', display: 'block', marginTop: '0.25rem' }}>${totalAssessed.toFixed(2)}</strong>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Total Students</span>
+                      <strong style={{ fontSize: '1.5rem', color: '#ffffff', display: 'block', marginTop: '0.25rem' }}>{totalCount}</strong>
                     </div>
                     <div>
-                      <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Total Revenue Collected</span>
-                      <strong style={{ fontSize: '1.5rem', color: 'var(--success)', display: 'block', marginTop: '0.25rem' }}>${totalCollected.toFixed(2)}</strong>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Paid Students</span>
+                      <strong style={{ fontSize: '1.5rem', color: 'var(--success)', display: 'block', marginTop: '0.25rem' }}>{paidCount}</strong>
                     </div>
                     <div>
-                      <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Outstanding Balances</span>
-                      <strong style={{ fontSize: '1.5rem', color: 'var(--logo-gold)', display: 'block', marginTop: '0.25rem' }}>${totalOutstanding.toFixed(2)}</strong>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Unpaid Students</span>
+                      <strong style={{ fontSize: '1.5rem', color: 'var(--danger)', display: 'block', marginTop: '0.25rem' }}>{unpaidCount}</strong>
                     </div>
                     <div>
-                      <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Collection Efficiency</span>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Tuition Settlement Rate</span>
                       <strong style={{ fontSize: '1.5rem', color: 'var(--primary)', display: 'block', marginTop: '0.25rem' }}>
-                        {totalAssessed > 0 ? ((totalCollected / totalAssessed) * 100).toFixed(1) : '0.0'}%
+                        {settlementRate}%
                       </strong>
                     </div>
                   </div>
@@ -616,8 +611,8 @@ export const OfficeAdmin = ({ currentUser, navigateTo }) => {
                               {tx.date} • {tx.method} • Ref: {tx.refNum || tx.id}
                             </span>
                           </div>
-                          <span style={{ fontWeight: 'bold', color: 'var(--success)', fontSize: '1.05rem' }}>
-                            +${tx.amount.toFixed(2)}
+                          <span className="badge badge-success" style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem', textTransform: 'uppercase', fontWeight: 'bold' }}>
+                            Settled
                           </span>
                         </div>
                       ))}
@@ -765,72 +760,7 @@ export const OfficeAdmin = ({ currentUser, navigateTo }) => {
         </div>
       )}
 
-      {/* Payment Recorder Modal */}
-      {showPaymentModal && selectedStudent && (
-        <div className="modal-overlay animate-fade-in" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1000, padding: '1rem' }}>
-          <div className="glass modal-content animate-slide-up" style={{ padding: '2rem', width: '100%', maxWidth: '400px', borderRadius: 'var(--border-radius-lg)', position: 'relative', textAlign: 'left' }}>
-            <button 
-              className="btn-close" 
-              onClick={() => setShowPaymentModal(false)}
-              style={{ position: 'absolute', top: '1rem', right: '1rem', border: 'none', background: 'transparent', color: 'var(--text-secondary)', fontSize: '1.5rem', cursor: 'pointer' }}
-            >
-              &times;
-            </button>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: '#ffffff' }}>Record Manual Payment</h3>
-            <p style={{ margin: '0 0 1rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-              Record a payment transaction for student <strong style={{ color: '#ffffff' }}>{selectedStudent.name}</strong>.
-            </p>
-
-            <form onSubmit={handleRecordPayment} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>Payment Amount ($)</label>
-                <input 
-                  type="number" 
-                  required
-                  min="1"
-                  max={getStudentBillingDetails(selectedStudent).balance}
-                  placeholder={`Max: $${getStudentBillingDetails(selectedStudent).balance.toFixed(2)}`}
-                  value={recordPayAmount}
-                  onChange={(e) => setRecordPayAmount(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: 'var(--border-radius-md)', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: '#ffffff' }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>Payment Mode</label>
-                <select 
-                  value={recordPayMethod} 
-                  onChange={(e) => setRecordPayMethod(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: 'var(--border-radius-md)', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', color: '#ffffff' }}
-                >
-                  <option value="Cash">Cash Payment</option>
-                  <option value="Check">Check / Bank Draft</option>
-                  <option value="Scholarship Waiver">Scholarship Waiver / Discount</option>
-                  <option value="Bank Transfer">Direct Bank Transfer</option>
-                </select>
-              </div>
-
-              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
-                <button 
-                  type="button" 
-                  className="btn" 
-                  onClick={() => setShowPaymentModal(false)}
-                  style={{ flex: 1, borderColor: 'var(--border-color)' }}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  className="btn btn-success"
-                  style={{ flex: 1 }}
-                >
-                  Record Payment
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Payment Recorder Modal Removed */}
 
     </div>
   );
