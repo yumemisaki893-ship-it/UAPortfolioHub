@@ -63,9 +63,68 @@ const goalsData = [
   }
 ];
 
+const campusesData = [
+  {
+    id: 'sibalom',
+    name: "Sibalom (Main Campus)",
+    location: "Sibalom, Antique",
+    specialization: "Engineering, ICT, Teacher Education, Arts & Sciences, Nursing & Health Sciences, Criminology",
+    description: "The administrative heart and largest campus of the University, offering comprehensive advanced technological and professional instruction.",
+    established: "1954",
+    x: 62,
+    y: 300,
+    color: "var(--accent)"
+  },
+  {
+    id: 'hamtic',
+    name: "Hamtic Campus",
+    location: "Hamtic, Antique",
+    specialization: "Agriculture, Forestry, Food Technology, Agricultural Engineering",
+    description: "Dedicated to agro-forestry research and development, producing leading experts in sustainable agriculture and land conservation.",
+    established: "1980",
+    x: 36,
+    y: 370,
+    color: "var(--logo-gold)"
+  },
+  {
+    id: 'tibiao',
+    name: "Tibiao Campus",
+    location: "Tibiao, Antique",
+    specialization: "Maritime Studies, Fisheries, Marine Biology, Technology",
+    description: "A premier hub for maritime education and marine biology, situated along the rich coastal waters of northern Antique.",
+    established: "1982",
+    x: 70,
+    y: 90,
+    color: "var(--primary)"
+  },
+  {
+    id: 'caluya',
+    name: "Caluya Campus",
+    location: "Caluya Island, Antique",
+    specialization: "Fisheries, Agriculture, Technology, Vocational Education",
+    description: "Serving offshore island communities, specializing in sustainable island agriculture, marine aquaculture, and local entrepreneurship.",
+    established: "1994",
+    x: 18,
+    y: 42,
+    color: "#10b981"
+  },
+  {
+    id: 'pandan',
+    name: "Pandan Extension Campus",
+    location: "Pandan, Antique",
+    specialization: "Business Administration, Hospitality Management, Teacher Education",
+    description: "Strategically located in the ecotourism zone of northern Antique, focusing on hospitality and sustainable business leadership.",
+    established: "2006",
+    x: 65,
+    y: 30,
+    color: "#ff33b5"
+  }
+];
+
 const Home = ({ navigateTo, currentUser }) => {
   const [activeLang, setActiveLang] = useState('en'); // 'en' | 'fil' | 'kr'
   const [activeGoal, setActiveGoal] = useState(null);
+  const [selectedCampus, setSelectedCampus] = useState(campusesData[0]);
   const [time, setTime] = useState('');
   const [dateStr, setDateStr] = useState('');
   const [registeredCount, setRegisteredCount] = useState(0);
@@ -253,6 +312,137 @@ const Home = ({ navigateTo, currentUser }) => {
                 {activeLang === 'fil' && "Upang mapaunlad ang buhay ng mga Antiqueño at ng mga Pilipino, ang University of Antique ay kinakailangang makalikha ng matatag na mga propesyonal sa pamamagitan ng de-kalidad na pagtuturo, mga inobatibong mga pananaliksik at mga programang pangkaunlaran, mga Gawain tungo sa pagkakaroon ng napananatili at pangmatagalang mga mapagkukunan, at mga serbisyong kapakipakinabang"}
                 {activeLang === 'kr' && "Para mapa-ugwad ang pangabuhi kang mga Antiqueño kag mga Pilipino, kinahanglan nga ang University of Antique makadihon kang mga propesyonal nga may kapag-on paagi sa kalidad nga pagpanudlo, mga inobatibo nga mga panalawsaw kag mga programa sa pagpasanyog, mga aktibidad nga may kaangtanan sa sustinable nga parangabuy-an, kag mapinuslanon nga mga serbisyo"}
               </p>
+            </div>
+          </div>
+
+          {/* Campuses Map Section */}
+          <div className="campuses-section animate-slide-up-delay-2">
+            <h2 className="section-title">Campuses of University of Antique</h2>
+            <p className="section-subtitle">
+              UA serves the province of Antique through its strategically located campuses. Hover over the map markers or list items to explore.
+            </p>
+            
+            <div className="campuses-grid">
+              {/* Map Column */}
+              <div className="campus-map-column glass">
+                <div className="map-badge">Interactive Map of Antique</div>
+                <div className="map-wrapper">
+                  <svg viewBox="0 0 120 400" className="campus-svg-map">
+                    {/* Coastline shadow/glow */}
+                    <path 
+                      d="M 65 30 Q 75 60, 68 90 T 50 160 T 55 240 T 48 300 T 45 340 T 35 380" 
+                      fill="none" 
+                      stroke="var(--border-color)" 
+                      strokeWidth="6" 
+                      strokeLinecap="round" 
+                      opacity="0.3"
+                    />
+                    {/* Actual Coastline path */}
+                    <path 
+                      d="M 65 30 Q 75 60, 68 90 T 50 160 T 55 240 T 48 300 T 45 340 T 35 380" 
+                      fill="none" 
+                      stroke="var(--primary)" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                    />
+                    
+                    {/* Caluya Island Group representation */}
+                    <circle cx="20" cy="40" r="12" fill="none" stroke="var(--border-color)" strokeWidth="1" strokeDasharray="2 2" />
+                    <path d="M 16 38 Q 24 35, 22 45 Z" fill="rgba(14, 27, 132, 0.05)" stroke="var(--primary)" strokeWidth="1.5" />
+                    <path d="M 11 58 Q 17 55, 15 62 Z" fill="rgba(14, 27, 132, 0.05)" stroke="var(--primary)" strokeWidth="1.5" />
+
+                    {/* Campus Markers */}
+                    {campusesData.map((campus) => {
+                      const isSelected = selectedCampus.id === campus.id;
+                      return (
+                        <g 
+                          key={campus.id} 
+                          className={`map-marker-group ${isSelected ? 'selected' : ''}`}
+                          onMouseEnter={() => setSelectedCampus(campus)}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          {/* Pulsing glow ring */}
+                          <circle 
+                            cx={campus.x} 
+                            cy={campus.y} 
+                            r={isSelected ? 10 : 6} 
+                            fill={campus.color} 
+                            opacity={isSelected ? 0.35 : 0.15} 
+                            className="marker-pulse"
+                          />
+                          {/* Inner solid dot */}
+                          <circle 
+                            cx={campus.x} 
+                            cy={campus.y} 
+                            r={isSelected ? 4.5 : 3.5} 
+                            fill={campus.color} 
+                            stroke="#ffffff" 
+                            strokeWidth="1"
+                          />
+                        </g>
+                      );
+                    })}
+                  </svg>
+                </div>
+              </div>
+
+              {/* Detail Column */}
+              <div className="campus-detail-column">
+                <div className="campus-list">
+                  {campusesData.map((campus) => {
+                    const isSelected = selectedCampus.id === campus.id;
+                    return (
+                      <button 
+                        key={campus.id}
+                        className={`campus-list-item glass ${isSelected ? 'selected' : ''}`}
+                        onMouseEnter={() => setSelectedCampus(campus)}
+                        onClick={() => setSelectedCampus(campus)}
+                      >
+                        <span className="campus-dot" style={{ backgroundColor: campus.color }}></span>
+                        <div className="campus-item-meta">
+                          <span className="campus-item-name">{campus.name}</span>
+                          <span className="campus-item-loc">{campus.location}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Glassmorphic Info Card */}
+                <div className="campus-info-card glass animate-fade-in" key={selectedCampus.id}>
+                  <div className="campus-card-header">
+                    <div className="campus-header-badge" style={{ backgroundColor: `${selectedCampus.color}15`, color: selectedCampus.color, border: `1px solid ${selectedCampus.color}30` }}>
+                      Est. {selectedCampus.established}
+                    </div>
+                    <h3>{selectedCampus.name}</h3>
+                    <div className="campus-card-loc">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '14px', height: '14px' }}>
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                        <circle cx="12" cy="10" r="3" />
+                      </svg>
+                      {selectedCampus.location}
+                    </div>
+                  </div>
+
+                  <div className="campus-card-body">
+                    <p className="campus-desc">{selectedCampus.description}</p>
+                    <div className="campus-specializations">
+                      <div className="spec-label">Key Specializations</div>
+                      <p className="spec-text">{selectedCampus.specialization}</p>
+                    </div>
+                  </div>
+
+                  <div className="campus-card-actions">
+                    <button 
+                      className="btn btn-primary btn-sm"
+                      onClick={() => navigateTo('directory', { major: 'All' })}
+                      style={{ width: '100%', minHeight: '38px', borderRadius: 'var(--border-radius-md)' }}
+                    >
+                      Browse Student Portfolios
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
