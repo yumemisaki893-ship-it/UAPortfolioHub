@@ -654,20 +654,6 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
 
   return (
     <div className="app-page-wrapper">
-      {student && (
-        <button 
-          className="btn-back-profile"
-          onClick={() => navigateTo('profile-detail', { id: student.id })}
-          aria-label="Back to Profile"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-          Back to Profile
-        </button>
-      )}
-
       <div className="container editor-page animate-fade-in" style={{ paddingBottom: '4rem', paddingTop: '2.5rem' }}>
         
         {/* Title Header */}

@@ -200,6 +200,21 @@ function App() {
         </button>
       )}
 
+      {((route.page === 'edit-profile' || route.page === 'security-settings') && 
+        (currentUser?.isAdmin && route.params?.id ? route.params.id : currentUser?.studentId)) && (
+        <button 
+          className="btn-back-profile" 
+          onClick={() => navigateTo('profile-detail', { id: (currentUser?.isAdmin && route.params?.id ? route.params.id : currentUser?.studentId) })}
+          aria-label="Back to Profile"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+          Back to Profile
+        </button>
+      )}
+
       {/* Main Page Area */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative' }}>
         <div key={route.page} className="page-transition-wrapper">
