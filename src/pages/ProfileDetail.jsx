@@ -535,7 +535,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
       style={{ marginBottom: '0.5rem', minHeight: '32px' }}
       onClick={() => navigateTo('edit-profile', { id: student.id })}
     >
-      Edit Profile Details
+      Profile Editor
     </button>
   )}
   <div
