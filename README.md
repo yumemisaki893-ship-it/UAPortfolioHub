@@ -37,7 +37,7 @@ Live Demo: **[uaportfoliohub.vercel.app](https://uaportfoliohub.vercel.app)**
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend Core**: React 18, JavaScript (ES6+), HTML5, Semantic Markup
 - **Styling**: Vanilla CSS (Tailwind-free) utilizing custom HSL palettes, variables, glassmorphic backdrop-filters, and CSS variables.
