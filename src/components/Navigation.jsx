@@ -57,6 +57,7 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
             <button 
               className="user-menu-btn hamburger-btn"
               onClick={() => setFlyoutOpen(true)}
+              onMouseEnter={() => setFlyoutOpen(true)}
               aria-label="Open Menu"
               style={{ width: '36px', height: '36px', justifyContent: 'center', padding: 0 }}
             >
