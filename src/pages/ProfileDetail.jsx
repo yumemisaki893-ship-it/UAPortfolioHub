@@ -553,7 +553,16 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
               onClick={() => { if (student.avatarId) { setViewerImage(student.avatarId); setViewerCaption(student.name + "'s Profile Photo"); } }}
               title={student.avatarId ? 'Click to view full size' : ''}
             >
-              <AvatarImage avatarId={student.avatarId} id={`detail-${student.id}`} />
+              {canEdit && (
+  <button
+    className="btn btn-secondary btn-sm"
+    style={{ marginBottom: '0.5rem', minHeight: '32px' }}
+    onClick={() => navigateTo('edit-profile', { id: student.id })}
+  >
+    Edit Profile Details
+  </button>
+)}
+<AvatarImage avatarId={student.avatarId} id={`detail-${student.id}`} />
               {canEdit && (
                 <>
                   <input 
