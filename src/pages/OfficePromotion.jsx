@@ -175,7 +175,7 @@ export const OfficePromotion = ({ navigateTo, currentUser }) => {
             Meet Our Office Administration Students
           </h2>
           <p className="statement-text" style={{ maxWidth: '640px', fontSize: '1rem', margin: 0, lineHeight: '1.6' }}>
-            Review the digital portfolios, capstone projects, curriculum vitae, and specialized tech skills of our current BSOA students.
+            Review the digital portfolios, capstone projects, curriculum vitae, and specialized tech skills of our current BSOAD students.
           </p>
           <button 
             className="btn btn-primary btn-lg-premium" 
