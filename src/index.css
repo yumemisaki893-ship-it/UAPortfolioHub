@@ -2176,3 +2176,248 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
     width: 100%;
   }
 }
+
+/* ClickUp-Inspired Split Screen Login Page */
+.auth-split-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--bg-primary);
+  overflow: hidden;
+}
+
+.auth-left-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 2rem;
+  overflow-y: auto;
+  position: relative;
+  z-index: 2;
+  background-color: var(--bg-primary);
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .auth-left-panel {
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.2);
+}
+
+.auth-right-panel {
+  flex: 1.2;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem;
+  overflow: hidden;
+  background: linear-gradient(-45deg, #0e1b84, #a30b0b, #e5ad06, #0e1b84);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  z-index: 1;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.auth-right-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.08) 0%, transparent 60%),
+              rgba(14, 27, 132, 0.25);
+  backdrop-filter: saturate(120%);
+  z-index: 2;
+}
+
+[data-theme="dark"] .auth-right-overlay {
+  background: radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
+              rgba(10, 10, 15, 0.55);
+}
+
+.auth-showcase-content {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #ffffff;
+}
+
+.auth-showcase-title {
+  font-family: var(--font-family);
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.auth-showcase-subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 2.5rem;
+  max-width: 460px;
+  line-height: 1.5;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.auth-showcase-preview {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(15, 15, 20, 0.4);
+  backdrop-filter: blur(10px);
+}
+
+.auth-showcase-preview:hover {
+  transform: translateY(-8px) scale(1.02);
+}
+
+.auth-showcase-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+/* Auth Card Adjustments for Split Screen */
+.auth-split-container .auth-card {
+  max-width: 440px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  text-align: left;
+}
+
+.auth-split-container .auth-header {
+  margin-bottom: 2rem;
+}
+
+.auth-split-container .auth-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.auth-split-container .auth-header p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.auth-logo-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+  align-self: flex-start;
+}
+
+.auth-logo-img {
+  height: 40px;
+  width: auto;
+}
+
+.auth-logo-text {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+/* Beautiful Inputs for Auth Split Form */
+.auth-split-container .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.auth-split-container .form-label {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+  display: block;
+}
+
+.auth-split-container .form-control {
+  border-radius: 8px;
+  border: 1.5px solid var(--border-color);
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  background-color: var(--bg-secondary);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.auth-split-container .form-control:focus {
+  border-color: var(--primary);
+  background-color: var(--bg-primary);
+  box-shadow: 0 0 0 4px var(--primary-glow);
+}
+
+.auth-split-container .btn {
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.75rem 1.25rem;
+  min-height: 44px;
+}
+
+.auth-split-container .password-input-wrapper {
+  position: relative;
+}
+
+.auth-split-container .password-toggle-btn {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+}
+
+.auth-split-container .password-toggle-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+/* Desktop-first media queries for split screen layout */
+@media (max-width: 992px) {
+  .auth-right-panel {
+    display: none;
+  }
+  .auth-left-panel {
+    padding: 3rem 1.5rem;
+  }
+  .auth-split-container .auth-card {
+    max-width: 100%;
+  }
+  .auth-logo-header {
+    align-self: center;
+  }
+}
