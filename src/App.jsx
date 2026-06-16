@@ -3,9 +3,8 @@ import Navigation from './components/Navigation';
 import Directory from './pages/Directory';
 import ProfileDetail from './pages/ProfileDetail';
 import Auth from './pages/Auth';
-import ProfileEditor from './pages/ProfileEditor';
+import { AccountSettings } from './pages/AccountSettings';
 import Home from './pages/Home';
-import SecuritySettings from './pages/SecuritySettings';
 import { OfficeAdmin } from './pages/OfficeAdmin';
 import { OfficePromotion } from './pages/OfficePromotion';
 import { getCurrentSession, getSessionData, getStudentById } from './utils/storage';
@@ -139,19 +138,22 @@ function App() {
         );
       case 'edit-profile':
         return (
-          <ProfileEditor 
+          <AccountSettings 
             currentUser={currentUser} 
             params={route.params}
             navigateTo={navigateTo} 
-            onProfileUpdate={handleProfileUpdate} 
+            onProfileUpdate={handleProfileUpdate}
+            initialTab="profile"
           />
         );
       case 'security-settings':
         return (
-          <SecuritySettings 
+          <AccountSettings 
             currentUser={currentUser} 
+            params={route.params}
             navigateTo={navigateTo}
             onProfileUpdate={handleProfileUpdate}
+            initialTab="security"
           />
         );
       case 'office-admin':
