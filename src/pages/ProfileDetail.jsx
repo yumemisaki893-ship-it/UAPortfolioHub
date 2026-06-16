@@ -306,19 +306,17 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
 
   return (
     <div className="profile-detail-page" style={{ position: 'relative' }}>
-      <div className="container" style={{ position: 'relative', height: 0, zIndex: 100 }}>
-        <button 
-          className="btn-back-directory" 
-          onClick={() => navigateTo('directory')}
-          aria-label="Back to Directory"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-          Back to Directory
-        </button>
-      </div>
+      <button 
+        className="btn-back-directory" 
+        onClick={() => navigateTo('directory')}
+        aria-label="Back to Directory"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+          <line x1="19" y1="12" x2="5" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
+        </svg>
+        Back to Directory
+      </button>
 
       {/* Full Width Cover Photo */}
       <div style={{ position: 'relative', width: '100%' }}>

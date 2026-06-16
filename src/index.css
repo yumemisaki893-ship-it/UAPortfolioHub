@@ -2070,8 +2070,8 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
 
 /* Premium Back to Directory Button */
 .btn-back-directory {
-  position: absolute;
-  top: 1.5rem;
+  position: fixed;
+  top: 5rem;
   left: 2rem;
   z-index: 100;
   display: inline-flex;
@@ -2091,6 +2091,23 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
   text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .btn-back-directory {
+    top: 4.5rem;
+    left: 1rem;
+    font-size: 0;
+    gap: 0;
+    padding: 0.5rem;
+    min-height: 34px;
+    min-width: 34px;
+    justify-content: center;
+  }
+  .btn-back-directory svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
 }
 
 [data-theme="light"] .btn-back-directory {
