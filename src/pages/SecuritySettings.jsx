@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getStudentById, updateUserEmail, updateUserPassword } from '../utils/storage';
+import { getStudentById, updateUserEmail, updateUserPassword, deleteStudentProfileAndAccount, signOut } from '../utils/storage';
 
 export const SecuritySettings = ({ currentUser, navigateTo, onProfileUpdate }) => {
   const [student, setStudent] = useState(null);
@@ -93,6 +93,25 @@ export const SecuritySettings = ({ currentUser, navigateTo, onProfileUpdate }) =
       setTimeout(() => setPasswordSuccess(false), 3000);
     } catch (err) {
       setPasswordError(err.message || 'Failed to update password.');
+    }
+  };
+
+  const handleDeleteProfile = async () => {
+    const confirmMessage = "Are you sure you want to permanently delete your portfolio profile and user account? This will sign you out and cannot be undone.";
+
+    if (window.confirm(confirmMessage)) {
+      if (window.confirm("FINAL CONFIRMATION: Are you absolutely certain you want to proceed?")) {
+        try {
+          await deleteStudentProfileAndAccount(student.id);
+          await signOut();
+          if (onProfileUpdate) {
+            onProfileUpdate();
+          }
+          navigateTo('home');
+        } catch (err) {
+          alert(err.message || 'Failed to delete portfolio and account.');
+        }
+      }
     }
   };
 
@@ -248,6 +267,30 @@ export const SecuritySettings = ({ currentUser, navigateTo, onProfileUpdate }) =
                 Update Password
               </button>
             </form>
+          </div>
+
+          {/* Danger Zone: Delete Portfolio & Account */}
+          <div className="editor-form-card glass" style={{ borderLeft: '3px solid var(--danger)', padding: '2rem' }}>
+            <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--danger)' }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px', color: 'var(--danger)' }}>
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              Danger Zone: Delete Portfolio & Account
+            </h2>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+              Permanently delete your entire student portfolio profile and registered user account. This operation is irreversible and will immediately sign you out.
+            </p>
+
+            <button 
+              type="button" 
+              className="btn btn-danger" 
+              style={{ minHeight: '38px', padding: '0.5rem 1.25rem' }}
+              onClick={handleDeleteProfile}
+            >
+              Delete Portfolio & Account
+            </button>
           </div>
 
         </div>

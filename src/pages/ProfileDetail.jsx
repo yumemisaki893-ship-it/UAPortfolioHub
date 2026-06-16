@@ -175,13 +175,15 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
               >
                 Edit Portfolio
               </button>
-              <button 
-                className="btn btn-danger btn-sm" 
-                style={{ minHeight: '32px' }}
-                onClick={handleDeleteProfile}
-              >
-                Delete Portfolio
-              </button>
+              {currentUser?.isAdmin && currentUser.studentId !== student.id && (
+                <button 
+                  className="btn btn-danger btn-sm" 
+                  style={{ minHeight: '32px' }}
+                  onClick={handleDeleteProfile}
+                >
+                  Delete Portfolio
+                </button>
+              )}
             </div>
           </div>
         )}

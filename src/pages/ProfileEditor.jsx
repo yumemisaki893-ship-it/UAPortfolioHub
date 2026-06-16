@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getStudentById, updateStudentProfile, deleteStudentProfileAndAccount, signOut } from '../utils/storage';
+import { getStudentById, updateStudentProfile } from '../utils/storage';
 import { AvatarPicker, AvatarImage } from '../components/AvatarPicker';
 import { ProjectManager } from '../components/ProjectManager';
 
@@ -197,26 +197,7 @@ export const ProfileEditor = ({ currentUser, params, navigateTo, onProfileUpdate
     }
   };
 
-  const handleDeleteProfile = async () => {
-    const confirmMessage = currentUser?.isAdmin && currentUser.studentId !== student.id
-      ? `WARNING: You are about to permanently delete ${student.name}'s portfolio and user account. This action cannot be undone. Do you wish to proceed?`
-      : "Are you sure you want to permanently delete your portfolio profile and user account? This will sign you out and cannot be undone.";
 
-    if (window.confirm(confirmMessage)) {
-      if (window.confirm("FINAL CONFIRMATION: Are you absolutely certain you want to proceed?")) {
-        await deleteStudentProfileAndAccount(student.id);
-        
-        if (currentUser?.isAdmin && currentUser.studentId !== student.id) {
-          alert(`${student.name}'s portfolio was successfully deleted.`);
-          navigateTo('directory');
-        } else {
-          await signOut();
-          onProfileUpdate(); // Triggers session refresh in App.jsx
-          navigateTo('home');
-        }
-      }
-    }
-  };
 
 
 
@@ -885,15 +866,8 @@ export const ProfileEditor = ({ currentUser, params, navigateTo, onProfileUpdate
             <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'flex-end', marginBottom: '3rem', alignItems: 'center' }}>
               <button 
                 type="button" 
-                className="btn btn-danger" 
-                style={{ marginRight: 'auto' }}
-                onClick={handleDeleteProfile}
-              >
-                Delete Portfolio & Account
-              </button>
-              <button 
-                type="button" 
                 className="btn btn-secondary"
+                style={{ marginRight: 'auto' }}
                 onClick={() => navigateTo('profile-detail', { id: student.id })}
               >
                 Cancel
