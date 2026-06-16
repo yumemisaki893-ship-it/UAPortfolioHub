@@ -477,13 +477,6 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                 >
                   Edit Portfolio
                 </button>
-                <button 
-                  className="btn btn-secondary btn-sm" 
-                  style={{ minHeight: '32px', marginLeft: '0.5rem' }}
-                  onClick={() => navigateTo('edit-profile', { id: student.id })}
-                >
-                  Edit Profile Details
-                </button>
               {isAdminPanel && (
                 <button 
                   className="btn btn-danger btn-sm" 
@@ -535,73 +528,75 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
             className="profile-header-content"
           >
             {/* Circular avatar container overlapping cover photo */}
-            <div 
-              style={{ 
-                width: '150px', 
-                height: '150px', 
-                flexShrink: 0, 
-                borderRadius: '50%', 
-                overflow: 'hidden',
-                border: '6px solid var(--bg-card)',
-                background: 'var(--bg-card)',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                marginTop: '-50px',
-                position: 'relative',
-                cursor: student.avatarId ? 'pointer' : 'default'
-              }}
-              className="profile-avatar-container"
-              onClick={() => { if (student.avatarId) { setViewerImage(student.avatarId); setViewerCaption(student.name + "'s Profile Photo"); } }}
-              title={student.avatarId ? 'Click to view full size' : ''}
-            >
-              {canEdit && (
-  <button
-    className="btn btn-secondary btn-sm"
-    style={{ marginBottom: '0.5rem', minHeight: '32px' }}
-    onClick={() => navigateTo('edit-profile', { id: student.id })}
+<div className="profile-avatar-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '150px' }}>
+  {canEdit && (
+    <button
+      className="btn btn-secondary btn-sm"
+      style={{ marginBottom: '0.5rem', minHeight: '32px' }}
+      onClick={() => navigateTo('edit-profile', { id: student.id })}
+    >
+      Edit Profile Details
+    </button>
+  )}
+  <div
+    style={{
+      width: '150px',
+      height: '150px',
+      flexShrink: 0,
+      borderRadius: '50%',
+      overflow: 'hidden',
+      border: '6px solid var(--bg-card)',
+      background: 'var(--bg-card)',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      marginTop: '-50px',
+      position: 'relative',
+      cursor: student.avatarId ? 'pointer' : 'default',
+    }}
+    className="profile-avatar-container"
+    onClick={() => { if (student.avatarId) { setViewerImage(student.avatarId); setViewerCaption(student.name + "'s Profile Photo"); } }}
+    title={student.avatarId ? 'Click to view full size' : ''}
   >
-    Edit Profile Details
-  </button>
-)}
-<AvatarImage avatarId={student.avatarId} id={`detail-${student.id}`} />
-              {canEdit && (
-                <>
-                  <input 
-                    type="file" 
-                    id="inplace-avatar-upload" 
-                    accept="image/png, image/jpeg, image/jpg" 
-                    style={{ display: 'none' }} 
-                    onChange={handleInPlaceAvatarUpload} 
-                  />
-                  <label 
-                    htmlFor="inplace-avatar-upload"
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: '100%',
-                      background: 'rgba(0, 0, 0, 0.5)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#fff',
-                      opacity: 0,
-                      transition: 'opacity 0.2s ease',
-                      cursor: 'pointer',
-                      gap: '4px'
-                    }}
-                    className="avatar-upload-overlay"
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px' }}>
-                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                      <circle cx="12" cy="13" r="4" />
-                    </svg>
-                    <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Change Photo</span>
-                  </label>
-                </>
-              )}
-            </div>
+    <AvatarImage avatarId={student.avatarId} id={`detail-${student.id}`} />
+    {canEdit && (
+      <>
+        <input
+          type="file"
+          id="inplace-avatar-upload"
+          accept="image/png, image/jpeg, image/jpg"
+          style={{ display: 'none' }}
+          onChange={handleInPlaceAvatarUpload}
+        />
+        <label
+          htmlFor="inplace-avatar-upload"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#fff',
+            opacity: 0,
+            transition: 'opacity 0.2s ease',
+            cursor: 'pointer',
+            gap: '4px',
+          }}
+          className="avatar-upload-overlay"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px' }}>
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
+          <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Change Photo</span>
+        </label>
+      </>
+    )}
+  </div>
+</div>
             
             <div className="profile-meta" style={{ flex: 1, paddingTop: '1rem' }}>
             <h1 style={{ fontSize: '1.75rem', marginBottom: '0.2rem', fontWeight: 700 }}>{student.name}</h1>
