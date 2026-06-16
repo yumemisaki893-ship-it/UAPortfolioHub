@@ -56,6 +56,7 @@ export const StudentCard = ({ student, currentUser, onClick, onDelete }) => {
           <div style={{ 
             width: '60px', 
             height: '60px', 
+            flexShrink: 0,
             borderRadius: '50%', 
             overflow: 'hidden', 
             border: '4px solid var(--bg-card)',
