@@ -475,7 +475,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                   style={{ minHeight: '32px' }}
                   onClick={() => navigateTo('edit-profile', { id: student.id })}
                 >
-                  Edit Portfolio Profile
+                  Profile Editor
                 </button>
               {isAdminPanel && (
                 <button 
