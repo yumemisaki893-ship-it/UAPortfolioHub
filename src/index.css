@@ -979,22 +979,18 @@ a:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.5) 0%,
-    rgba(255, 255, 255, 0.85) 60%,
-    var(--bg-primary) 100%
-  );
+  background: 
+    radial-gradient(circle at 12% 20%, rgba(213, 0, 28, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 88% 80%, rgba(244, 180, 0, 0.08) 0%, transparent 45%),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.88) 60%, var(--bg-primary) 100%);
   z-index: 1;
 }
 
 [data-theme="dark"] .home-hero::before {
-  background: linear-gradient(
-    to bottom,
-    rgba(10, 10, 10, 0.5) 0%,
-    rgba(10, 10, 10, 0.85) 60%,
-    var(--bg-primary) 100%
-  );
+  background: 
+    radial-gradient(circle at 12% 20%, rgba(255, 77, 100, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 88% 80%, rgba(255, 200, 0, 0.12) 0%, transparent 45%),
+    linear-gradient(to bottom, rgba(10, 10, 10, 0.45) 0%, rgba(10, 10, 10, 0.92) 60%, var(--bg-primary) 100%);
 }
 
 .home-hero-content {
@@ -1136,7 +1132,7 @@ a:hover {
 }
 
 .home-vision-mission {
-  background: var(--bg-secondary);
+  background: linear-gradient(to bottom, var(--bg-secondary) 0%, var(--bg-primary) 100%);
   border-top: 1px solid var(--border-color);
   padding: 5rem 2rem;
   width: 100%;
@@ -1161,12 +1157,18 @@ a:hover {
 .lang-selector {
   position: relative;
   display: flex;
-  background: var(--bg-primary);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   padding: 4px;
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--border-radius-md);
   border: 1px solid var(--border-color);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
   width: 320px;
+}
+
+[data-theme="dark"] .lang-selector {
+  background: rgba(18, 18, 18, 0.55);
 }
 
 .lang-tab {
@@ -1200,10 +1202,11 @@ a:hover {
   bottom: 4px;
   left: 4px;
   width: calc((100% - 8px) / 3);
-  background: var(--logo-gold);
+  background: linear-gradient(135deg, var(--logo-gold) 0%, #e6a100 100%);
   z-index: 1;
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   border-radius: var(--border-radius-sm);
+  box-shadow: 0 2px 6px rgba(244, 180, 0, 0.2);
 }
 
 .lang-selector:has(.lang-tab.active:nth-child(2)) .lang-slider {
@@ -1239,18 +1242,28 @@ a:hover {
   align-items: flex-start;
   gap: 1.5rem;
   min-height: 260px;
-  background: var(--accent);
+  background: linear-gradient(135deg, #b30016 0%, #80000d 100%);
   border: 2px solid var(--logo-gold);
   color: #ffffff;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .statement-card {
+  background: linear-gradient(135deg, #80000d 0%, #4a0006 100%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .statement-card:hover {
   transform: translateY(-4px);
-  background: var(--accent);
+  background: linear-gradient(135deg, #c7001a 0%, #940011 100%);
   border: 2px solid var(--logo-gold);
   color: #ffffff;
   box-shadow: 0 12px 30px var(--logo-gold-glow);
+}
+
+[data-theme="dark"] .statement-card:hover {
+  background: linear-gradient(135deg, #940011 0%, #5e0009 100%);
 }
 
 .statement-badge {
@@ -1731,6 +1744,7 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
 
 .goal-item {
   border: 1px solid var(--border-color);
+  border-left: 3px solid var(--border-color);
   border-radius: var(--border-radius-md);
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1739,6 +1753,7 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
 
 .goal-item:hover, .goal-item.active {
   border-color: var(--logo-gold);
+  border-left-color: var(--logo-gold);
   box-shadow: 0 4px 16px var(--logo-gold-glow);
 }
 
