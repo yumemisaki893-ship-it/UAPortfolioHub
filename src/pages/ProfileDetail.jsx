@@ -253,6 +253,57 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
     e.target.value = null;
   };
 
+  const handleInPlaceResumeUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const validTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    const extension = file.name.split('.').pop().toLowerCase();
+
+    if (!validTypes.includes(file.type) && extension !== 'pdf' && extension !== 'docx') {
+      alert('Please upload PDF or DOCX files only.');
+      e.target.value = null;
+      return;
+    }
+
+    if (file.size > 1 * 1024 * 1024) {
+      alert(`File is too large (${Math.round(file.size / 1024)}KB). Maximum allowed is 1MB.`);
+      e.target.value = null;
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const newResume = {
+        name: file.name,
+        dataUrl: reader.result,
+        uploadedAt: new Date().toISOString()
+      };
+      try {
+        await updateStudentProfile(student.id, { resume: newResume });
+        setStudent({ ...student, resume: newResume });
+      } catch (err) {
+        alert(err.message || 'Failed to upload resume.');
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = null;
+  };
+
+  const handleInPlaceRemoveResume = async () => {
+    if (window.confirm('Are you sure you want to remove your resume?')) {
+      try {
+        await updateStudentProfile(student.id, { resume: null });
+        setStudent({ ...student, resume: null });
+      } catch (err) {
+        alert(err.message || 'Failed to remove resume.');
+      }
+    }
+  };
+
   return (
     <div className="profile-detail-page" style={{ position: 'relative' }}>
       <div className="container" style={{ position: 'relative', height: 0, zIndex: 100 }}>
@@ -570,14 +621,63 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
 
           {/* CV / Resume Section (Default) */}
           <div className="profile-section glass">
-            <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-                <line x1="16" y1="13" x2="8" y2="13" />
-                <line x1="16" y1="17" x2="8" y2="17" />
-              </svg>
-              CV / Resume
+            <h2 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="16" y1="13" x2="8" y2="13" />
+                  <line x1="16" y1="17" x2="8" y2="17" />
+                </svg>
+                CV / Resume
+              </div>
+              {canEdit && (
+                <div onClick={(e) => e.stopPropagation()} style={{ display: 'flex', gap: '0.4rem' }}>
+                  <input
+                    type="file"
+                    id="inplace-resume-upload"
+                    accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    style={{ display: 'none' }}
+                    onChange={handleInPlaceResumeUpload}
+                  />
+                  <label
+                    htmlFor="inplace-resume-upload"
+                    className="btn btn-secondary btn-sm"
+                    style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', minHeight: '30px', padding: '0.3rem 0.75rem', fontSize: '0.75rem', fontWeight: 600, border: '1px solid var(--border-color)', borderRadius: 'var(--border-radius-md)' }}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '11px', height: '11px' }}>
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    {student.resume ? 'Replace' : 'Upload'}
+                  </label>
+                  {student.resume && (
+                    <button
+                      className="btn btn-danger btn-sm"
+                      style={{
+                        minHeight: '30px',
+                        minWidth: '30px',
+                        borderRadius: '50%',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: 0,
+                        background: 'var(--danger-bg)',
+                        borderColor: 'var(--danger-border)',
+                        color: 'var(--danger)'
+                      }}
+                      onClick={handleInPlaceRemoveResume}
+                      title="Remove Resume"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '12px', height: '12px' }}>
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              )}
             </h2>
             {student.resume ? (
               <div style={{
@@ -645,7 +745,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
               </div>
             ) : (
               <p style={{ fontStyle: 'italic', color: 'var(--text-muted)' }}>
-                No CV or resume uploaded yet.
+                {canEdit ? 'Upload your CV or resume using the button above.' : 'No CV or resume uploaded yet.'}
               </p>
             )}
           </div>
