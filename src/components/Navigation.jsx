@@ -115,7 +115,7 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
                 onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo('office-promotion'); }}
                 className="flyout-link"
               >
-                BS Office Administration
+                Bachelor of Science in Office Administration (BSOA)
               </a>
               
               {currentUser ? (
