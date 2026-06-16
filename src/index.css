@@ -1174,9 +1174,9 @@ a:hover {
 
 .hero-title-gradient {
   background: linear-gradient(135deg, 
-    var(--accent) 0%, 
+    var(--primary) 0%, 
     var(--logo-gold) 50%, 
-    var(--accent) 100%
+    var(--primary) 100%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
@@ -1187,9 +1187,9 @@ a:hover {
 
 [data-theme="dark"] .hero-title-gradient {
   background: linear-gradient(135deg, 
-    var(--accent) 0%, 
+    var(--primary) 0%, 
     var(--logo-gold) 50%, 
-    var(--accent) 100%
+    var(--primary) 100%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
