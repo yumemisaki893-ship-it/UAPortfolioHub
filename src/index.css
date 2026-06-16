@@ -2072,8 +2072,9 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
   height: 3px;
   background: linear-gradient(135deg, 
     var(--accent) 0%, 
-    var(--logo-gold) 50%, 
-    var(--primary) 100%
+    var(--logo-gold) 25%, 
+    #10b981 50%, 
+    var(--primary) 75%
   );
   background-size: 200% auto;
   animation: textGradientMove 4s ease infinite;

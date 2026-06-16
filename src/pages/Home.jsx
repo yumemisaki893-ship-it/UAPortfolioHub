@@ -260,7 +260,12 @@ const Home = ({ navigateTo, currentUser }) => {
               {goalsData.map((goal) => {
                 const isActive = activeGoal === goal.id;
                 return (
-                  <div key={goal.id} className={`goal-item ${isActive ? 'active' : ''}`}>
+                  <div 
+                    key={goal.id} 
+                    className={`goal-item ${isActive ? 'active' : ''}`}
+                    onMouseEnter={() => setActiveGoal(goal.id)}
+                    onMouseLeave={() => setActiveGoal(null)}
+                  >
                     <div 
                       className="goal-header" 
                       onClick={() => setActiveGoal(isActive ? null : goal.id)}
