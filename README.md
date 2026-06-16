@@ -46,7 +46,7 @@ Live Demo: **[uaportfoliohub.vercel.app](https://uaportfoliohub.vercel.app)**
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js (v18+)
