@@ -17,6 +17,10 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
 
+  // Image Viewer for profile picture / banner
+  const [viewerImage, setViewerImage] = useState(null);
+  const [viewerCaption, setViewerCaption] = useState('');
+
   // States for in-place About Me editing
   const [isEditingAboutMe, setIsEditingAboutMe] = useState(false);
   const [aboutMeText, setAboutMeText] = useState(initialStudent?.aboutMe || '');
@@ -338,8 +342,14 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
             width: '100%', 
             aspectRatio: '21 / 9', 
             background: student.coverPhotoUrl ? `url(${student.coverPhotoUrl}) center/cover no-repeat` : 'var(--bg-secondary)',
-            borderBottom: '1px solid var(--border-color)'
+            borderBottom: '1px solid var(--border-color)',
+            cursor: student.coverPhotoUrl ? 'pointer' : 'default',
+            transition: 'filter 0.2s ease'
           }}
+          onClick={() => { if (student.coverPhotoUrl) { setViewerImage(student.coverPhotoUrl); setViewerCaption('Cover Photo'); } }}
+          onMouseEnter={(e) => { if (student.coverPhotoUrl) e.currentTarget.style.filter = 'brightness(0.85)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.filter = ''; }}
+          title={student.coverPhotoUrl ? 'Click to view full size' : ''}
         ></div>
         {canEdit && (
           <div style={{ position: 'absolute', right: '1.5rem', bottom: '1.5rem', zIndex: 10, display: 'flex', gap: '0.5rem' }}>
@@ -484,9 +494,12 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                 background: 'var(--bg-card)',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                 marginTop: '-50px',
-                position: 'relative'
+                position: 'relative',
+                cursor: student.avatarId ? 'pointer' : 'default'
               }}
               className="profile-avatar-container"
+              onClick={() => { if (student.avatarId) { setViewerImage(student.avatarId); setViewerCaption(student.name + "'s Profile Photo"); } }}
+              title={student.avatarId ? 'Click to view full size' : ''}
             >
               <AvatarImage avatarId={student.avatarId} id={`detail-${student.id}`} />
               {canEdit && (
@@ -1230,6 +1243,36 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
             {student.photos[photoIndex].caption && (
               <div className="lightbox-caption">
                 {student.photos[photoIndex].caption}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Image Viewer Modal for Profile Picture / Banner */}
+      {viewerImage && (
+        <div 
+          className="lightbox-overlay" 
+          onClick={() => { setViewerImage(null); setViewerCaption(''); }}
+          style={{ zIndex: 10000 }}
+        >
+          <button 
+            className="lightbox-close" 
+            onClick={() => { setViewerImage(null); setViewerCaption(''); }} 
+            aria-label="Close Viewer"
+          >
+            &times;
+          </button>
+          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <img 
+              src={viewerImage} 
+              alt={viewerCaption || 'Full size view'} 
+              className="lightbox-image"
+              style={{ borderRadius: '8px' }}
+            />
+            {viewerCaption && (
+              <div className="lightbox-caption">
+                {viewerCaption}
               </div>
             )}
           </div>
