@@ -18,7 +18,7 @@ export const OfficePromotion = ({ navigateTo, currentUser }) => {
           </div>
           
           <h1 className="office-hero-title animate-slide-up">
-            Bachelor of Science in <span className="hero-title-gradient">Office Administration (BSOA)</span>
+            Bachelor of Science in <span className="hero-title-gradient">Office Administration (BSOAD)</span>
           </h1>
           
           <p className="hero-subtitle animate-slide-up-delay-1" style={{ margin: '0 auto 2.5rem' }}>
