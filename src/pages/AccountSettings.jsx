@@ -83,11 +83,23 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
   // Profile Save Status
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [autoSaveStatus, setAutoSaveStatus] = useState(''); // '' | 'saving' | 'saved' | 'error'
   // Extra validation error states
   const [websiteError, setWebsiteError] = useState('');
   const [linkedinError, setLinkedinError] = useState('');
   const [twitterError, setTwitterError] = useState('');
   const [contactError, setContactError] = useState('');
+
+  // Set initialized to true once the profile is loaded and states are filled
+  useEffect(() => {
+    if (student) {
+      const timer = setTimeout(() => {
+        setIsInitialized(true);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [student]);
 
   // Account Security states
   const [newEmail, setNewEmail] = useState(initialProfile?.email || '');
@@ -332,6 +344,153 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
   const handleRemoveSkill = (skillToRemove) => {
     setSkills(skills.filter(s => s !== skillToRemove));
   };
+
+  // Auto-save settings changes
+  useEffect(() => {
+    if (!isInitialized || !student) return;
+
+    // Check if anything has actually changed from baseline student profile
+    const hasChanged = 
+      name !== (student.name || '') ||
+      major !== (student.major || '') ||
+      avatarId !== (student.avatarId || 'avatar-1') ||
+      coverPhotoUrl !== (student.coverPhotoUrl || '') ||
+      shortBio !== (student.shortBio || '') ||
+      aboutMe !== (student.aboutMe || '') ||
+      JSON.stringify(skills) !== JSON.stringify(student.skills || []) ||
+      github !== (student.github || '') ||
+      linkedin !== (student.linkedin || '') ||
+      website !== (student.website || '') ||
+      facebook !== (student.facebook || '') ||
+      instagram !== (student.instagram || '') ||
+      twitter !== (student.twitter || '') ||
+      contactNumber !== (student.contactNumber || '') ||
+      JSON.stringify(projects) !== JSON.stringify(student.projects || []) ||
+      JSON.stringify(photos) !== JSON.stringify(student.photos || []) ||
+      isPublic !== (student.isPublic !== false) ||
+      JSON.stringify(resume) !== JSON.stringify(student.resume || null) ||
+      elemenSchool !== (student.education?.elementary?.school || '') ||
+      elemenYears !== (student.education?.elementary?.years || '') ||
+      jhsSchool !== (student.education?.juniorHigh?.school || '') ||
+      jhsYears !== (student.education?.juniorHigh?.years || '') ||
+      shsSchool !== (student.education?.seniorHigh?.school || '') ||
+      shsStrand !== (student.education?.seniorHigh?.strand || '') ||
+      shsYears !== (student.education?.seniorHigh?.years || '') ||
+      collegeSchool !== (student.education?.college?.school || '') ||
+      collegeDegree !== (student.education?.college?.degree || '') ||
+      collegeYears !== (student.education?.college?.years || '') ||
+      JSON.stringify(experiences) !== JSON.stringify(student.experience || []) ||
+      JSON.stringify(seminars) !== JSON.stringify(student.seminars || []) ||
+      JSON.stringify(certificates) !== JSON.stringify(student.certificates || []);
+
+    if (!hasChanged) return;
+    if (!name.trim()) return; // Don't auto-save if name is empty (required)
+
+    setAutoSaveStatus('saving');
+    
+    const delayDebounceFn = setTimeout(async () => {
+      // Validate URLs and phone numbers silently for auto-save
+      const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/\S*)?$/i;
+      const linkedinRegex = /linkedin\.com\/in\//i;
+      const twitterRegex = /twitter\.com\/|x\.com\//i;
+      const phoneRegex = /^\+?\d{7,15}$/;
+
+      if (website && !urlRegex.test(website)) {
+        setAutoSaveStatus('error');
+        return;
+      }
+      if (linkedin && !linkedinRegex.test(linkedin)) {
+        setAutoSaveStatus('error');
+        return;
+      }
+      if (twitter && !twitterRegex.test(twitter)) {
+        setAutoSaveStatus('error');
+        return;
+      }
+      if (contactNumber && !phoneRegex.test(contactNumber.replace(/[^\d+]/g, ''))) {
+        setAutoSaveStatus('error');
+        return;
+      }
+
+      try {
+        const updatedProfile = await updateStudentProfile(student.id, {
+          name,
+          major,
+          avatarId,
+          coverPhotoUrl,
+          shortBio,
+          aboutMe,
+          skills,
+          github,
+          linkedin,
+          website,
+          facebook,
+          instagram,
+          twitter,
+          contactNumber,
+          projects,
+          photos,
+          isPublic,
+          resume,
+          education: {
+            elementary: { school: elemenSchool, years: elemenYears },
+            juniorHigh: { school: jhsSchool, years: jhsYears },
+            seniorHigh: { school: shsSchool, strand: shsStrand, years: shsYears },
+            college: { school: collegeSchool, degree: collegeDegree, years: collegeYears }
+          },
+          experience: experiences,
+          seminars: seminars,
+          certificates: certificates
+        });
+
+        setStudent(updatedProfile); // update baseline student object
+        if (onProfileUpdate) {
+          onProfileUpdate(updatedProfile);
+        }
+        setAutoSaveStatus('saved');
+        setTimeout(() => setAutoSaveStatus(''), 3000);
+      } catch (err) {
+        console.error('Auto-save failed:', err);
+        setAutoSaveStatus('error');
+      }
+    }, 1500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [
+    isInitialized,
+    name,
+    major,
+    avatarId,
+    coverPhotoUrl,
+    shortBio,
+    aboutMe,
+    skills,
+    github,
+    linkedin,
+    website,
+    facebook,
+    instagram,
+    twitter,
+    contactNumber,
+    projects,
+    photos,
+    isPublic,
+    resume,
+    elemenSchool,
+    elemenYears,
+    jhsSchool,
+    jhsYears,
+    shsSchool,
+    shsStrand,
+    shsYears,
+    collegeSchool,
+    collegeDegree,
+    collegeYears,
+    experiences,
+    seminars,
+    certificates,
+    student
+  ]);
 
   // Handle Edit Settings Profile Submission
   const handleProfileSubmit = async (e) => {
@@ -1555,7 +1714,7 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
               </div>
 
               {/* Submit Action */}
-              <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'flex-end', marginBottom: '3rem', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'flex-end', marginBottom: '3rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 <button 
                   type="button" 
                   className="btn btn-secondary"
@@ -1564,8 +1723,54 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
                 >
                   Cancel
                 </button>
+                {/* Auto-save Status Indicator */}
+                {autoSaveStatus && (
+                  <div 
+                    style={{ 
+                      fontSize: '0.85rem', 
+                      color: autoSaveStatus === 'saving' 
+                        ? 'var(--text-secondary)' 
+                        : autoSaveStatus === 'saved' 
+                          ? 'var(--success, #2EC4B6)' 
+                          : 'var(--danger, #E71D36)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      fontWeight: 500,
+                      marginRight: '0.5rem',
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    {autoSaveStatus === 'saving' && (
+                      <>
+                        <svg className="animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ width: '14px', height: '14px', marginRight: '2px', animation: 'spin 1s linear infinite' }}>
+                          <circle cx="12" cy="12" r="10" strokeDasharray="30 10" />
+                        </svg>
+                        Saving changes...
+                      </>
+                    )}
+                    {autoSaveStatus === 'saved' && (
+                      <>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '14px', height: '14px', color: 'var(--success, #2EC4B6)' }}>
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        All changes saved
+                      </>
+                    )}
+                    {autoSaveStatus === 'error' && (
+                      <>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '14px', height: '14px', color: 'var(--danger, #E71D36)' }}>
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="12" y1="8" x2="12" y2="12" />
+                          <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                        Validation error (check inputs)
+                      </>
+                    )}
+                  </div>
+                )}
                 <button type="submit" className="btn btn-primary">
-                  Save Portfolio Profile
+                  Save Changes
                 </button>
               </div>
 
