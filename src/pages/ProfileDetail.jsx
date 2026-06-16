@@ -470,13 +470,20 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
               </p>
             </div>
             <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-              <button 
-                className="btn btn-primary btn-sm" 
-                style={{ minHeight: '32px' }}
-                onClick={() => navigateTo('edit-profile', { id: student.id })}
-              >
-                Edit Portfolio
-              </button>
+                <button 
+                  className="btn btn-primary btn-sm" 
+                  style={{ minHeight: '32px' }}
+                  onClick={() => navigateTo('edit-profile', { id: student.id })}
+                >
+                  Edit Portfolio
+                </button>
+                <button 
+                  className="btn btn-secondary btn-sm" 
+                  style={{ minHeight: '32px', marginLeft: '0.5rem' }}
+                  onClick={() => navigateTo('edit-profile', { id: student.id })}
+                >
+                  Edit Profile Details
+                </button>
               {isAdminPanel && (
                 <button 
                   className="btn btn-danger btn-sm" 
