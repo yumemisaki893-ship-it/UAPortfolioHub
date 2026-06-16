@@ -1241,17 +1241,17 @@ a:hover {
   gap: 1.5rem;
   min-height: 260px;
   background: var(--accent);
-  border: 1px solid var(--accent);
+  border: 2px solid var(--logo-gold);
   color: #ffffff;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .statement-card:hover {
   transform: translateY(-4px);
-  background: #ffffff;
-  border: 1px solid #000000;
-  color: #000000;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  background: var(--accent);
+  border: 2px solid var(--logo-gold);
+  color: #ffffff;
+  box-shadow: 0 12px 30px var(--logo-gold-glow);
 }
 
 .statement-badge {
@@ -1266,11 +1266,6 @@ a:hover {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.statement-card:hover .statement-badge {
-  background: var(--accent);
-  color: #ffffff;
-}
-
 .statement-text {
   font-size: 1.25rem;
   line-height: 1.6;
@@ -1279,10 +1274,6 @@ a:hover {
   letter-spacing: -0.015em;
   animation: fadeIn 0.4s ease-out;
   transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.statement-card:hover .statement-text {
-  color: #000000;
 }
 
 .mission-text {
@@ -1315,10 +1306,6 @@ a:hover {
   line-height: 1.7;
   letter-spacing: normal;
   transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.statement-card:hover .mandates-text {
-  color: rgba(0, 0, 0, 0.8);
 }
 
 /* Custom CTA Button: Red by default, white with black outline/text on hover */
