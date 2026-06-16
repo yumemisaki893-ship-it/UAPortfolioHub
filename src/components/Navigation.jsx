@@ -104,7 +104,8 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
                 Home
               </a>
               <a 
-                href="#"                 onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo('directory'); }}
+                href="#" 
+                onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo(currentUser ? 'directory' : 'auth'); }}
                 className="flyout-link"
               >
                 Browse Portfolios

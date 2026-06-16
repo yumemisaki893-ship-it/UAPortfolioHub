@@ -90,7 +90,7 @@ export const OfficePromotion = ({ navigateTo, currentUser }) => {
             <p className="statement-text" style={{ fontSize: '0.975rem', lineHeight: '1.75', margin: 0 }}>
               As business environments become more decentralized and virtual, the demand for office managers who are proficient in digital tools, cloud databases, and hybrid collaboration continues to grow.
             </p>
-            
+
             <div style={{ padding: '1.25rem', background: 'rgba(255, 255, 255, 0.12)', borderLeft: '4px solid var(--logo-gold)', borderRadius: 'var(--border-radius-md)', backdropFilter: 'blur(5px)' }}>
               <p style={{ fontSize: '0.9rem', fontStyle: 'italic', color: 'rgba(255, 255, 255, 0.9)', margin: 0, lineHeight: '1.5' }}>
                 "Administrators transform organizational complexity into efficient daily workflows."

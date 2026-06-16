@@ -509,37 +509,23 @@ export const deleteStudentProfileAndAccount = async (studentId) => {
   // 1. Delete student doc
   await deleteDoc(doc(db, 'students', studentId));
 
+  // 2. Delete user credential document in Firestore
+  const q = query(collection(db, 'users'), where('studentId', '==', studentId));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach(async (document) => {
+    await deleteDoc(doc(db, 'users', document.id));
+  });
+
+  // 3. Delete active auth user account if they deleted themselves
   const currentUser = auth.currentUser;
-
-  // 2. Delete user credential document directly if it matches the current user's UID
   if (currentUser) {
-    try {
-      await deleteDoc(doc(db, 'users', currentUser.uid));
-    } catch (e) {
-      console.warn("Could not delete own user document directly by UID:", e);
-    }
-  }
-
-  // 3. Try to query matching studentId in users collection (Admin operations)
-  try {
-    const q = query(collection(db, 'users'), where('studentId', '==', studentId));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach(async (document) => {
-      // Avoid deleting twice if it's the current user (already deleted above)
-      if (!currentUser || document.id !== currentUser.uid) {
-        await deleteDoc(doc(db, 'users', document.id));
+    const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+    if (userDoc.exists() && userDoc.data().studentId === studentId) {
+      try {
+        await currentUser.delete();
+      } catch (e) {
+        console.warn("Could not delete Auth account (recent authentication might be required).");
       }
-    });
-  } catch (err) {
-    console.warn("Could not query users collection for deletion (expected for standard users):", err);
-  }
-
-  // 4. Delete Firebase Auth user account if it matches the profile
-  if (currentUser) {
-    try {
-      await currentUser.delete();
-    } catch (e) {
-      console.warn("Could not delete Firebase Auth user account:", e);
     }
   }
 };
@@ -661,85 +647,5 @@ export const resetUserPasswordByEmail = async (email, newPassword) => {
   // Firebase auth standard password recovery flow
   await sendPasswordResetEmail(auth, cleanEmail);
 };
-
-// Courses CRUD Operations
-export const getCourses = async () => {
-  if (!isConfigured) {
-    const data = localStorage.getItem('student_portfolio_courses');
-    if (!data) {
-      const defaultCourses = [
-        { id: 'CS-101', code: 'CS-101', title: 'Introduction to Computer Science', units: 3, department: 'Computer Science', instructor: 'Dr. Evelyn Vance', capacity: 40, feePerUnit: 150 },
-        { id: 'CS-202', code: 'CS-202', title: 'Data Structures & Algorithms', units: 4, department: 'Computer Science', instructor: 'Prof. Robert Chen', capacity: 30, feePerUnit: 150 },
-        { id: 'MATH-301', code: 'MATH-301', title: 'Advanced Calculus', units: 3, department: 'Mathematics', instructor: 'Dr. Chloe Smith', capacity: 35, feePerUnit: 150 },
-        { id: 'BSOAD-111', code: 'BSOAD-111', title: 'Administrative Office Management', units: 3, department: 'Office Administration', instructor: 'Prof. Sarah Jenkins', capacity: 45, feePerUnit: 150 },
-        { id: 'BSOAD-212', code: 'BSOAD-212', title: 'Advanced Document Processing', units: 3, department: 'Office Administration', instructor: 'Dr. James Cole', capacity: 30, feePerUnit: 150 },
-        { id: 'LIT-105', code: 'LIT-105', title: 'World Literature', units: 3, department: 'Humanities', instructor: 'Prof. Maria Santos', capacity: 50, feePerUnit: 150 },
-        { id: 'ENG-201', code: 'ENG-201', title: 'Technical Writing', units: 3, department: 'Humanities', instructor: 'Dr. Arthur Pendelton', capacity: 40, feePerUnit: 150 }
-      ];
-      localStorage.setItem('student_portfolio_courses', JSON.stringify(defaultCourses));
-      return defaultCourses;
-    }
-    return JSON.parse(data);
-  }
-  try {
-    const querySnapshot = await getDocs(collection(db, 'courses'));
-    const list = [];
-    querySnapshot.forEach((doc) => {
-      list.push({ id: doc.id, ...doc.data() });
-    });
-    if (list.length === 0) {
-      const defaultCourses = [
-        { code: 'CS-101', title: 'Introduction to Computer Science', units: 3, department: 'Computer Science', instructor: 'Dr. Evelyn Vance', capacity: 40, feePerUnit: 150 },
-        { code: 'CS-202', title: 'Data Structures & Algorithms', units: 4, department: 'Computer Science', instructor: 'Prof. Robert Chen', capacity: 30, feePerUnit: 150 },
-        { code: 'MATH-301', title: 'Advanced Calculus', units: 3, department: 'Mathematics', instructor: 'Dr. Chloe Smith', capacity: 35, feePerUnit: 150 },
-        { code: 'BSOAD-111', title: 'Administrative Office Management', units: 3, department: 'Office Administration', instructor: 'Prof. Sarah Jenkins', capacity: 45, feePerUnit: 150 },
-        { code: 'BSOAD-212', title: 'Advanced Document Processing', units: 3, department: 'Office Administration', instructor: 'Dr. James Cole', capacity: 30, feePerUnit: 150 },
-        { code: 'LIT-105', title: 'World Literature', units: 3, department: 'Humanities', instructor: 'Prof. Maria Santos', capacity: 50, feePerUnit: 150 },
-        { code: 'ENG-201', title: 'Technical Writing', units: 3, department: 'Humanities', instructor: 'Dr. Arthur Pendelton', capacity: 40, feePerUnit: 150 }
-      ];
-      for (const course of defaultCourses) {
-        await setDoc(doc(db, 'courses', course.code), course);
-      }
-      return defaultCourses.map(c => ({ id: c.code, ...c }));
-    }
-    return list;
-  } catch (e) {
-    console.error("Error loading courses: ", e);
-    return [];
-  }
-};
-
-export const saveCourse = async (course) => {
-  const courseId = course.code || course.id;
-  if (!isConfigured) {
-    const courses = await getCourses();
-    const index = courses.findIndex(c => c.id === courseId || c.code === courseId);
-    const saved = { ...course, id: courseId, code: courseId };
-    if (index === -1) {
-      courses.push(saved);
-    } else {
-      courses[index] = { ...courses[index], ...saved };
-    }
-    localStorage.setItem('student_portfolio_courses', JSON.stringify(courses));
-    return saved;
-  }
-  const docRef = doc(db, 'courses', courseId);
-  const data = { ...course, code: courseId };
-  await setDoc(docRef, data, { merge: true });
-  return { id: courseId, ...data };
-};
-
-export const deleteCourse = async (courseId) => {
-  if (!isConfigured) {
-    const courses = await getCourses();
-    const filtered = courses.filter(c => c.id !== courseId && c.code !== courseId);
-    localStorage.setItem('student_portfolio_courses', JSON.stringify(filtered));
-    return true;
-  }
-  const docRef = doc(db, 'courses', courseId);
-  await deleteDoc(docRef);
-  return true;
-};
-
 
 

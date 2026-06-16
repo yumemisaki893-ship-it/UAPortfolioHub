@@ -12,13 +12,13 @@
   --text-secondary: #666666;
   --text-muted: #888888;
   
-  --primary: #d5001c; /* Red from logo lamp/text */
-  --primary-hover: #a30012;
-  --primary-glow: rgba(213, 0, 28, 0.08);
+  --primary: #0e1b84; /* Navy blue from logo ring */
+  --primary-hover: #07115c;
+  --primary-glow: rgba(14, 27, 132, 0.05);
   
-  --accent: #0e1b84; /* Navy blue from logo ring */
-  --accent-hover: #07115c;
-  --accent-glow: rgba(14, 27, 132, 0.05);
+  --accent: #d5001c; /* Red from logo lamp/text */
+  --accent-hover: #a30012;
+  --accent-glow: rgba(213, 0, 28, 0.08);
   
   --logo-gold: #f4b400; /* Gold/yellow from logo triangle */
   --logo-gold-glow: rgba(244, 180, 0, 0.1);
@@ -56,13 +56,13 @@
   --text-secondary: #888888;
   --text-muted: #555555;
   
-  --primary: #ff4d64; /* Red for dark theme readability */
-  --primary-hover: #ff7084;
-  --primary-glow: rgba(255, 77, 100, 0.15);
+  --primary: #5c70ff; /* Royal blue for dark theme readability */
+  --primary-hover: #7a8cff;
+  --primary-glow: rgba(92, 112, 255, 0.15);
   
-  --accent: #5c70ff; /* Royal blue for dark theme readability */
-  --accent-hover: #7a8cff;
-  --accent-glow: rgba(92, 112, 255, 0.15);
+  --accent: #ff4d64; /* Red for dark theme readability */
+  --accent-hover: #ff7084;
+  --accent-glow: rgba(255, 77, 100, 0.15);
   
   --logo-gold: #ffc800;
   --logo-gold-glow: rgba(255, 200, 0, 0.15);
@@ -1174,9 +1174,9 @@ a:hover {
 
 .hero-title-gradient {
   background: linear-gradient(135deg, 
-    var(--primary) 0%, 
+    var(--accent) 0%, 
     var(--logo-gold) 50%, 
-    var(--primary) 100%
+    var(--accent) 100%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
@@ -1187,9 +1187,9 @@ a:hover {
 
 [data-theme="dark"] .hero-title-gradient {
   background: linear-gradient(135deg, 
-    var(--primary) 0%, 
+    var(--accent) 0%, 
     var(--logo-gold) 50%, 
-    var(--primary) 100%
+    var(--accent) 100%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
@@ -1751,21 +1751,13 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
   bottom: 0;
   width: 320px;
   max-width: 85vw;
-  background: rgba(18, 18, 18, 0.85);
-  backdrop-filter: blur(25px) saturate(180%);
-  -webkit-backdrop-filter: blur(25px) saturate(180%);
-  border-left: 2px solid var(--logo-gold);
-  box-shadow: -10px 0 35px rgba(0, 0, 0, 0.3);
+  background: var(--bg-card);
+  border-left: 1px solid var(--border-color);
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   transform: translateX(100%);
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-[data-theme="light"] .flyout-menu {
-  background: rgba(255, 255, 255, 0.85);
-  border-left: 2px solid var(--primary);
-  box-shadow: -10px 0 35px rgba(0, 0, 0, 0.1);
 }
 
 .flyout-overlay.open .flyout-menu {
@@ -1808,50 +1800,34 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
   gap: 2rem;
   overflow-y: auto;
 }
+
 .flyout-nav-links {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1.25rem;
 }
 
 .flyout-link {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
   color: var(--text-primary);
   text-decoration: none;
-  font-size: 0.95rem;
-  font-weight: 500;
-  border-radius: var(--border-radius-md);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.flyout-link svg {
-  opacity: 0.7;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  left: 0;
 }
 
 .flyout-link:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--logo-gold) !important;
-  transform: translateX(4px);
-}
-
-[data-theme="light"] .flyout-link:hover {
-  background: rgba(0, 0, 0, 0.04);
-  color: var(--primary) !important;
-}
-
-.flyout-link:hover svg {
-  opacity: 1;
-  transform: scale(1.1);
+  color: var(--accent);
+  left: 6px;
 }
 
 .flyout-divider {
-  border: 0;
+  border: none;
   border-top: 1px solid var(--border-color);
-  margin: 1.5rem 0;
+  margin: 0;
 }
 
 .flyout-section {
@@ -3207,159 +3183,4 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* Registrar Specific Styles */
-.badge-success {
-  background: var(--success-bg) !important;
-  color: var(--success) !important;
-  border-color: var(--success-border) !important;
-}
-.badge-warning {
-  background: var(--logo-gold-glow) !important;
-  color: var(--logo-gold) !important;
-  border-color: rgba(244, 180, 0, 0.25) !important;
-}
-.badge-danger {
-  background: var(--danger-bg) !important;
-  color: var(--danger) !important;
-  border-color: var(--danger-border) !important;
-}
-.badge-secondary {
-  background: var(--bg-secondary) !important;
-  color: var(--text-secondary) !important;
-  border-color: var(--border-color) !important;
-}
-
-/* Course list item highlight */
-.course-list-item-block {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.course-list-item-block.active-course {
-  border-color: var(--primary) !important;
-  box-shadow: 0 0 15px var(--primary-glow);
-}
-
-/* Admin table styles */
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.admin-table th {
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-}
-.admin-table tr {
-  transition: background-color 0.2s ease;
-}
-.admin-table tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.02);
-}
-[data-theme="light"] .admin-table tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.02);
-}
-
-
-/* --- UST Style Layout Overhaul --- */
-
-.top-bar {
-  background: var(--primary);
-  color: #fff;
-}
-
-.top-bar a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.top-bar a:hover {
-  color: var(--logo-gold);
-}
-
-.ust-navbar {
-  padding: 0.5rem 0;
-}
-
-.desktop-menu .nav-link {
-  font-weight: 600;
-  color: var(--text-primary);
-  text-decoration: none;
-  text-transform: uppercase;
-  font-size: 0.85rem;
-  letter-spacing: 0.5px;
-}
-
-.desktop-menu .nav-link:hover {
-  color: var(--logo-gold);
-}
-
-@media (max-width: 900px) {
-  .desktop-menu .nav-link {
-    display: none;
-  }
-  .mobile-only-links {
-    display: flex !important;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color);
-  }
-}
-
-.ust-footer {
-  background: var(--bg-secondary);
-  border-top: 1px solid var(--border-color);
-  padding: 3rem 0 1rem;
-  margin-top: auto;
-}
-
-.footer-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 2rem;
-  margin-bottom: 2rem;
-}
-
-@media (max-width: 768px) {
-  .footer-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.footer-col h4 {
-  margin-bottom: 1rem;
-  color: var(--primary);
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 0.9rem;
-}
-
-.footer-col p {
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-}
-
-.footer-col a {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-
-.footer-col a:hover {
-  color: var(--primary);
-  text-decoration: underline;
-}
-
-.footer-bottom {
-  text-align: center;
-  border-top: 1px solid var(--border-color);
-  padding-top: 1.5rem;
-  font-size: 0.85rem;
-  color: var(--text-muted);
 }

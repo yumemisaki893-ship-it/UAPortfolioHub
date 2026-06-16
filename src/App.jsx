@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Navigation from './components/Navigation';
-import Auth from './pages/Auth';
-import Home from './pages/Home';
-import { AccountSettings } from './pages/AccountSettings';
-import ProfileDetail from './pages/ProfileDetail';
-import { RegistrarPortal } from './pages/RegistrarPortal';
 import Directory from './pages/Directory';
+import ProfileDetail from './pages/ProfileDetail';
+import Auth from './pages/Auth';
+import { AccountSettings } from './pages/AccountSettings';
+import Home from './pages/Home';
+import { OfficeAdmin } from './pages/OfficeAdmin';
+import { OfficePromotion } from './pages/OfficePromotion';
 import { getCurrentSession, getSessionData, getStudentById } from './utils/storage';
 import { auth, isConfigured } from './utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -15,7 +16,7 @@ function App() {
   const [theme, setTheme] = useState('dark');
   
   // Custom Navigation Router State
-  // Format: { page: 'home' | 'auth' | 'registrar-portal' | 'profile-detail' | 'edit-profile', params: { id?: string } }
+  // Format: { page: 'home' | 'directory' | 'profile-detail' | 'auth' | 'edit-profile', params: { id?: string } }
   const [route, setRoute] = useState({ page: 'home', params: {} });
   
   // Session Authentication State
@@ -117,8 +118,8 @@ function App() {
     switch (route.page) {
       case 'home':
         return <Home navigateTo={navigateTo} currentUser={currentUser} />;
-      case 'registrar-portal':
-        return <RegistrarPortal navigateTo={navigateTo} currentUser={currentUser} />;
+      case 'directory':
+        return <Directory navigateTo={navigateTo} currentUser={currentUser} params={route.params} />;
       case 'profile-detail':
         return (
           <ProfileDetail 
@@ -145,8 +146,30 @@ function App() {
             initialTab="profile"
           />
         );
-      case 'directory':
-        return <Directory navigateTo={navigateTo} currentUser={currentUser} />;
+      case 'security-settings':
+        return (
+          <AccountSettings 
+            currentUser={currentUser} 
+            params={route.params}
+            navigateTo={navigateTo}
+            onProfileUpdate={handleProfileUpdate}
+            initialTab="security"
+          />
+        );
+      case 'office-admin':
+        return (
+          <OfficeAdmin 
+            currentUser={currentUser} 
+            navigateTo={navigateTo} 
+          />
+        );
+      case 'office-promotion':
+        return (
+          <OfficePromotion 
+            currentUser={currentUser} 
+            navigateTo={navigateTo} 
+          />
+        );
       default:
         return <Home navigateTo={navigateTo} currentUser={currentUser} />;
     }
@@ -163,6 +186,20 @@ function App() {
         onLogoutSuccess={handleLogoutSuccess}
       />
 
+      {route.page === 'profile-detail' && (
+        <button 
+          className="btn-back-directory" 
+          onClick={() => navigateTo('directory')}
+          aria-label="Browse Portfolios"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+          Browse Portfolios
+        </button>
+      )}
+
       {/* Main Page Area */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative' }}>
         <div key={route.page} className="page-transition-wrapper">
@@ -171,35 +208,9 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="footer ust-footer">
-        <div className="container footer-grid">
-          <div className="footer-col">
-            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-              <img src="/ua-logo.png" alt="Logo" style={{ width: '30px', height: '30px' }} />
-              University of Antique
-            </h3>
-            <p>Sibalom, Antique, 5713</p>
-            <p>Philippines</p>
-            <p>Phone: (036) 543-8571</p>
-            <p>Email: info@antiquespride.edu.ph</p>
-          </div>
-          <div className="footer-col">
-            <h4>Quick Links</h4>
-            <a href="#" onClick={(e) => { e.preventDefault(); navigateTo('home'); }}>About UA</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); navigateTo('programs-offered'); }}>Academics</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); navigateTo('directory'); }}>Admissions</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); navigateTo('home'); }}>Research & Extension</a>
-          </div>
-          <div className="footer-col">
-            <h4>Resources</h4>
-            <a href="#" onClick={(e) => { e.preventDefault(); navigateTo('home'); }}>University Library</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); navigateTo('home'); }}>Alumni Relations</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); navigateTo('home'); }}>Careers at UA</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); navigateTo('home'); }}>Campus Map</a>
-          </div>
-        </div>
-        <div className="container footer-bottom">
-          <p>© {new Date().getFullYear()} University of Antique. All rights reserved.</p>
+      <footer className="footer">
+        <div className="container">
+          <p>© {new Date().getFullYear()} PortfolioHub. Designed for student projects and connections.</p>
         </div>
       </footer>
     </>
