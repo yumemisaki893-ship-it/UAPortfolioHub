@@ -87,7 +87,15 @@ export const StudentCard = ({ student, currentUser, onClick, onDelete }) => {
                 </span>
               )}
             </div>
-            <div className="card-major">{student.major}</div>
+            <div className="card-major" style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+              <span>{student.major}</span>
+              {student.campus && (
+                <>
+                  <span style={{ color: 'var(--text-muted)' }}>•</span>
+                  <span style={{ fontSize: '0.725rem', fontWeight: 500, color: 'var(--text-secondary)' }}>{student.campus.replace(' Campus', '').replace(' (Main Campus)', '')}</span>
+                </>
+              )}
+            </div>
           </div>
         </div>
         

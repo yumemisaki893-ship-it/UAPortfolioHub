@@ -30,6 +30,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
   const [isEditingHeader, setIsEditingHeader] = useState(false);
   const [headerName, setHeaderName] = useState(initialStudent?.name || '');
   const [headerMajor, setHeaderMajor] = useState(initialStudent?.major || '');
+  const [headerCampus, setHeaderCampus] = useState(initialStudent?.campus || 'Sibalom (Main Campus)');
   const [headerBio, setHeaderBio] = useState(initialStudent?.shortBio || '');
   const [headerEmail, setHeaderEmail] = useState(initialStudent?.email || '');
   const [headerPhone, setHeaderPhone] = useState(initialStudent?.contactNumber || '');
@@ -95,6 +96,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
     if (student) {
       setHeaderName(student.name || '');
       setHeaderMajor(student.major || '');
+      setHeaderCampus(student.campus || 'Sibalom (Main Campus)');
       setHeaderBio(student.shortBio || '');
       setHeaderEmail(student.email || '');
       setHeaderPhone(student.contactNumber || '');
@@ -662,7 +664,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                   width: '100%' 
                 }}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
                   <div className="form-group" style={{ marginBottom: 0 }}>
                     <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.25rem', display: 'block' }}>Full Name</label>
                     <input className="form-control" type="text" value={headerName} onChange={(e) => setHeaderName(e.target.value)} style={{ padding: '0.4rem 0.75rem', fontSize: '0.875rem', borderRadius: '8px' }} />
@@ -670,6 +672,21 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                   <div className="form-group" style={{ marginBottom: 0 }}>
                     <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.25rem', display: 'block' }}>Major / Department</label>
                     <input className="form-control" type="text" value={headerMajor} onChange={(e) => setHeaderMajor(e.target.value)} style={{ padding: '0.4rem 0.75rem', fontSize: '0.875rem', borderRadius: '8px' }} />
+                  </div>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.25rem', display: 'block' }}>Campus</label>
+                    <select 
+                      className="form-control" 
+                      value={headerCampus} 
+                      onChange={(e) => setHeaderCampus(e.target.value)} 
+                      style={{ padding: '0.4rem 0.75rem', fontSize: '0.875rem', borderRadius: '8px', minHeight: '38px' }}
+                    >
+                      <option value="Sibalom (Main Campus)">Sibalom (Main Campus)</option>
+                      <option value="Hamtic Campus">Hamtic Campus</option>
+                      <option value="Tibiao Campus">Tibiao Campus</option>
+                      <option value="Caluya Campus">Caluya Campus</option>
+                      <option value="Libertad Campus">Libertad Campus</option>
+                    </select>
                   </div>
                 </div>
                 <div className="form-group" style={{ marginBottom: 0 }}>
@@ -722,6 +739,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                       const updated = await updateStudentProfile(student.id, {
                         name: headerName,
                         major: headerMajor,
+                        campus: headerCampus,
                         shortBio: headerBio,
                         email: headerEmail,
                         contactNumber: headerPhone,
@@ -758,8 +776,8 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                   )}
                 </h1>
                 
-                {/* Sleek Major/Department Gold Badge */}
-                <div style={{ marginBottom: '0.75rem' }}>
+                {/* Sleek Major/Department & Campus Badges */}
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
                   <span 
                     className="profile-major-badge"
                     style={{
@@ -782,6 +800,29 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                       <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
                     </svg>
                     {student.major}
+                  </span>
+
+                  <span 
+                    className="profile-campus-badge"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '0.35rem 0.85rem',
+                      borderRadius: '20px',
+                      background: 'rgba(14, 27, 132, 0.1)',
+                      border: '1px solid rgba(14, 27, 132, 0.3)',
+                      color: 'var(--primary, #0e1b84)',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      letterSpacing: '0.01em'
+                    }}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '12px', height: '12px' }}>
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    {student.campus || 'Sibalom (Main Campus)'}
                   </span>
                 </div>
 
@@ -994,6 +1035,15 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                       <button className="btn btn-primary btn-sm" onClick={async () => {
                         try {
                           const updated = await updateStudentProfile(student.id, {
+                            name: headerName,
+                            major: headerMajor,
+                            campus: headerCampus,
+                            shortBio: headerBio,
+                            email: headerEmail,
+                            contactNumber: headerPhone,
+                            github: headerGithub,
+                            linkedin: headerLinkedin,
+                            website: headerWebsite,
                             education: {
                               elementary: { school: eduElemSchool, years: eduElemYears },
                               juniorHigh: { school: eduJhsSchool, years: eduJhsYears },

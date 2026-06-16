@@ -6,6 +6,7 @@ export const Directory = ({ navigateTo, currentUser, params }) => {
   const [students, setStudents] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMajor, setSelectedMajor] = useState(params?.major || 'All');
+  const [selectedCampus, setSelectedCampus] = useState(params?.campus || 'All');
   const [sortBy, setSortBy] = useState('name-asc');
 
   // Load students on mount
@@ -21,12 +22,17 @@ export const Directory = ({ navigateTo, currentUser, params }) => {
     loadData();
   }, [currentUser]);
 
-  // Sync selectedMajor if navigation params change
+  // Sync selectedMajor and selectedCampus if navigation params change
   useEffect(() => {
     if (params?.major) {
       setSelectedMajor(params.major);
     } else {
       setSelectedMajor('All');
+    }
+    if (params?.campus) {
+      setSelectedCampus(params.campus);
+    } else {
+      setSelectedCampus('All');
     }
   }, [params]);
 
@@ -54,6 +60,11 @@ export const Directory = ({ navigateTo, currentUser, params }) => {
     new Set(students.map(s => s.major).filter(Boolean))
   );
 
+  // Extract unique campuses for filter dropdown
+  const uniqueCampuses = Array.from(
+    new Set(students.map(s => s.campus || 'Sibalom (Main Campus)').filter(Boolean))
+  );
+
   // Filter and Search logic
   const filteredStudents = students.filter(student => {
     const matchesSearch = 
@@ -62,9 +73,12 @@ export const Directory = ({ navigateTo, currentUser, params }) => {
       student.skills?.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()));
 
     const matchesMajor = selectedMajor === 'All' || student.major === selectedMajor;
+    const matchesCampus = selectedCampus === 'All' || 
+      student.campus === selectedCampus || 
+      (!student.campus && selectedCampus === 'Sibalom (Main Campus)');
     const isVisible = student.isPublic !== false || !!currentUser?.isAdmin;
 
-    return matchesSearch && matchesMajor && isVisible;
+    return matchesSearch && matchesMajor && matchesCampus && isVisible;
   });
 
   // Sort logic
@@ -170,6 +184,25 @@ export const Directory = ({ navigateTo, currentUser, params }) => {
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
             </span>
+          </div>
+
+          {/* Campus Filter */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <label htmlFor="campus-select" style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
+              Campus:
+            </label>
+            <select
+              id="campus-select"
+              className="form-control"
+              value={selectedCampus}
+              onChange={(e) => setSelectedCampus(e.target.value)}
+              style={{ width: '180px', minHeight: '44px', padding: '0.5rem 1rem' }}
+            >
+              <option value="All">All Campuses</option>
+              {uniqueCampuses.map((campus, index) => (
+                <option key={index} value={campus}>{campus}</option>
+              ))}
+            </select>
           </div>
 
           {/* Major Filter */}

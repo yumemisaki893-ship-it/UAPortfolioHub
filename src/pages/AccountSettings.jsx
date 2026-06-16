@@ -28,6 +28,7 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
   // Profile Form states
   const [name, setName] = useState(initialProfile?.name || '');
   const [major, setMajor] = useState(initialProfile?.major || '');
+  const [campus, setCampus] = useState(initialProfile?.campus || 'Sibalom (Main Campus)');
   const [avatarId, setAvatarId] = useState(initialProfile?.avatarId || 'avatar-1');
   const [coverPhotoUrl, setCoverPhotoUrl] = useState(initialProfile?.coverPhotoUrl || '');
   const [shortBio, setShortBio] = useState(initialProfile?.shortBio || '');
@@ -140,6 +141,7 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
           id: targetStudentId,
           name: formattedName,
           major: "Undeclared",
+          campus: "Sibalom (Main Campus)",
           avatarId: `avatar-${Math.floor(Math.random() * 8) + 1}`,
           shortBio: "Welcome to my new student portfolio! Click edit to fill in details.",
           aboutMe: "I haven't written my bio yet. Stay tuned!",
@@ -167,6 +169,7 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
         if (isStudentSwitched) {
           setName(profile.name || '');
           setMajor(profile.major || '');
+          setCampus(profile.campus || 'Sibalom (Main Campus)');
           setAvatarId(profile.avatarId || 'avatar-1');
           setCoverPhotoUrl(profile.coverPhotoUrl || '');
           setShortBio(profile.shortBio || '');
@@ -416,6 +419,7 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
         const updatedProfile = await updateStudentProfile(student.id, {
           name,
           major,
+          campus,
           avatarId,
           coverPhotoUrl,
           shortBio,
@@ -460,6 +464,7 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
     isInitialized,
     name,
     major,
+    campus,
     avatarId,
     coverPhotoUrl,
     shortBio,
@@ -537,6 +542,7 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
       const updatedProfile = await updateStudentProfile(student.id, {
         name,
         major,
+        campus,
         avatarId,
         coverPhotoUrl,
         shortBio,
@@ -894,6 +900,24 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
                   </datalist>
                 </div>
 
+                <div className="form-group">
+                  <label className="form-label" htmlFor="edit-campus">University Campus</label>
+                  <select
+                    id="edit-campus"
+                    className="form-control"
+                    value={campus}
+                    onChange={(e) => setCampus(e.target.value)}
+                    required
+                    style={{ minHeight: '44px' }}
+                  >
+                    <option value="Sibalom (Main Campus)">Sibalom (Main Campus)</option>
+                    <option value="Hamtic Campus">Hamtic Campus</option>
+                    <option value="Tibiao Campus">Tibiao Campus</option>
+                    <option value="Caluya Campus">Caluya Campus</option>
+                    <option value="Libertad Campus">Libertad Campus</option>
+                  </select>
+                </div>
+ 
                 <div className="form-group">
                   <label className="form-label" htmlFor="edit-shortbio">Short Professional Tagline / Bio</label>
                   <input

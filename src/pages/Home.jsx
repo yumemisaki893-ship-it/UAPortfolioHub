@@ -109,14 +109,14 @@ const campusesData = [
     color: "#10b981"
   },
   {
-    id: 'pandan',
-    name: "Pandan Extension Campus",
-    location: "Pandan, Antique",
-    specialization: "Business Administration, Hospitality Management, Teacher Education",
-    description: "Strategically located in the ecotourism zone of northern Antique, focusing on hospitality and sustainable business leadership.",
-    established: "2006",
-    x: 65,
-    y: 30,
+    id: 'libertad',
+    name: "Libertad Campus",
+    location: "Libertad, Antique",
+    specialization: "Information Technology, Hospitality Management, Technology & Vocational Education",
+    description: "Serving the northernmost tip of Antique, providing quality education in technology and hospitality management to empower local communities.",
+    established: "2009",
+    x: 62,
+    y: 22,
     color: "#ff33b5"
   }
 ];
@@ -328,28 +328,47 @@ const Home = ({ navigateTo, currentUser }) => {
                 <div className="map-badge">Interactive Map of Antique</div>
                 <div className="map-wrapper">
                   <svg viewBox="0 0 120 400" className="campus-svg-map">
-                    {/* Coastline shadow/glow */}
+                    {/* Faint coordinate grid lines */}
+                    <line x1="0" y1="100" x2="120" y2="100" stroke="var(--border-color)" strokeWidth="0.5" strokeDasharray="3 3" opacity="0.4" />
+                    <line x1="0" y1="200" x2="120" y2="200" stroke="var(--border-color)" strokeWidth="0.5" strokeDasharray="3 3" opacity="0.4" />
+                    <line x1="0" y1="300" x2="120" y2="300" stroke="var(--border-color)" strokeWidth="0.5" strokeDasharray="3 3" opacity="0.4" />
+                    <line x1="40" y1="0" x2="40" y2="400" stroke="var(--border-color)" strokeWidth="0.5" strokeDasharray="3 3" opacity="0.4" />
+                    <line x1="80" y1="0" x2="80" y2="400" stroke="var(--border-color)" strokeWidth="0.5" strokeDasharray="3 3" opacity="0.4" />
+                    
+                    {/* Compass Rose icon */}
+                    <g transform="translate(100, 365)" opacity="0.35" stroke="var(--text-secondary)" strokeWidth="1.2" fill="none">
+                      <circle cx="0" cy="0" r="10" strokeDasharray="2 2" />
+                      <line x1="-13" y1="0" x2="13" y2="0" />
+                      <line x1="0" y1="-13" x2="0" y2="13" />
+                      <polygon points="0,-10 2.5,-2.5 0,0 -2.5,-2.5" fill="var(--text-secondary)" />
+                      <polygon points="0,10 2.5,2.5 0,0 -2.5,2.5" fill="var(--text-secondary)" />
+                      <polygon points="10,0 2.5,2.5 0,0 2.5,-2.5" fill="var(--text-secondary)" />
+                      <polygon points="-10,0 -2.5,2.5 0,0 -2.5,-2.5" fill="var(--text-secondary)" />
+                      <text x="-3.5" y="-14" fontSize="7" fontWeight="800" fill="var(--text-secondary)" stroke="none" fontFamily="var(--font-family-heading)">N</text>
+                    </g>
+                    
+                    {/* Province Landmass Polygon (filled) */}
                     <path 
-                      d="M 65 30 Q 75 60, 68 90 T 50 160 T 55 240 T 48 300 T 45 340 T 35 380" 
-                      fill="none" 
+                      d="M 60 20 Q 75 60, 68 90 T 50 160 T 55 240 T 48 300 T 45 340 T 35 380 L 42 380 L 52 350 L 58 310 L 65 290 L 70 240 L 68 200 L 64 160 L 70 120 L 80 90 L 77 70 L 73 50 Z" 
+                      fill="var(--primary-glow)" 
                       stroke="var(--border-color)" 
-                      strokeWidth="6" 
-                      strokeLinecap="round" 
-                      opacity="0.3"
+                      strokeWidth="1" 
+                      strokeLinejoin="round"
                     />
-                    {/* Actual Coastline path */}
+
+                    {/* Actual Coastline path (strong stroke) */}
                     <path 
-                      d="M 65 30 Q 75 60, 68 90 T 50 160 T 55 240 T 48 300 T 45 340 T 35 380" 
+                      d="M 60 20 Q 75 60, 68 90 T 50 160 T 55 240 T 48 300 T 45 340 T 35 380" 
                       fill="none" 
                       stroke="var(--primary)" 
-                      strokeWidth="2" 
+                      strokeWidth="2.5" 
                       strokeLinecap="round" 
                     />
                     
                     {/* Caluya Island Group representation */}
-                    <circle cx="20" cy="40" r="12" fill="none" stroke="var(--border-color)" strokeWidth="1" strokeDasharray="2 2" />
-                    <path d="M 16 38 Q 24 35, 22 45 Z" fill="rgba(14, 27, 132, 0.05)" stroke="var(--primary)" strokeWidth="1.5" />
-                    <path d="M 11 58 Q 17 55, 15 62 Z" fill="rgba(14, 27, 132, 0.05)" stroke="var(--primary)" strokeWidth="1.5" />
+                    <circle cx="20" cy="40" r="12" fill="none" stroke="var(--border-color)" strokeWidth="0.75" strokeDasharray="2 2" opacity="0.5" />
+                    <path d="M 16 38 Q 24 35, 22 45 Z" fill="var(--primary-glow)" stroke="var(--primary)" strokeWidth="1.5" />
+                    <path d="M 11 58 Q 17 55, 15 62 Z" fill="var(--primary-glow)" stroke="var(--primary)" strokeWidth="1.5" />
 
                     {/* Campus Markers */}
                     {campusesData.map((campus) => {
@@ -435,7 +454,7 @@ const Home = ({ navigateTo, currentUser }) => {
                   <div className="campus-card-actions">
                     <button 
                       className="btn btn-primary btn-sm"
-                      onClick={() => navigateTo('directory', { major: 'All' })}
+                      onClick={() => navigateTo('directory', { campus: selectedCampus.name })}
                       style={{ width: '100%', minHeight: '38px', borderRadius: 'var(--border-radius-md)' }}
                     >
                       Browse Student Portfolios
