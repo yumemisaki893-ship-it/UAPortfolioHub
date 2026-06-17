@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getStudents } from '../utils/storage';
-import campusesData from '../data/campuses.json';
 
 const goalsData = [
   {
@@ -67,7 +66,6 @@ const goalsData = [
 const Home = ({ navigateTo, currentUser, currentTheme }) => {
   const [activeLang, setActiveLang] = useState('en'); // 'en' | 'fil' | 'kr'
   const [activeGoal, setActiveGoal] = useState(null);
-  const [selectedCampus, setSelectedCampus] = useState(campusesData[0]);
   const [time, setTime] = useState('');
   const [dateStr, setDateStr] = useState('');
   const [registeredCount, setRegisteredCount] = useState(0);
@@ -258,79 +256,7 @@ const Home = ({ navigateTo, currentUser, currentTheme }) => {
             </div>
           </div>
 
-          {/* Campuses Map Section */}
-          <div className="campuses-section animate-slide-up-delay-2">
-            <h2 className="section-title">Campuses of University of Antique</h2>
-            <p className="section-subtitle">
-              UA serves the province of Antique through its strategically located campuses. Select a campus to explore details.
-            </p>
-            
-            <div className="campuses-grid">
-              {/* Detail Column */}
-              <div className="campus-detail-column">
-                <div className="campus-list">
-                  {campusesData.map((campus) => {
-                    const isSelected = selectedCampus.id === campus.id;
-                    return (
-                      <button 
-                        key={campus.id}
-                        className={`campus-list-item glass ${isSelected ? 'selected' : ''}`}
-                        onMouseEnter={() => setSelectedCampus(campus)}
-                        onClick={() => setSelectedCampus(campus)}
-                      >
-                        <span className="campus-dot" style={{ backgroundColor: campus.color }}></span>
-                        <div className="campus-item-meta">
-                          <span className="campus-item-name">{campus.name}</span>
-                          <span className="campus-item-loc">{campus.location}</span>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
 
-                {/* Glassmorphic Info Card */}
-                <div className="campus-info-card glass animate-fade-in" key={selectedCampus.id}>
-                  <div className="campus-card-header">
-                    <div className="campus-header-badge" style={{ backgroundColor: `${selectedCampus.color}15`, color: selectedCampus.color, border: `1px solid ${selectedCampus.color}30` }}>
-                      Est. {selectedCampus.established}
-                    </div>
-                    <h3>{selectedCampus.name}</h3>
-                    <div className="campus-card-loc">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '14px', height: '14px' }}>
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                        <circle cx="12" cy="10" r="3" />
-                      </svg>
-                      {selectedCampus.location}
-                    </div>
-                  </div>
-
-                  <div className="campus-card-body">
-                    <img src={selectedCampus.photo} alt={`${selectedCampus.name} photo`} className="campus-info-img" />
-                    <p className="campus-desc">{selectedCampus.description}</p>
-                    <div className="campus-contact">
-                      <p><strong>Address:</strong> {selectedCampus.address}</p>
-                      <p><strong>Phone:</strong> {selectedCampus.phone}</p>
-                      <p><strong>Email:</strong> {selectedCampus.email}</p>
-                    </div>
-                    <div className="campus-specializations">
-                      <div className="spec-label">Key Specializations</div>
-                      <p className="spec-text">{selectedCampus.specialization}</p>
-                    </div>
-                  </div>
-
-                  <div className="campus-card-actions">
-                    <button 
-                      className="btn btn-primary btn-sm"
-                      onClick={() => navigateTo('directory', { campus: selectedCampus.name })}
-                      style={{ width: '100%', minHeight: '38px', borderRadius: 'var(--border-radius-md)' }}
-                    >
-                      Browse Student Portfolios
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* Goals & Objectives Accordion */}
           <div className="goals-section">
