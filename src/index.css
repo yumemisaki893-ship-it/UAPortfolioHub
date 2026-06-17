@@ -44,10 +44,10 @@
   /* Transitions */
   --transition-fast: 0.12s ease;
   
-  /* Layout - Slightly Sharp Edges (MacOS Glass style) */
-  --border-radius-sm: 4px;
-  --border-radius-md: 6px;
-  --border-radius-lg: 8px;
+  /* Layout - Sharp Edges */
+  --border-radius-sm: 0px;
+  --border-radius-md: 0px;
+  --border-radius-lg: 0px;
 }
 
 /* Minimalist Dark Theme Overrides */
@@ -152,7 +152,7 @@ input, textarea, select,
   }
   ::-webkit-scrollbar-thumb {
     background: light-dark(#cccccc, #333333);
-    border-radius: 4px;
+    border-radius: 0px;
   }
   ::-webkit-scrollbar-thumb:hover {
     background: light-dark(#999999, #555555);
@@ -212,14 +212,14 @@ a:hover {
   color: var(--text-secondary);
 }
 
-/* MacOS Glass Container Utility */
+/* Minimalist Container Utility */
 .glass {
-  backdrop-filter: blur(30px) saturate(180%);
-  -webkit-backdrop-filter: blur(30px) saturate(180%);
-  background: rgba(255, 255, 255, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 
-              inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05), 
+              inset 0 1px 1px rgba(255, 255, 255, 0.5);
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
               box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
               border-color 0.3s ease, 
@@ -227,10 +227,10 @@ a:hover {
 }
 
 [data-theme="dark"] .glass {
-  background: rgba(20, 20, 20, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 
-              inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  background: rgba(10, 10, 10, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), 
+              inset 0 1px 1px rgba(255, 255, 255, 0.02);
 }
 
 /* Buttons (Flat, High Contrast) */
@@ -252,16 +252,17 @@ a:hover {
 }
 
 .btn-primary {
-  background: var(--primary);
-  color: var(--bg-primary);
-  border-color: var(--primary);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  box-shadow: none;
 }
 
 .btn-primary:hover {
-  background: var(--text-secondary);
-  border-color: var(--text-secondary);
-  transform: translateY(-1px);
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--logo-gold);
+  transform: translateY(-1.5px);
   box-shadow: 0 4px 12px var(--primary-glow);
 }
 
@@ -271,14 +272,15 @@ a:hover {
 
 .btn-secondary {
   background: transparent;
-  border-color: var(--blue-button);
+  border: 2px solid var(--blue-button);
   color: var(--blue-button);
 }
 
 .btn-secondary:hover {
   background: var(--blue-button);
-  border-color: var(--blue-button);
+  border-color: var(--primary);
   color: #ffffff;
+  transform: translateY(-1.5px);
   box-shadow: 0 4px 12px var(--blue-button-glow);
 }
 
@@ -1326,34 +1328,36 @@ a:hover {
 }
 
 .btn-lg-premium.btn-primary {
-  background: var(--primary);
-  color: var(--bg-primary);
+  background: transparent;
+  color: var(--primary);
+  border: 2.5px solid var(--primary);
 }
 
 .btn-lg-premium.btn-primary:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 8px 20px var(--accent-glow);
-  transform: translateY(-2px);
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--logo-gold);
+  box-shadow: 0 8px 20px var(--primary-glow);
+  transform: translateY(-2.5px);
 }
 
 .btn-lg-premium.btn-secondary {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-color: var(--border-color);
-  color: var(--text-primary);
+  background: transparent;
+  border: 2.5px solid var(--logo-gold);
+  color: var(--logo-gold);
 }
 
 [data-theme="dark"] .btn-lg-premium.btn-secondary {
-  background: rgba(18, 18, 18, 0.65);
-  border-color: var(--border-color);
+  background: transparent;
+  border-color: var(--logo-gold);
 }
 
 .btn-lg-premium.btn-secondary:hover {
-  background: var(--bg-primary);
-  border-color: var(--text-muted);
-  transform: translateY(-2px);
+  background: var(--logo-gold);
+  border-color: var(--primary);
+  color: #000000;
+  transform: translateY(-2.5px);
+  box-shadow: 0 8px 20px var(--logo-gold-glow);
 }
 
 /* Hero Live Status Bar */
@@ -1641,19 +1645,19 @@ a:hover {
   transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Custom CTA Button: Red by default, white with black outline/text on hover */
+/* Custom CTA Button: Red and gold transparent outline, fills on hover */
 .btn-view-portfolio {
-  background: var(--accent) !important;
-  border-color: var(--accent) !important;
-  color: #ffffff !important;
+  background: transparent !important;
+  border: 2px solid var(--logo-gold) !important;
+  color: var(--logo-gold) !important;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .btn-view-portfolio:hover {
-  background: var(--logo-gold) !important;
+  background: var(--primary) !important;
   border-color: var(--logo-gold) !important;
-  color: #000000 !important;
-  box-shadow: 0 8px 20px var(--logo-gold-glow) !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 20px var(--primary-glow) !important;
 }
 
 /* Smooth global theme switching transitions */
@@ -3986,37 +3990,43 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
   backdrop-filter: blur(20px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
   color: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  border: 1px solid var(--primary) !important;
+  border-left: 4px solid var(--logo-gold) !important;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45) !important;
+  transition: all 0.25s ease !important;
 }
 
-/* Specific borders/accents for profile layout */
+/* Specific hover effects with outline color swapping */
 .profile-detail-page .profile-header-card {
+  border: 1px solid var(--primary) !important;
   border-left: 4px solid var(--logo-gold) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.09) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.09) !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.09) !important;
+}
+.profile-detail-page .profile-header-card:hover {
+  border-color: var(--logo-gold) !important;
+  border-left-color: var(--primary) !important;
 }
 
 .profile-detail-page .profile-section {
-  border-left: 3px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid var(--primary) !important;
+  border-left: 4px solid var(--logo-gold) !important;
 }
-
 .profile-detail-page .profile-section:hover {
-  border-left-color: var(--logo-gold) !important;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), 0 4px 16px var(--logo-gold-glow) !important;
+  border-color: var(--logo-gold) !important;
+  border-left-color: var(--primary) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), 0 4px 16px var(--primary-glow) !important;
 }
 
 .profile-detail-page .project-item {
-  border-left: 3px solid var(--primary) !important;
+  border: 1px solid var(--primary) !important;
+  border-left: 4px solid var(--logo-gold) !important;
 }
-
 .profile-detail-page .project-item:hover {
   border-color: var(--logo-gold) !important;
-  border-left-color: var(--logo-gold) !important;
+  border-left-color: var(--primary) !important;
 }
 
-/* Ensure text inside cards responds correctly to themes */
+/* Ensure text inside cards is highly readable (white on dark panels) */
+.profile-detail-page .profile-meta h1,
 .profile-detail-page .profile-meta .major,
 .profile-detail-page .profile-section h2,
 .profile-detail-page .about-text,
@@ -4030,21 +4040,22 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
 .profile-detail-page .profile-meta .major-badge,
 .profile-detail-page .profile-meta div,
 .profile-detail-page .spec-label,
+.profile-detail-page h1,
 .profile-detail-page h2,
 .profile-detail-page h3,
 .profile-detail-page h4,
 .profile-detail-page p,
 .profile-detail-page span,
 .profile-detail-page li {
-  color: var(--text-primary);
+  color: rgba(255, 255, 255, 0.95) !important;
 }
 
 .profile-detail-page .profile-section h2 {
-  color: var(--logo-gold) !important; /* Gold headings on cards */
+  color: var(--logo-gold) !important; /* Gold headings on dark translucent cards */
 }
 
 .profile-detail-page .profile-meta .major {
-  color: var(--text-secondary) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
 }
 
 .profile-detail-page .profile-meta .campus-card-loc {
@@ -4071,14 +4082,9 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
 }
 
 .profile-detail-page .badge-major {
-  background: var(--bg-card-glass, rgba(0, 0, 0, 0.05)) !important;
-  border: 1px solid var(--border-color) !important;
-  color: var(--text-primary) !important;
-}
-
-[data-theme="dark"] .profile-detail-page .badge-major {
   background: rgba(255, 255, 255, 0.08) !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
 }
 
 /* ==========================================================================
@@ -4114,27 +4120,32 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
   z-index: 1;
 }
 
-/* Vision/Mission Mandate Cards */
+/* Vision/Mission Mandate Cards - Red & Gold Outline with Color Swapping Hover */
 .statement-card.glass {
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-left: 4px solid var(--primary) !important;
+  border: 1px solid var(--primary) !important;
+  border-left: 4px solid var(--logo-gold) !important;
   padding: 2.25rem !important;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color 0.2s ease, border-left-color 0.2s ease;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
 .statement-card.glass:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(197, 31, 36, 0.05);
+  border-color: var(--logo-gold) !important;
+  border-left-color: var(--primary) !important;
+  box-shadow: 0 8px 30px var(--primary-glow);
 }
 
 .vision-card.glass {
-  border-left-color: var(--accent) !important;
+  border: 1px solid var(--logo-gold) !important;
+  border-left: 4px solid var(--primary) !important;
 }
 
 .vision-card.glass:hover {
-  box-shadow: 0 8px 30px rgba(226, 161, 0, 0.08) !important;
+  border-color: var(--primary) !important;
+  border-left-color: var(--logo-gold) !important;
+  box-shadow: 0 8px 30px var(--logo-gold-glow) !important;
 }
 
 .statement-badge {
@@ -4150,19 +4161,20 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
   color: var(--accent);
 }
 
-/* Goals Accordion Redesign */
+/* Goals Accordion Redesign - Red & Gold Outline with Color Swapping Hover */
 .goal-item {
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-left: 3px solid var(--border-color);
+  border: 1px solid var(--primary);
+  border-left: 4px solid var(--logo-gold);
   transition: all 0.25s ease;
   margin-bottom: 0.75rem;
 }
 
 .goal-item:hover,
 .goal-item.active {
-  border-left-color: var(--accent);
-  box-shadow: 0 4px 15px rgba(226, 161, 0, 0.05);
+  border-color: var(--logo-gold);
+  border-left-color: var(--primary);
+  box-shadow: 0 4px 15px var(--primary-glow);
   background: var(--bg-secondary);
 }
 
@@ -4246,27 +4258,32 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
   -webkit-text-fill-color: transparent;
 }
 
-/* Modernized Student Cards */
+/* Modernized Student Cards - Red & Gold Outline with Color Swapping Hover */
 .student-card.glass {
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--primary);
+  border-left: 4px solid var(--logo-gold);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, border-left-color 0.2s ease;
 }
 
 .student-card.glass:hover {
   transform: translateY(-4px);
-  border-color: var(--primary);
-  box-shadow: 0 12px 30px rgba(197, 31, 36, 0.06), 0 2px 8px var(--primary-glow);
+  border-color: var(--logo-gold);
+  border-left-color: var(--primary);
+  box-shadow: 0 12px 30px var(--primary-glow), 0 2px 8px var(--logo-gold-glow);
 }
 
 [data-theme="dark"] .student-card.glass {
   background: var(--bg-secondary);
+  border: 1px solid var(--primary);
+  border-left: 4px solid var(--logo-gold);
 }
 
 [data-theme="dark"] .student-card.glass:hover {
-  border-color: var(--primary);
-  box-shadow: 0 12px 30px rgba(255, 77, 90, 0.12), 0 2px 8px var(--primary-glow);
+  border-color: var(--logo-gold);
+  border-left-color: var(--primary);
+  box-shadow: 0 12px 30px var(--primary-glow), 0 2px 8px var(--logo-gold-glow);
 }
 
 
