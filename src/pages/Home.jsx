@@ -117,8 +117,6 @@ const Home = ({ navigateTo, currentUser }) => {
     };
   }, []);
 
-  const activeGoalDetails = goalsData.find(goal => goal.id === activeGoal);
-
   return (
     <div className="home-container">
       {/* Hero Section */}
@@ -258,37 +256,37 @@ const Home = ({ navigateTo, currentUser }) => {
             </div>
           </div>
 
-          {/* Goals & Objectives Redesigned */}
+          {/* Goals & Objectives Section */}
           <div className="goals-section">
-            <h2 className='mb-4'>Goals & Objectives</h2>
-            <div className="goals-redesigned">
-              <div className="goal-tabs">
-                {goalsData.map((goal) => (
-                  <button
-                    key={goal.id}
-                    className={`goal-tab ${activeGoal === goal.id ? 'active' : ''}`}
-                    onClick={() => setActiveGoal(goal.id)}
-                  >
-                    {goal.title}
-                  </button>
-                ))}
-              </div>
-              <div className="goal-content-redesigned">
-                {activeGoalDetails ? (
-                  <>
-                    <h3 className='font-bold'>{activeGoalDetails.summary}</h3>
+            <h2>Goals & Objectives</h2>
+            <div className="goals-accordion">
+              {goalsData.map(goal => (
+                <div 
+                  key={goal.id} 
+                  className={`goal-item ${activeGoal === goal.id ? 'active' : ''}`}
+                  onClick={() => setActiveGoal(activeGoal === goal.id ? null : goal.id)}
+                >
+                  <div className="goal-header">
+                    <div className="goal-title-container">
+                      <span className="goal-title">{goal.title}</span>
+                      <span className="goal-summary">{goal.summary}</span>
+                    </div>
+                    <svg className="goal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+                  <div className="goal-content">
                     <ul className="objectives-list">
-                      {activeGoalDetails.objectives.map((obj, index) => (
-                        <li key={index} className="objective-item">{obj}</li>
+                      {goal.objectives.map((objective, index) => (
+                        <li key={index} className="objective-item">{objective}</li>
                       ))}
                     </ul>
-                  </>
-                ) : (
-                  <p>Select a goal to see its objectives.</p>
-                )}
-              </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
+
         </div>
       </section>
     </div>
