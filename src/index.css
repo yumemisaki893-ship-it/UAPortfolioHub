@@ -1,27 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
+  color-scheme: light;
   /* Colors - University of Antique Logo Theme */
-  --bg-primary: #ffffff;
-  --bg-secondary: #fafafa;
+  --bg-primary: #f8f9fa; /* Soft light-grey canvas background */
+  --bg-secondary: #fcfcfc; /* Pure white card background */
   --bg-card: #ffffff;
-  --border-color: #eaeaea;
-  --border-hover: #d5001c;
+  --border-color: #e5e7eb;
+  --border-hover: #c51f24; /* Elegant Crimson Red */
   
-  --text-primary: #111111;
-  --text-secondary: #666666;
-  --text-muted: #888888;
+  --text-primary: #111827; /* Dark charcoal text for readability */
+  --text-secondary: #4b5563; /* Medium grey text */
+  --text-muted: #9ca3af;
   
-  --primary: #d5001c; /* Red from logo */
-  --primary-hover: #b80017;
-  --primary-glow: rgba(213, 0, 28, 0.08);
+  --primary: #c51f24; /* Crimson Red */
+  --primary-hover: #a31418;
+  --primary-glow: rgba(197, 31, 36, 0.08);
   
-  --accent: #f4b400; /* Gold from logo */
-  --accent-hover: #dba200;
-  --accent-glow: rgba(244, 180, 0, 0.12);
+  --accent: #e2a100; /* Honey Gold */
+  --accent-hover: #c78c00;
+  --accent-glow: rgba(226, 161, 0, 0.12);
   
-  --logo-gold: #f4b400; /* Gold/yellow from logo triangle */
-  --logo-gold-glow: rgba(244, 180, 0, 0.15);
+  --logo-gold: #e2a100;
+  --logo-gold-glow: rgba(226, 161, 0, 0.15);
   
   /* Blue for minor buttons */
   --blue-button: #0e1b84;
@@ -51,26 +52,27 @@
 
 /* Minimalist Dark Theme Overrides */
 [data-theme="dark"] {
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #121212;
-  --bg-card: #0a0a0a;
-  --border-color: #262626;
-  --border-hover: #ff4d64;
+  color-scheme: dark;
+  --bg-primary: #0d0f12; /* Deep Obsidian Black */
+  --bg-secondary: #151922; /* Card dark grey-blue */
+  --bg-card: #151922;
+  --border-color: #222a36;
+  --border-hover: #ff4d5a; /* Bright Crimson Red */
   
-  --text-primary: #ededed;
-  --text-secondary: #888888;
-  --text-muted: #555555;
+  --text-primary: #f3f4f6; /* Off-white text */
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
   
-  --primary: #ff4d64; /* Red for dark theme readability */
-  --primary-hover: #ff7084;
-  --primary-glow: rgba(255, 77, 100, 0.22);
+  --primary: #ff4d5a; /* Crimson Red */
+  --primary-hover: #ff7681;
+  --primary-glow: rgba(255, 77, 90, 0.22);
   
-  --accent: #ffc800; /* Gold for dark theme readability */
-  --accent-hover: #ffd54f;
-  --accent-glow: rgba(255, 200, 0, 0.22);
+  --accent: #ffc83b; /* Honey Gold */
+  --accent-hover: #ffd769;
+  --accent-glow: rgba(255, 200, 59, 0.22);
   
-  --logo-gold: #ffc800;
-  --logo-gold-glow: rgba(255, 200, 0, 0.22);
+  --logo-gold: #ffc83b;
+  --logo-gold-glow: rgba(255, 200, 59, 0.22);
   
   /* Blue for minor buttons */
   --blue-button: #5c70ff;
@@ -134,18 +136,33 @@ input, textarea, select,
 }
 
 /* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
+:root {
+  scrollbar-color: light-dark(#cccccc, #333333) transparent;
+  scrollbar-width: thin;
 }
-::-webkit-scrollbar-track {
-  background: var(--bg-primary);
+
+/* WebKit scrollbar fallback */
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: light-dark(#cccccc, #333333);
+    border-radius: 0px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: light-dark(#999999, #555555);
+  }
 }
-::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+
+/* Global Focus outline styles */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
 }
 
 #root {
@@ -4057,6 +4074,194 @@ body, main, footer, .navbar, .glass, .student-card, .statement-card, .btn, .form
   background: rgba(255, 255, 255, 0.08) !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   color: #ffffff !important;
+}
+
+/* ==========================================================================
+   UI/UX OVERHAUL REDESIGN IMPROVEMENTS
+   ========================================================================== */
+
+/* Hero Grid Background */
+.home-hero {
+  position: relative;
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+.home-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(to right, rgba(197, 31, 36, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(197, 31, 36, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at 50% 50%, black, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black, transparent 80%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.home-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Vision/Mission Mandate Cards */
+.statement-card.glass {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--primary) !important;
+  padding: 2.25rem !important;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.statement-card.glass:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(197, 31, 36, 0.05);
+}
+
+.vision-card.glass {
+  border-left-color: var(--accent) !important;
+}
+
+.vision-card.glass:hover {
+  box-shadow: 0 8px 30px rgba(226, 161, 0, 0.08) !important;
+}
+
+.statement-badge {
+  font-size: 0.725rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--primary);
+  margin-bottom: 0.75rem;
+}
+
+.vision-card .statement-badge {
+  color: var(--accent);
+}
+
+/* Goals Accordion Redesign */
+.goal-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-left: 3px solid var(--border-color);
+  transition: all 0.25s ease;
+  margin-bottom: 0.75rem;
+}
+
+.goal-item:hover,
+.goal-item.active {
+  border-left-color: var(--accent);
+  box-shadow: 0 4px 15px rgba(226, 161, 0, 0.05);
+  background: var(--bg-secondary);
+}
+
+.goal-header {
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.goal-title {
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.goal-summary {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.goal-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--text-secondary);
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.goal-item.active .goal-icon {
+  transform: rotate(180deg);
+  color: var(--accent);
+}
+
+.goal-content {
+  padding: 0 1.5rem 1.5rem;
+}
+
+.objective-item {
+  padding: 0.5rem 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="dark"] .objective-item {
+  border-bottom-color: rgba(255, 255, 255, 0.03);
+}
+
+.objective-item:last-child {
+  border-bottom: none;
+}
+
+/* Floating Responsive Navbar */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(12px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(190%) !important;
+  background: light-dark(rgba(255, 255, 255, 0.8), rgba(13, 15, 18, 0.8)) !important;
+  border-bottom: 1px solid var(--border-color);
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-logo span {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-family: var(--font-family-heading);
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Modernized Student Cards */
+.student-card.glass {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+
+.student-card.glass:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: 0 12px 30px rgba(197, 31, 36, 0.06), 0 2px 8px var(--primary-glow);
+}
+
+[data-theme="dark"] .student-card.glass {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .student-card.glass:hover {
+  border-color: var(--primary);
+  box-shadow: 0 12px 30px rgba(255, 77, 90, 0.12), 0 2px 8px var(--primary-glow);
 }
 
 
