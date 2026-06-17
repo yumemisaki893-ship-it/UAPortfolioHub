@@ -65,7 +65,7 @@ const goalsData = [
 
 const Home = ({ navigateTo, currentUser }) => {
   const [activeLang, setActiveLang] = useState('en'); // 'en' | 'fil' | 'kr'
-  const [activeGoal, setActiveGoal] = useState(null);
+  const [activeGoal, setActiveGoal] = useState(1);
   const [time, setTime] = useState('');
   const [dateStr, setDateStr] = useState('');
   const [registeredCount, setRegisteredCount] = useState(0);
@@ -117,6 +117,8 @@ const Home = ({ navigateTo, currentUser }) => {
     };
   }, []);
 
+  const activeGoalDetails = goalsData.find(goal => goal.id === activeGoal);
+
   return (
     <div className="home-container">
       {/* Hero Section */}
@@ -128,7 +130,7 @@ const Home = ({ navigateTo, currentUser }) => {
 
           <h1 className="hero-title animate-slide-up">
             Build your professional <br />
-            <span className="hero-title-gradient">digital portfolio.</span>
+            <span className="hero-title-gradient text-gradient-animated">digital portfolio.</span>
           </h1>
           
           <p className="hero-subtitle animate-slide-up-delay-1">
@@ -256,51 +258,35 @@ const Home = ({ navigateTo, currentUser }) => {
             </div>
           </div>
 
-
-
-          {/* Goals & Objectives Accordion */}
+          {/* Goals & Objectives Redesigned */}
           <div className="goals-section">
-            <h2>Goals & Objectives</h2>
-            <div className="goals-accordion">
-              {goalsData.map((goal) => {
-                const isActive = activeGoal === goal.id;
-                return (
-                  <div 
-                    key={goal.id} 
-                    className={`goal-item ${isActive ? 'active' : ''}`}
-                    onMouseEnter={() => setActiveGoal(goal.id)}
-                    onMouseLeave={() => setActiveGoal(null)}
+            <h2 className='mb-4'>Goals & Objectives</h2>
+            <div className="goals-redesigned">
+              <div className="goal-tabs">
+                {goalsData.map((goal) => (
+                  <button
+                    key={goal.id}
+                    className={`goal-tab ${activeGoal === goal.id ? 'active' : ''}`}
+                    onClick={() => setActiveGoal(goal.id)}
                   >
-                    <div 
-                      className="goal-header" 
-                      onClick={() => setActiveGoal(isActive ? null : goal.id)}
-                    >
-                      <div className="goal-title-container">
-                        <span className="goal-title">{goal.title}</span>
-                        <span className="goal-summary">{goal.summary}</span>
-                      </div>
-                      <svg 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="2.5" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        className="goal-icon"
-                      >
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </div>
-                    <div className="goal-content">
-                      <ul className="objectives-list">
-                        {goal.objectives.map((obj, index) => (
-                          <li key={index} className="objective-item">{obj}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                );
-              })}
+                    {goal.title}
+                  </button>
+                ))}
+              </div>
+              <div className="goal-content-redesigned">
+                {activeGoalDetails ? (
+                  <>
+                    <h3 className='font-bold'>{activeGoalDetails.summary}</h3>
+                    <ul className="objectives-list">
+                      {activeGoalDetails.objectives.map((obj, index) => (
+                        <li key={index} className="objective-item">{obj}</li>
+                      ))}
+                    </ul>
+                  </>
+                ) : (
+                  <p>Select a goal to see its objectives.</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
