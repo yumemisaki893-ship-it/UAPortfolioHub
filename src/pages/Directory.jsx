@@ -101,7 +101,7 @@ export const Directory = ({ navigateTo, currentUser, params }) => {
         {/* Hero Section */}
         <section className="hero animate-slide-up">
           <div className="hero-glow"></div>
-          <h1>Meet the Next Gen of <span>Innovators</span></h1>
+          <h1>Meet the Next Gen of <span className='text-gradient-animated'>Innovators</span></h1>
           <p>
             Discover and connect with talented university students showcasing their technical projects, creative portfolios, and specialized skills.
           </p>
