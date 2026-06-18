@@ -1349,8 +1349,6 @@ a:hover {
 .hero-title-gradient,
 .hero h1 span,
 .profile-meta h1,
-.auth-card h1,
-.auth-header h1,
 .text-gradient-animated {
   background: linear-gradient(90deg,
       #f4b400 0%,
@@ -1389,8 +1387,6 @@ a:hover {
 [data-theme="dark"] .hero-title-gradient,
 [data-theme="dark"] .hero h1 span,
 [data-theme="dark"] .profile-meta h1,
-[data-theme="dark"] .auth-card h1,
-[data-theme="dark"] .auth-header h1,
 [data-theme="dark"] .text-gradient-animated {
   background: linear-gradient(90deg,
       #ffc800 0%,
@@ -3035,14 +3031,14 @@ a {
   font-family: var(--font-family-heading);
   font-size: 2rem;
   font-weight: 800;
-  color: var(--text-primary);
+  color: #ffffff;
   margin-bottom: 0.5rem;
   letter-spacing: -0.025em;
 }
 
 .auth-subtitle {
   font-size: 0.9rem;
-  color: var(--text-secondary);
+  color: #ffffff;
   font-weight: 500;
 }
 
