@@ -122,7 +122,7 @@ const Home = ({ navigateTo, currentUser }) => {
       {/* Hero Section */}
       <section className="home-hero">
         <div className="home-hero-content">
-          <div className="badge-promo home-hover-lift animate-fade-in">
+          <div className="badge-promo badge-promo-availability home-hover-lift animate-fade-in">
             Now available for all University of Antique students
           </div>
 
@@ -261,8 +261,8 @@ const Home = ({ navigateTo, currentUser }) => {
             <h2>Goals & Objectives</h2>
             <div className="goals-accordion">
               {goalsData.map(goal => (
-                <div 
-                  key={goal.id} 
+                <div
+                  key={goal.id}
                   className={`goal-item ${activeGoal === goal.id ? 'active' : ''}`}
                   onClick={() => setActiveGoal(activeGoal === goal.id ? null : goal.id)}
                 >
