@@ -1698,16 +1698,8 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
                 </div>
               </div>
 
-              {/* Bottom Action: Cancel & Status */}
+              {/* Bottom Action: Status */}
               <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'flex-end', marginBottom: '3rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                <button 
-                  type="button" 
-                  className="btn btn-secondary"
-                  style={{ marginRight: 'auto' }}
-                  onClick={() => navigateTo('profile-detail', { id: student.id })}
-                >
-                  Cancel
-                </button>
                 {/* Auto-save Status Indicator */}
                 {autoSaveStatus && (
                   <div 
