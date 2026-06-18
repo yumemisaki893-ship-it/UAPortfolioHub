@@ -721,7 +721,7 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
                   borderRadius: '50%', 
                   overflow: 'hidden', 
                   border: '4px solid var(--border-color)',
-                  boxShadow: 'none',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                   background: 'var(--bg-secondary)',
                   display: 'flex',
                   justifyContent: 'center',

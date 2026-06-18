@@ -22,7 +22,7 @@ export const StudentCard = ({ student, currentUser, onClick, onDelete }) => {
             fontSize: '0.7rem',
             borderRadius: 'var(--border-radius-sm)',
             minHeight: '26px',
-            boxShadow: 'none',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
             zIndex: 30,
             display: 'flex',
             alignItems: 'center',
@@ -60,7 +60,7 @@ export const StudentCard = ({ student, currentUser, onClick, onDelete }) => {
             borderRadius: '50%', 
             overflow: 'hidden', 
             border: '4px solid var(--bg-card)',
-            boxShadow: 'none',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
             background: 'var(--bg-card)'
           }}>
             <AvatarImage avatarId={student.avatarId} id={`card-${student.id}`} />

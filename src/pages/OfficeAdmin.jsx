@@ -25,14 +25,20 @@ export const OfficeAdmin = ({ currentUser, navigateTo }) => {
   };
 
   useEffect(() => {
-    // Security redirect check: admin access only
-    if (!currentUser) return;
-    if (!currentUser.isAdmin) {
+    // Security redirect check
+    const session = localStorage.getItem('student_portfolio_session');
+    if (!session && !currentUser) {
+      navigateTo('auth');
+      return;
+    }
+    if (currentUser && !currentUser.isAdmin) {
       navigateTo('home');
       return;
     }
 
-    loadData();
+    if (currentUser && currentUser.isAdmin) {
+      loadData();
+    }
   }, [currentUser, navigateTo]);
 
   // Helper to resolve year level deterministically if not present

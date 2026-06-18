@@ -11,7 +11,10 @@ export const Directory = ({ navigateTo, currentUser, params }) => {
 
   // Load students on mount
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      navigateTo('auth');
+      return;
+    }
     const loadData = async () => {
       const list = await getStudents();
       setStudents(list);

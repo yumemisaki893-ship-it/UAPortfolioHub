@@ -220,121 +220,115 @@ const Home = ({ navigateTo, currentUser }) => {
             </button>
           </div>
 
-          <div className="hero-glow"></div>
+          <div className="hero-live-status-bar home-hover-lift animate-slide-up-delay-3">
+            <span className="status-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="status-icon">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <span className="status-text clock-value">{time}</span>
+              <span className="status-subtext">({dateStr})</span>
+            </span>
+            <span className="status-divider">|</span>
+            <span className="status-item" style={{ position: 'relative' }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="status-icon">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
+              </svg>
+              <span className="status-text">{uaStudentCount.toLocaleString()}</span>
+              <span className="status-subtext">UA Students</span>
+              {currentUser && currentUser.isAdmin && (
+                <button 
+                  onClick={handleEditStudentCount} 
+                  title="Edit Student Count"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--logo-gold)',
+                    cursor: 'pointer',
+                    padding: '0 4px',
+                    marginLeft: '4px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    verticalAlign: 'middle'
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '14px', height: '14px' }}>
+                    <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                  </svg>
+                </button>
+              )}
+            </span>
+            <span className="status-divider">|</span>
+            <span className="status-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="status-icon">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+              </svg>
+              <span className="status-text">{registeredCount}</span>
+              <span className="status-subtext">Portfolios</span>
+            </span>
+          </div>
         </div>
       </section>
 
-      <section className="home-bento">
+      <section className="home-vision-mission">
         <div className="container">
-          <div className="bento-grid">
-            
-            {/* Tile 1: Live Status & Clock */}
-            <div className="bento-tile tile-status animate-slide-up">
-              <div className="bento-tile-header">
-                <span className="bento-badge">Live Status</span>
-                <span className="pulse-indicator"></span>
-              </div>
-              <div className="bento-status-main">
-                <div className="bento-clock">
-                  <div className="clock-label">Local Time</div>
-                  <div className="clock-time">{time}</div>
-                  <div className="clock-date">{dateStr}</div>
-                </div>
-                <div className="bento-metrics">
-                  <div className="metric-item">
-                    <div className="metric-num">
-                      {uaStudentCount.toLocaleString()}
-                      {currentUser && currentUser.isAdmin && (
-                        <button 
-                          onClick={handleEditStudentCount} 
-                          title="Edit Student Count"
-                          className="btn-edit-metric"
-                        >
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '13px', height: '13px' }}>
-                            <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                    <div className="metric-label">UA Students</div>
-                  </div>
-                  <div className="metric-item">
-                    <div className="metric-num">{registeredCount}</div>
-                    <div className="metric-label">Portfolios</div>
-                  </div>
-                </div>
-              </div>
+          <div className="section-header">
+            <div className="lang-selector">
+              <div className="lang-slider"></div>
+              <button
+                className={`lang-tab ${activeLang === 'en' ? 'active' : ''}`}
+                onClick={() => setActiveLang('en')}
+                onMouseEnter={() => setActiveLang('en')}
+              >
+                English
+              </button>
+              <button
+                className={`lang-tab ${activeLang === 'fil' ? 'active' : ''}`}
+                onClick={() => setActiveLang('fil')}
+                onMouseEnter={() => setActiveLang('fil')}
+              >
+                Filipino
+              </button>
+              <button
+                className={`lang-tab ${activeLang === 'kr' ? 'active' : ''}`}
+                onClick={() => setActiveLang('kr')}
+                onMouseEnter={() => setActiveLang('kr')}
+              >
+                Kinaray-a
+              </button>
             </div>
+          </div>
 
-            {/* Tile 2: Language Selector Tab */}
-            <div className="bento-tile tile-lang animate-slide-up-delay-1">
-              <div className="bento-tile-header">
-                <span className="bento-badge">Select Language</span>
-              </div>
-              <div className="bento-lang-controls">
-                <button
-                  className={`bento-lang-btn ${activeLang === 'en' ? 'active' : ''}`}
-                  onClick={() => setActiveLang('en')}
-                  onMouseEnter={() => setActiveLang('en')}
-                >
-                  <span className="lang-code">EN</span>
-                  <span className="lang-name">English</span>
-                </button>
-                <button
-                  className={`bento-lang-btn ${activeLang === 'fil' ? 'active' : ''}`}
-                  onClick={() => setActiveLang('fil')}
-                  onMouseEnter={() => setActiveLang('fil')}
-                >
-                  <span className="lang-code">FIL</span>
-                  <span className="lang-name">Filipino</span>
-                </button>
-                <button
-                  className={`bento-lang-btn ${activeLang === 'kr' ? 'active' : ''}`}
-                  onClick={() => setActiveLang('kr')}
-                  onMouseEnter={() => setActiveLang('kr')}
-                >
-                  <span className="lang-code">KR</span>
-                  <span className="lang-name">Kinaray-a</span>
-                </button>
-              </div>
-            </div>
+          {/* Mandate Panel */}
+          <div className="statement-card mandates-card home-hover-lift animate-fade-in">
+            <div className="statement-badge">Mandate</div>
+            <p className="statement-text mandates-text">
+              {activeLang === 'en' && "The University shall primarily provide advanced education, higher technological, professional instruction and training in the fields of education, agriculture, forestry, fishery, maritime education, ecology, engineering, philosophy, information and communications technology, letters, arts and sciences, nursing, medicine and other relevant fields of study. It shall also undertake research and extension services in support of the socioeconomic development of Antique, and provide progressive leadership in its areas of specialization."}
+              {activeLang === 'fil' && "Pangunahing magbibigay ang Unibersidad ng mas mataas na edukasyon, mas mataas na teknolohikal, propesyonal na pagtuturo at pagsasanay sa mga larangan ng edukasyon, agrikultura, paggugubat, pangingisda, edukasyong maritima, ekolohiya, inhinyeriya, pilosopiya, teknolohiya ng impormasyon at komunikasyon, panitikan, sining at agham, pag-aalaga, medisina at iba pang kaugnay na larangan ng pag-aaral. Magsasagawa rin ito ng mga serbisyong pananaliksik at pagpapalawig bilang suporta sa sosyoekonomikong pag-unlad ng Antique, at magbibigay ng progresibong pamumuno sa mga larangan ng espesyalisasyon nito."}
+              {activeLang === 'kr' && "Ang Unibersidad ang magaserbe nga panguna nga dalan para sa abanse nga edukasyon, teknolohiya, kag paghanas sa mga kurso parehas kang edukasyon, agrikultura, panggubat kang kagulangan, pangisda, maritime, ekolohiya, inhenyeriya, pilosopiya, ICT, literatura, sining kag agham, narsing, medisina, kag iba pa nga importante nga kurso. Magapatigayon man dya kang mga pananaliksik kag serbisyo sa komunidad para sa pag-uswag kang ekonomiya kag sosyedad sa Antique, kag magaserbe nga giya sa mga kahanas nga dya nagakabase."}
+            </p>
+          </div>
 
-            {/* Tile 3: Mandate */}
-            <div className="bento-tile tile-mandate bento-hover-lift animate-slide-up-delay-2">
-              <div className="bento-tile-header">
-                <span className="bento-badge">University Mandate</span>
-              </div>
-              <p className="bento-text">
-                {activeLang === 'en' && "The University shall primarily provide advanced education, higher technological, professional instruction and training in the fields of education, agriculture, forestry, fishery, maritime education, ecology, engineering, philosophy, information and communications technology, letters, arts and sciences, nursing, medicine and other relevant fields of study. It shall also undertake research and extension services in support of the socioeconomic development of Antique, and provide progressive leadership in its areas of specialization."}
-                {activeLang === 'fil' && "Pangunahing magbibigay ang Unibersidad ng mas mataas na edukasyon, mas mataas na teknolohikal, propesyonal na pagtuturo at pagsasanay sa mga larangan ng edukasyon, agrikultura, paggugubat, pangingisda, edukasyong maritima, ekolohiya, inhinyeriya, pilosopiya, teknolohiya ng impormasyon at komunikasyon, panitikan, sining at agham, pag-aalaga, medisina at iba pang kaugnay na larangan ng pag-aaral. Magsasagawa rin ito ng mga serbisyong pananaliksik at pagpapalawig bilang suporta sa sosyoekonomikong pag-unlad ng Antique, at magbibigay ng progresibong pamumuno sa mga larangan ng espesyalisasyon nito."}
-                {activeLang === 'kr' && "Ang Unibersidad ang magaserbe nga panguna nga dalan para sa abanse nga edukasyon, teknolohiya, kag paghanas sa mga kurso parehas kang edukasyon, agrikultura, panggubat kang kagulangan, pangisda, maritime, ekolohiya, inhenyeriya, pilosopiya, ICT, literatura, sining kag agham, narsing, medisina, kag iba pa nga importante nga kurso. Magapatigayon man dya kang mga pananaliksik kag serbisyo sa komunidad para sa pag-uswag kang ekonomiya kag sosyedad sa Antique, kag magaserbe nga giya sa mga kahanas nga dya nagakabase."}
+          <div className="vision-mission-grid">
+            <div className="statement-card vision-card home-hover-lift">
+              <div className="statement-badge">Vision</div>
+              <p className="statement-text vision-text">
+                {activeLang === 'en' && "A premier university in transforming lives, and building sustainable and resilient communities"}
+                {activeLang === 'fil' && "Nangungunang Pamantasan sa pagbabanyuhay at sa pagtatag ng matibay at likas-kayang komunidad"}
+                {activeLang === 'kr' && "Nagapanguna nga institusyon sa pagpabag-o kang kabuhi kag pagbalay kang mapag-on kag mapinadayunon nga komunidad"}
               </p>
             </div>
 
-            {/* Tile 4: Vision */}
-            <div className="bento-tile tile-vision bento-hover-lift animate-slide-up-delay-3">
-              <div className="bento-tile-header">
-                <span className="bento-badge">Vision</span>
-              </div>
-              <p className="bento-text statement-highlight">
-                {activeLang === 'en' && "A premier university in transforming lives, and building sustainable and resilient communities."}
-                {activeLang === 'fil' && "Nangungunang Pamantasan sa pagbabanyuhay at sa pagtatag ng matibay at likas-kayang komunidad."}
-                {activeLang === 'kr' && "Nagapanguna nga institusyon sa pagpabag-o kang kabuhi kag pagbalay kang mapag-on kag mapinadayunon nga komunidad."}
-              </p>
-            </div>
-
-            {/* Tile 5: Mission */}
-            <div className="bento-tile tile-mission bento-hover-lift animate-slide-up-delay-3">
-              <div className="bento-tile-header">
-                <span className="bento-badge">Mission</span>
-              </div>
-              <p className="bento-text">
+            <div className="statement-card mission-card home-hover-lift">
+              <div className="statement-badge">Mission</div>
+              <p className="statement-text mission-text">
                 {activeLang === 'en' && "To uplift the lives of the Antiqueños and the Filipinos, UA shall produce empowered individuals through quality instruction, innovative research and development programs, sustainable resource generation activities, and relevant extension services."}
-                {activeLang === 'fil' && "Upang mapaunlad ang buhay ng mga Antiqueño at ng mga Pilipino, ang University of Antique ay kinakailangang makalikha ng matatag na mga propesyonal sa pamamagitan ng de-kalidad na pagtuturo, mga inobatibong mga pananaliksik at mga programang pangkaunlaran, mga Gawain tungo sa pagkakaroon ng napananatili at pangmatagalang mga mapagkukunan, at mga serbisyong kapakipakinabang."}
-                {activeLang === 'kr' && "Para mapa-ugwad ang pangabuhi kang mga Antiqueño kag mga Pilipino, kinahanglan nga ang University of Antique makadihon kang mga propesyonal nga may kapag-on paagi sa kalidad nga pagpanudlo, mga inobatibo nga mga panalawsaw kag mga programa sa pagpasanyog, mga aktibidad nga may kaangtanan sa sustinable nga parangabuy-an, kag mapinuslanon nga mga serbisyo."}
+                {activeLang === 'fil' && "Upang mapaunlad ang buhay ng mga Antiqueño at ng mga Pilipino, ang University of Antique ay kinakailangang makalikha ng matatag na mga propesyonal sa pamamagitan ng de-kalidad na pagtuturo, mga inobatibong mga pananaliksik at mga programang pangkaunlaran, mga Gawain tungo sa pagkakaroon ng napananatili at pangmatagalang mga mapagkukunan, at mga serbisyong kapakipakinabang"}
+                {activeLang === 'kr' && "Para mapa-ugwad ang pangabuhi kang mga Antiqueño kag mga Pilipino, kinahanglan nga ang University of Antique makadihon kang mga propesyonal nga may kapag-on paagi sa kalidad nga pagpanudlo, mga inobatibo nga mga panalawsaw kag mga programa sa pagpasanyog, mga aktibidad nga may kaangtanan sa sustinable nga parangabuy-an, kag mapinuslanon nga mga serbisyo"}
               </p>
             </div>
-
           </div>
 
           {/* Goals & Objectives Section */}
