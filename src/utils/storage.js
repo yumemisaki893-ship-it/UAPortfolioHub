@@ -528,12 +528,10 @@ export const deleteStudentProfileAndAccount = async (studentId) => {
   // 1. Delete student doc
   await deleteDoc(doc(db, 'students', studentId));
 
-  // 2. Delete user credential document in Firestore
-  const q = query(collection(db, 'users'), where('studentId', '==', studentId));
-  const querySnapshot = await getDocs(q);
-  querySnapshot.forEach(async (document) => {
-    await deleteDoc(doc(db, 'users', document.id));
-  });
+// 2. Delete user credential document in Firestore
+if (auth.currentUser) {
+  await deleteDoc(doc(db, 'users', auth.currentUser.uid));
+}
 
   // 3. Delete active auth user account if they deleted themselves
   const currentUser = auth.currentUser;
