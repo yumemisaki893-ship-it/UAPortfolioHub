@@ -1569,12 +1569,26 @@ a:hover {
 }
 
 .section-header {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 3rem;
-  border-bottom: 1px solid var(--border-color);
   padding-bottom: 1.5rem;
+}
+
+.section-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      var(--border-color) 15%,
+      var(--border-color) 85%,
+      transparent 100%);
 }
 
 @media (max-width: 768px) {
@@ -1586,6 +1600,7 @@ a:hover {
 
 .lang-selector {
   position: relative;
+  z-index: 2;
   display: flex;
   background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(10px);
