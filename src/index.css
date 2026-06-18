@@ -3031,15 +3031,23 @@ a {
   font-family: var(--font-family-heading);
   font-size: 2rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #000000;
   margin-bottom: 0.5rem;
   letter-spacing: -0.025em;
 }
 
+[data-theme="dark"] .auth-card h1 {
+  color: #ffffff;
+}
+
 .auth-subtitle {
   font-size: 0.9rem;
-  color: #ffffff;
+  color: #000000;
   font-weight: 500;
+}
+
+[data-theme="dark"] .auth-subtitle {
+  color: #ffffff;
 }
 
 .auth-subtitle a {
