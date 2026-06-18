@@ -666,4 +666,50 @@ export const resetUserPasswordByEmail = async (email, newPassword) => {
   await sendPasswordResetEmail(auth, cleanEmail);
 };
 
+// Retrieve total UA student count (dynamic cloud stat)
+export const getUAStudentCount = async () => {
+  if (!isConfigured) {
+    const localVal = localStorage.getItem('ua_student_count');
+    return localVal ? parseInt(localVal, 10) : 25785;
+  }
+
+  try {
+    const docRef = doc(db, 'students', '--stats--');
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return docSnap.data().uaStudentCount || 25785;
+    }
+    return 25785;
+  } catch (e) {
+    console.error("Error reading UA student count from Firestore: ", e);
+    return 25785;
+  }
+};
+
+// Mutate total UA student count in the cloud
+export const updateUAStudentCount = async (count) => {
+  const cleanCount = parseInt(count, 10);
+  if (isNaN(cleanCount)) throw new Error("Invalid student count value");
+
+  if (!isConfigured) {
+    localStorage.setItem('ua_student_count', cleanCount.toString());
+    // Trigger local storage storage event for cross-tab reactivity
+    window.dispatchEvent(new Event('storage'));
+    return cleanCount;
+  }
+
+  try {
+    const docRef = doc(db, 'students', '--stats--');
+    await setDoc(docRef, {
+      isPublic: true,
+      uaStudentCount: cleanCount
+    }, { merge: true });
+    return cleanCount;
+  } catch (e) {
+    console.error("Error updating UA student count in Firestore: ", e);
+    throw e;
+  }
+};
+
+
 

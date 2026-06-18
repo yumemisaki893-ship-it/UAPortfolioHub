@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { getStudents } from '../utils/storage';
+import { getStudents, updateUAStudentCount } from '../utils/storage';
+import { db, isConfigured } from '../utils/firebase';
+import { doc, setDoc, onSnapshot, collection } from 'firebase/firestore';
 
 const goalsData = [
   {
@@ -71,6 +73,21 @@ const Home = ({ navigateTo, currentUser }) => {
   const [registeredCount, setRegisteredCount] = useState(0);
   const [uaStudentCount, setUaStudentCount] = useState(25785);
 
+  const handleEditStudentCount = async () => {
+    const newVal = prompt("Enter the new real-time University of Antique student population count:", uaStudentCount);
+    if (newVal === null) return;
+    const parsedVal = parseInt(newVal.replace(/,/g, ''), 10);
+    if (isNaN(parsedVal) || parsedVal < 0) {
+      alert("Please enter a valid positive number.");
+      return;
+    }
+    try {
+      await updateUAStudentCount(parsedVal);
+    } catch (e) {
+      alert("Failed to update student count: " + e.message);
+    }
+  };
+
   useEffect(() => {
     // 1. Digital Clock ticking
     const updateTime = () => {
@@ -92,28 +109,65 @@ const Home = ({ navigateTo, currentUser }) => {
     updateTime();
     const clockInterval = setInterval(updateTime, 1000);
 
-    // 2. Fetch actual registered portfolios count
-    const loadRegisteredCount = async () => {
-      try {
-        const list = await getStudents();
-        setRegisteredCount(list.length);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    loadRegisteredCount();
-
-    // 3. Real-time UA student number dynamic updates (fluctuates to simulate activity)
-    const uaCountInterval = setInterval(() => {
-      setUaStudentCount(prev => {
-        const change = Math.floor(Math.random() * 3) - 1; // -1, 0, 1, or 2
-        return prev + change;
+    // 2. Real-time registered portfolios count (onSnapshot)
+    let unsubscribeStudents = null;
+    if (isConfigured) {
+      const colRef = collection(db, 'students');
+      unsubscribeStudents = onSnapshot(colRef, (querySnapshot) => {
+        let count = 0;
+        querySnapshot.forEach((doc) => {
+          if (doc.id !== '--stats--') {
+            count++;
+          }
+        });
+        setRegisteredCount(count);
+      }, (err) => {
+        console.error("Error listening to students collection:", err);
       });
-    }, 4000);
+    } else {
+      const loadLocalStudents = () => {
+        const data = localStorage.getItem('student_portfolio_students');
+        const list = data ? JSON.parse(data) : [];
+        setRegisteredCount(list.length);
+      };
+      loadLocalStudents();
+      window.addEventListener('storage', loadLocalStudents);
+      unsubscribeStudents = () => window.removeEventListener('storage', loadLocalStudents);
+    }
+
+    // 3. Real-time UA student count updates (onSnapshot)
+    let unsubscribeUAStats = null;
+    if (isConfigured) {
+      const docRef = doc(db, 'students', '--stats--');
+      unsubscribeUAStats = onSnapshot(docRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.uaStudentCount !== undefined) {
+            setUaStudentCount(data.uaStudentCount);
+          }
+        } else {
+          setDoc(docRef, {
+            isPublic: true,
+            uaStudentCount: 25785
+          }).catch(err => console.error("Error creating stats document:", err));
+        }
+      }, (err) => {
+        console.error("Error listening to stats:", err);
+      });
+    } else {
+      const loadLocalCount = () => {
+        const localVal = localStorage.getItem('ua_student_count');
+        setUaStudentCount(localVal ? parseInt(localVal, 10) : 25785);
+      };
+      loadLocalCount();
+      window.addEventListener('storage', loadLocalCount);
+      unsubscribeUAStats = () => window.removeEventListener('storage', loadLocalCount);
+    }
 
     return () => {
       clearInterval(clockInterval);
-      clearInterval(uaCountInterval);
+      if (unsubscribeStudents) unsubscribeStudents();
+      if (unsubscribeUAStats) unsubscribeUAStats();
     };
   }, []);
 
@@ -176,13 +230,34 @@ const Home = ({ navigateTo, currentUser }) => {
               <span className="status-subtext">({dateStr})</span>
             </span>
             <span className="status-divider">|</span>
-            <span className="status-item">
+            <span className="status-item" style={{ position: 'relative' }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="status-icon">
                 <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
                 <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
               </svg>
               <span className="status-text">{uaStudentCount.toLocaleString()}</span>
               <span className="status-subtext">UA Students</span>
+              {currentUser && currentUser.isAdmin && (
+                <button 
+                  onClick={handleEditStudentCount} 
+                  title="Edit Student Count"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--logo-gold)',
+                    cursor: 'pointer',
+                    padding: '0 4px',
+                    marginLeft: '4px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    verticalAlign: 'middle'
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '14px', height: '14px' }}>
+                    <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                  </svg>
+                </button>
+              )}
             </span>
             <span className="status-divider">|</span>
             <span className="status-item">
