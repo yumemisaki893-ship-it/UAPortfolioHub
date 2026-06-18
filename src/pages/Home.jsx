@@ -5,6 +5,8 @@ const goalsData = [
   {
     id: 1,
     title: "GOAL 1 (ACADEMICS)",
+    shortTitle: "Academics",
+    category: "Academic Excellence",
     summary: "Deliver quality instruction responsive to the needs of the local communities while conforming to international standards",
     objectives: [
       "Objective 1.1. To offer updated curricular offerings enhanced by the relevance of its niches in order to meet local and global demands",
@@ -18,6 +20,8 @@ const goalsData = [
   {
     id: 2,
     title: "GOAL 2 (RESEARCH)",
+    shortTitle: "Research",
+    category: "Scientific Innovation",
     summary: "Produce relevant, innovative, interdisciplinary, and interdisciplinary researches",
     objectives: [
       "Objective 2.1. To strengthen research endeavors in relation to the three niches of the University, and Futures Thinking",
@@ -31,6 +35,8 @@ const goalsData = [
   {
     id: 3,
     title: "GOAL 3 (EXTENSION)",
+    shortTitle: "Extension",
+    category: "Community Engagement",
     summary: "Implement collaborative, sustainable, and research-based extension and training services",
     objectives: [
       "Objective 3.1. To strengthen national and international linkages engaged in extension services for community building",
@@ -44,6 +50,8 @@ const goalsData = [
   {
     id: 4,
     title: "GOAL 4 (RESOURCE GENERATION)",
+    shortTitle: "Resource Gen",
+    category: "Sustainable Operations",
     summary: "Develop and enhance viable and sustainable resource-generating activities",
     objectives: [
       "Objective 4.1. To formulate and implement viable investment plan",
@@ -55,13 +63,62 @@ const goalsData = [
   {
     id: 5,
     title: "GOAL 5 (GOVERNANCE)",
+    shortTitle: "Governance",
+    category: "Good Governance",
     summary: "Enhance good governance and efficient administrative services",
     objectives: [
       "Objective 5.1. To reinforce good governance and effective and efficient operations in the university",
       "Objective 5.2. To build safe, secure, gender responsive, sustainable environment, and student friendly campuses"
     ]
   }
-]; // campuses data imported from '../data/campuses.json'
+];
+
+const getGoalIcon = (id) => {
+  switch (id) {
+    case 1:
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="goal-selector-icon">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+          <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
+        </svg>
+      );
+    case 2:
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="goal-selector-icon">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          <line x1="11" y1="8" x2="11" y2="14" />
+          <line x1="8" y1="11" x2="14" y2="11" />
+        </svg>
+      );
+    case 3:
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="goal-selector-icon">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      );
+    case 4:
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="goal-selector-icon">
+          <line x1="12" y1="1" x2="12" y2="23"></line>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </svg>
+      );
+    case 5:
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="goal-selector-icon">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+          <path d="M12 2L2 7l10 5 10-5-10-5z" />
+          <path d="M12 17V11" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}; // campuses data imported from '../data/campuses.json'
 
 const Home = ({ navigateTo, currentUser }) => {
   const [activeLang, setActiveLang] = useState('en'); // 'en' | 'fil' | 'kr'
@@ -122,13 +179,13 @@ const Home = ({ navigateTo, currentUser }) => {
       {/* Hero Section */}
       <section className="home-hero">
         <div className="home-hero-content">
-          <div className="badge-promo animate-fade-in">
+          <div className="badge-promo home-hover-lift animate-fade-in">
             Now available for all University of Antique students
           </div>
 
           <h1 className="hero-title animate-slide-up">
-            Build your professional <br />
-            <span className="hero-title-gradient text-gradient-animated">digital portfolio.</span>
+            Build your professional{' '}
+            <span className="hero-title-gradient hero-gradient-loop">digital portfolio</span>.
           </h1>
           
           <p className="hero-subtitle animate-slide-up-delay-1">
@@ -166,7 +223,7 @@ const Home = ({ navigateTo, currentUser }) => {
             </button>
           </div>
 
-          <div className="hero-live-status-bar animate-slide-up-delay-3">
+          <div className="hero-live-status-bar home-hover-lift animate-slide-up-delay-3">
             <span className="status-item">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="status-icon">
                 <circle cx="12" cy="12" r="10" />
@@ -227,7 +284,7 @@ const Home = ({ navigateTo, currentUser }) => {
           </div>
 
           {/* Mandate Panel */}
-          <div className="statement-card mandates-card animate-fade-in">
+          <div className="statement-card mandates-card home-hover-lift animate-fade-in">
             <div className="statement-badge">Mandate</div>
             <p className="statement-text mandates-text">
               {activeLang === 'en' && "The University shall primarily provide advanced education, higher technological, professional instruction and training in the fields of education, agriculture, forestry, fishery, maritime education, ecology, engineering, philosophy, information and communications technology, letters, arts and sciences, nursing, medicine and other relevant fields of study. It shall also undertake research and extension services in support of the socioeconomic development of Antique, and provide progressive leadership in its areas of specialization."}
@@ -237,7 +294,7 @@ const Home = ({ navigateTo, currentUser }) => {
           </div>
 
           <div className="vision-mission-grid">
-            <div className="statement-card vision-card">
+            <div className="statement-card vision-card home-hover-lift">
               <div className="statement-badge">Vision</div>
               <p className="statement-text vision-text">
                 {activeLang === 'en' && "A premier university in transforming lives, and building sustainable and resilient communities"}
@@ -246,7 +303,7 @@ const Home = ({ navigateTo, currentUser }) => {
               </p>
             </div>
 
-            <div className="statement-card mission-card">
+            <div className="statement-card mission-card home-hover-lift">
               <div className="statement-badge">Mission</div>
               <p className="statement-text mission-text">
                 {activeLang === 'en' && "To uplift the lives of the Antiqueños and the Filipinos, UA shall produce empowered individuals through quality instruction, innovative research and development programs, sustainable resource generation activities, and relevant extension services."}
@@ -258,32 +315,59 @@ const Home = ({ navigateTo, currentUser }) => {
 
           {/* Goals & Objectives Section */}
           <div className="goals-section">
-            <h2>Goals & Objectives</h2>
-            <div className="goals-accordion">
-              {goalsData.map(goal => (
-                <div 
-                  key={goal.id} 
-                  className={`goal-item ${activeGoal === goal.id ? 'active' : ''}`}
-                  onClick={() => setActiveGoal(activeGoal === goal.id ? null : goal.id)}
-                >
-                  <div className="goal-header">
-                    <div className="goal-title-container">
-                      <span className="goal-title">{goal.title}</span>
-                      <span className="goal-summary">{goal.summary}</span>
+            <div className="goals-section-header">
+              <h2>Goals & Objectives</h2>
+              <p className="goals-section-subtitle">Strategic pillars driving the University of Antique forward</p>
+            </div>
+
+            <div className="goals-compact-panel home-hover-lift">
+              <div className="goals-tab-bar" role="tablist" aria-label="University goals">
+                {goalsData.map(goal => (
+                  <button
+                    key={goal.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={activeGoal === goal.id}
+                    className={`goals-tab ${activeGoal === goal.id ? 'active' : ''}`}
+                    onClick={() => setActiveGoal(goal.id)}
+                    onMouseEnter={() => setActiveGoal(goal.id)}
+                  >
+                    {getGoalIcon(goal.id)}
+                    <span className="goals-tab-label">{goal.shortTitle}</span>
+                    <span className="goals-tab-category">{goal.category}</span>
+                  </button>
+                ))}
+              </div>
+
+              {(() => {
+                const selectedGoal = goalsData.find(g => g.id === activeGoal) || goalsData[0];
+                return (
+                  <div className="goals-tab-panel" key={selectedGoal.id}>
+                    <div className="goals-tab-panel-header">
+                      <div className="goals-tab-panel-meta">
+                        <span className="goals-tab-panel-badge">Goal {selectedGoal.id}</span>
+                        <span className="goals-tab-panel-category">{selectedGoal.category}</span>
+                      </div>
+                      <h3 className="goals-tab-panel-title">{selectedGoal.title}</h3>
+                      <p className="goals-tab-panel-summary">{selectedGoal.summary}</p>
                     </div>
-                    <svg className="goal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                  </div>
-                  <div className="goal-content">
-                    <ul className="objectives-list">
-                      {goal.objectives.map((objective, index) => (
-                        <li key={index} className="objective-item">{objective}</li>
-                      ))}
+
+                    <ul className="goals-objectives-grid">
+                      {selectedGoal.objectives.map((obj, i) => {
+                        const match = obj.match(/^Objective\s+\d+\.\d+\.\s*(.*)/i);
+                        const objText = match ? match[1] : obj;
+                        const objNumber = obj.match(/^Objective\s+(\d+\.\d+)/i)?.[1] || `${selectedGoal.id}.${i + 1}`;
+                        return (
+                          <li key={i} className="goals-objective-item">
+                            <span className="goals-objective-num">{objNumber}</span>
+                            <span className="goals-objective-text">{objText}</span>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
-                </div>
-              ))}
+                );
+              })()}
             </div>
           </div>
 
