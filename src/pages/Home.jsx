@@ -69,7 +69,7 @@ const Home = ({ navigateTo, currentUser }) => {
   const [time, setTime] = useState('');
   const [dateStr, setDateStr] = useState('');
   const [registeredCount, setRegisteredCount] = useState(0);
-  const [uaStudentCount, setUaStudentCount] = useState(19482);
+  const [uaStudentCount, setUaStudentCount] = useState(25785);
 
   useEffect(() => {
     // 1. Digital Clock ticking
