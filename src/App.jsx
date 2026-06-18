@@ -40,7 +40,13 @@ function App() {
                 student
               });
             } else {
-              setCurrentUser(null);
+              // If user document isn't written yet (during signup), preserve the local session state if emails match
+              setCurrentUser(prev => {
+                if (prev && prev.email === firebaseUser.email) {
+                  return prev;
+                }
+                return null;
+              });
             }
           } catch (e) {
             console.error("Error setting session: ", e);

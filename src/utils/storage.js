@@ -378,6 +378,10 @@ export const signUp = async (name, email, password) => {
   };
   await setDoc(doc(db, 'users', user.uid), sessionData);
 
+  // Cache the newly created student profile
+  cachedStudentsMap[studentId] = newStudent;
+  cachedStudentTimes[studentId] = Date.now();
+
   return {
     user: sessionData,
     student: newStudent
@@ -439,6 +443,12 @@ export const signInWithGoogle = async () => {
     student = await getStudentById(sessionData.studentId);
   }
 
+  // Cache the student profile to guarantee instant local resolution
+  if (student) {
+    cachedStudentsMap[student.id] = student;
+    cachedStudentTimes[student.id] = Date.now();
+  }
+
   return {
     user: sessionData,
     student
@@ -459,17 +469,20 @@ export const updateStudentProfile = async (studentId, updatedFields) => {
   invalidateCache([studentId]);
   if (!isConfigured) {
     const students = await getStudents();
-    const index = students.findIndex(s => s.id === studentId);
+    let index = students.findIndex(s => s.id === studentId);
     
     if (index === -1) {
-      throw new Error('Student profile not found.');
+      const newProfile = { id: studentId, ...updatedFields };
+      students.push(newProfile);
+      localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(students));
+      return newProfile;
     }
     
     students[index] = {
       ...students[index],
       ...updatedFields,
       id: studentId,
-      email: students[index].email
+      email: updatedFields.email || students[index].email
     };
     
     localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(students));
@@ -477,8 +490,8 @@ export const updateStudentProfile = async (studentId, updatedFields) => {
   }
 
   const docRef = doc(db, 'students', studentId);
-  const { id, email, ...safeFields } = updatedFields;
-  await updateDoc(docRef, safeFields);
+  const { id, ...safeFields } = updatedFields;
+  await setDoc(docRef, safeFields, { merge: true });
   const updatedDoc = await getDoc(docRef);
   return { id: studentId, ...updatedDoc.data() };
 };
