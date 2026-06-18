@@ -54,10 +54,10 @@
   /* Transitions */
   --transition-fast: 0.12s ease;
 
-  /* Layout - Rounded Edges (MacOS Glass style) */
-  --border-radius-sm: 4px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 12px;
+  /* Layout - Rounded Edges (Minimalist Sharp style) */
+  --border-radius-sm: 0px;
+  --border-radius-md: 0px;
+  --border-radius-lg: 0px;
 }
 
 /* Minimalist Dark Theme Overrides */
@@ -285,14 +285,14 @@ a:hover {
   background: var(--primary);
   color: #ffffff;
   border: 1px solid var(--primary);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: none;
 }
 
 .btn-primary:hover {
   background: var(--primary-hover);
   border-color: var(--primary-hover);
-  transform: translateY(-1.5px);
-  box-shadow: 0 6px 15px var(--primary-glow);
+  transform: translateY(-1.5px) scale(1.02);
+  box-shadow: none;
 }
 
 .btn-primary:active {
@@ -456,14 +456,14 @@ a:hover {
   z-index: 100;
   padding: 0.85rem 0;
   border-bottom: 1px solid var(--border-color);
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   transition: background-color var(--transition-fast), border-color var(--transition-fast);
 }
 
 [data-theme="dark"] .navbar {
-  background: rgba(10, 10, 10, 0.75);
+  background: rgba(10, 10, 10, 0.65);
 }
 
 .navbar-container {
@@ -580,14 +580,14 @@ a:hover {
 .student-card:hover {
   border-color: var(--logo-gold);
   border-left-color: var(--accent);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px var(--logo-gold-glow);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: none;
 }
 
 [data-theme="dark"] .student-card:hover {
   border-color: var(--logo-gold);
   border-left-color: var(--accent);
-  box-shadow: 0 12px 24px var(--logo-gold-glow);
+  box-shadow: none;
 }
 
 .card-header {
@@ -654,13 +654,13 @@ a:hover {
   display: flex;
   gap: 2rem;
   align-items: center;
-  border: 1px solid rgba(244, 180, 0, 0.2) !important;
+  border: 1px solid var(--border-color) !important;
   border-left: 4px solid var(--logo-gold) !important;
-  box-shadow: 0 8px 30px var(--logo-gold-glow) !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .profile-header-card {
-  border: 1px solid rgba(255, 200, 0, 0.1) !important;
+  border: 1px solid var(--border-color) !important;
   border-left: 4px solid var(--logo-gold) !important;
 }
 
@@ -1014,11 +1014,11 @@ a:hover {
   text-align: center;
   border: 1px solid var(--border-color);
   border-top: 3px solid var(--logo-gold);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+  box-shadow: none;
 }
 
 [data-theme="dark"] .auth-card {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  box-shadow: none;
 }
 
 .auth-header {
@@ -1121,7 +1121,7 @@ a:hover {
 
 /* Page Transitions */
 .page-transition-wrapper {
-  animation: pageTransitionIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: pageTransitionIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -1131,12 +1131,14 @@ a:hover {
 @keyframes pageTransitionIn {
   0% {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(16px) scale(0.98);
+    filter: blur(8px);
   }
 
   100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
   }
 }
 
@@ -1708,20 +1710,20 @@ a:hover {
   border: 2px solid var(--logo-gold);
   color: #ffffff;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 8px 32px rgba(128, 0, 13, 0.15);
+  box-shadow: none;
 }
 
 [data-theme="dark"] .statement-card {
   background: linear-gradient(135deg, #80000d 0%, #4a0006 100%);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: none;
 }
 
 .statement-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-4px) scale(1.01);
   background: linear-gradient(135deg, #d62227 0%, #990010 100%);
   border-color: #ffd700;
   /* Bright gold on hover */
-  box-shadow: 0 12px 30px rgba(226, 161, 0, 0.35);
+  box-shadow: none;
 }
 
 [data-theme="dark"] .statement-card:hover {
