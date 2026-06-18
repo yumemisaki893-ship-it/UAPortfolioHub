@@ -92,11 +92,18 @@ export const OfficeAdmin = ({ currentUser, navigateTo }) => {
 
   // Filter & Search logic
   const filteredStudents = students.filter(student => {
+    if (!student || student.id === '--stats--') return false;
+
+    const name = student.name || '';
+    const email = student.email || '';
+    const shortBio = student.shortBio || '';
+    const skills = student.skills || [];
+
     const matchesSearch = 
-      student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (student.shortBio && student.shortBio.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (student.skills && student.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase())));
+      name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      shortBio.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      skills.some(skill => skill && typeof skill === 'string' && skill.toLowerCase().includes(searchQuery.toLowerCase()));
 
     const matchesMajor = selectedMajor === 'All' || student.major === selectedMajor;
 

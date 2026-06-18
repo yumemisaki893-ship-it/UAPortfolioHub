@@ -127,6 +127,7 @@ export const getStudents = async (forceRefresh = false) => {
     const querySnapshot = await getDocs(collection(db, 'students'));
     const list = [];
     querySnapshot.forEach((doc) => {
+      if (doc.id === '--stats--') return; // Skip stats metadata document
       const studentData = { id: doc.id, ...doc.data() };
       list.push(studentData);
       cachedStudentsMap[doc.id] = studentData;

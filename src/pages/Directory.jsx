@@ -67,10 +67,16 @@ export const Directory = ({ navigateTo, currentUser, params }) => {
 
   // Filter and Search logic
   const filteredStudents = students.filter(student => {
+    if (!student || student.id === '--stats--') return false;
+
+    const name = student.name || '';
+    const shortBio = student.shortBio || '';
+    const skills = student.skills || [];
+
     const matchesSearch =
-      student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.shortBio.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.skills?.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()));
+      name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      shortBio.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      skills.some(skill => skill && typeof skill === 'string' && skill.toLowerCase().includes(searchQuery.toLowerCase()));
 
     const matchesMajor = selectedMajor === 'All' || student.major === selectedMajor;
     const matchesCampus = selectedCampus === 'All' ||
