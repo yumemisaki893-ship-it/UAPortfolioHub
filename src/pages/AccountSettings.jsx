@@ -118,7 +118,7 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
     setActiveTab(initialTab);
   }, [initialTab]);
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!initialProfile);
 
   // Update loading state after profile load
   useEffect(() => {
@@ -127,14 +127,16 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
     }
   }, [student]);
 
-  // Adjust early return to use loading state
-  if (!currentUser || isLoading) {
-    return (
-      <div className="container" style={{ padding: '6rem 2rem', textAlign: 'center' }}>
-        <h2>Loading Account Settings...</h2>
-      </div>
-    );
-  }
+  // Load student profile details on mount or ID switch
+  useEffect(() => {
+    if (!currentUser) {
+      navigateTo('auth');
+      return;
+    }
+    
+    const loadProfile = async () => {
+      let profile;
+      if (currentUser.student && currentUser.student.id === targetStudentId) {
         profile = currentUser.student;
       } else {
         profile = await getStudentById(targetStudentId);
