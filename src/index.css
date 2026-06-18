@@ -4818,18 +4818,7 @@ a {
   font-weight: 700;
   letter-spacing: -0.03em;
   font-family: var(--font-family-heading);
-  background: linear-gradient(90deg,
-      var(--primary) 0%,
-      var(--accent) 25%,
-      var(--primary) 50%,
-      var(--accent) 75%,
-      var(--primary) 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  animation: shine 1.2s linear infinite;
+  color: #ffffff;
   display: inline-block;
 }
 
