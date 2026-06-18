@@ -677,13 +677,13 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
         <div className="settings-tabs-container animate-slide-up-delay-1">
         <button 
           className={`settings-tab-btn ${activeTab === 'profile' ? 'active' : ''}`}
-          onClick={() => setActiveTab('profile')}
+          onClick={() => navigateTo('edit-profile', params)}
         >
           Edit Profile Details
         </button>
         <button 
           className={`settings-tab-btn ${activeTab === 'security' ? 'active' : ''}`}
-          onClick={() => setActiveTab('security')}
+          onClick={() => navigateTo('security-settings', params)}
         >
           Account Security & Credentials
         </button>
@@ -703,7 +703,7 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
 
       {/* Tab 1: Edit Profile Details Section */}
       {activeTab === 'profile' && (
-        <form onSubmit={handleProfileSubmit} className="animate-slide-up-delay-2">
+        <form id="profile-edit-form" onSubmit={handleProfileSubmit} className="animate-slide-up-delay-2">
           <div className="editor-grid">
             
             {/* LEFT SIDEBAR: Avatar & Core Information */}
@@ -1760,19 +1760,6 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
 
           </div>
 
-          {/* Floating Save Changes Button — mirrors Back to Profile */}
-          <button 
-            type="submit" 
-            className="btn-save-settings"
-            aria-label="Save Changes"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-              <polyline points="17 21 17 13 7 13 7 21" />
-              <polyline points="7 3 7 8 15 8" />
-            </svg>
-            Save Changes
-          </button>
         </form>
       )}
 
