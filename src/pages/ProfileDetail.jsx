@@ -235,6 +235,12 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
   };
 
   useEffect(() => {
+    if (lightboxOpen || viewerImage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
     if (!lightboxOpen) return;
 
     const handleKeyDown = (e) => {
@@ -244,8 +250,11 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [lightboxOpen, student?.photos]);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [lightboxOpen, viewerImage, student?.photos]);
 
   if (loading && !student) {
     return (

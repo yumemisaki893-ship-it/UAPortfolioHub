@@ -2126,6 +2126,9 @@ a {
   left: 0;
   right: 0;
   bottom: 0;
+  height: 100dvh;
+  overflow: hidden;
+  touch-action: none;
   background: rgba(5, 5, 5, 0.96);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
