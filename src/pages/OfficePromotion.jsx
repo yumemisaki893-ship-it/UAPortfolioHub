@@ -5,10 +5,9 @@ export const OfficePromotion = ({ navigateTo }) => {
 
   return (
     <div className="office-promo-container">
-      <div className="office-content-wrapper container">
-
-        {/* Hero Section */}
-        <section className="office-hero animate-fade-in">
+      {/* Hero Section */}
+      <section className="office-hero animate-fade-in">
+        <div className="office-hero-content">
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
             <span className="badge-promo" style={{ marginBottom: 0 }}>
               Academic Program Spotlight
@@ -37,8 +36,10 @@ export const OfficePromotion = ({ navigateTo }) => {
               Browse All Portfolios
             </button>
           </div>
-        </section>
+        </div>
+      </section>
 
+      <div className="office-content-wrapper container">
         {/* Program Core Content */}
         <div className="vision-mission-grid animate-slide-up-delay-1" style={{ maxWidth: '1100px', margin: '0 auto 4rem' }}>
 
