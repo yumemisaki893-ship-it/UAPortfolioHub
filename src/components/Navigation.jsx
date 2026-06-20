@@ -81,14 +81,17 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
                   width: '28px',
                   height: '28px',
                   borderRadius: '50%',
-                  overflow: 'hidden',
+                  background: 'var(--primary)',
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
                   flexShrink: 0,
-                  display: 'flex'
+                  textTransform: 'uppercase'
                 }}>
-                  <AvatarImage 
-                    avatarId={currentUser.student?.avatarId || 'avatar-1'} 
-                    id={`nav-avatar-${currentUser.studentId || 'admin'}`} 
-                  />
+                  {(currentUser.student?.name || currentUser.name || 'U').charAt(0).toUpperCase()}
                 </div>
               </button>
             )}

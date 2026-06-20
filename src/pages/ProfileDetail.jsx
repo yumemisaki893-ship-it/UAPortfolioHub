@@ -2153,104 +2153,135 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
       {/* Lightbox Modal */}
       {lightboxOpen && student.photos && student.photos[photoIndex] && (
         <div ref={lightboxRef} className="lightbox-overlay" onClick={closeLightbox}>
-          <div className="lightbox-toolbar" onClick={(e) => e.stopPropagation()}>
-            <div className="lightbox-counter">
-              IMAGE {photoIndex + 1} OF {student.photos.length}
-            </div>
-            <div className="lightbox-actions">
-              <button className="toolbar-btn" onClick={zoomOut} title="Zoom Out">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-              </button>
-              <span className="zoom-level">{Math.round(zoom * 100)}%</span>
-              <button className="toolbar-btn" onClick={zoomIn} title="Zoom In">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-              </button>
-              <button className="toolbar-btn" onClick={resetZoom} title="Reset Zoom">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
-                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                </svg>
-              </button>
-              <button className="toolbar-btn" onClick={toggleFullscreen} title="Toggle Fullscreen">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
-                  <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
-                </svg>
-              </button>
-              {canEdit && (
-                <>
-                  <button className="toolbar-btn edit" onClick={() => handleInPlaceEditCaption(student.photos[photoIndex].id, student.photos[photoIndex].caption)} title="Edit Caption">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                      <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                    </svg>
-                  </button>
-                  <button className="toolbar-btn delete" onClick={() => handleInPlaceRemovePhotoInsideLightbox(student.photos[photoIndex].id)} title="Delete Photo">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
-                      <polyline points="3 6 5 6 21 6" />
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                    </svg>
-                  </button>
-                </>
-              )}
-              <button className="toolbar-btn close" onClick={closeLightbox} title="Close Lightbox">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-            </div>
-          </div>
-          
-          <div className="lightbox-main" onClick={closeLightbox}>
-            {student.photos.length > 1 && (
-              <button className="lightbox-nav-btn prev" onClick={prevPhoto} aria-label="Previous Photo">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '24px', height: '24px' }}>
-                  <polyline points="15 18 9 12 15 6" />
-                </svg>
-              </button>
-            )}
-
-            <div className="lightbox-image-container" onClick={(e) => e.stopPropagation()} style={{ transform: `scale(${zoom})` }}>
-              <img 
-                src={student.photos[photoIndex].url} 
-                alt={student.photos[photoIndex].caption || `Gallery view ${photoIndex + 1}`} 
-                className="lightbox-image"
-              />
-            </div>
-
-            {student.photos.length > 1 && (
-              <button className="lightbox-nav-btn next" onClick={nextPhoto} aria-label="Next Photo">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '24px', height: '24px' }}>
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </button>
-            )}
-          </div>
-
-          <div className="lightbox-bottom-section" onClick={(e) => e.stopPropagation()}>
-            {student.photos[photoIndex].caption && (
-              <div className="lightbox-caption-panel">
-                {student.photos[photoIndex].caption}
-              </div>
-            )}
+          <div className="lightbox-split-container" onClick={(e) => e.stopPropagation()}>
             
-            {student.photos.length > 1 && (
-              <div className="lightbox-thumbnails">
-                {student.photos.map((photo, idx) => (
-                  <div 
-                    key={photo.id || idx}
-                    className={`lightbox-thumbnail-item ${idx === photoIndex ? 'active' : ''}`}
-                    onClick={() => handleThumbnailClick(idx)}
-                  >
-                    <img src={photo.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                ))}
+            {/* Left: Media Panel */}
+            <div className="lightbox-media-panel" onClick={closeLightbox}>
+              {/* Media Controls floating at the top */}
+              <div className="lightbox-media-toolbar" onClick={(e) => e.stopPropagation()}>
+                <button className="toolbar-btn" onClick={zoomOut} title="Zoom Out">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </button>
+                <span className="zoom-level">{Math.round(zoom * 100)}%</span>
+                <button className="toolbar-btn" onClick={zoomIn} title="Zoom In">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </button>
+                <button className="toolbar-btn" onClick={resetZoom} title="Reset Zoom">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                  </svg>
+                </button>
+                <button className="toolbar-btn" onClick={toggleFullscreen} title="Toggle Fullscreen">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+                  </svg>
+                </button>
               </div>
-            )}
+
+              {/* Prev Button */}
+              {student.photos.length > 1 && (
+                <button className="lightbox-nav-btn prev" onClick={(e) => { e.stopPropagation(); prevPhoto(); }} aria-label="Previous Photo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '24px', height: '24px' }}>
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                </button>
+              )}
+
+              {/* Image Viewport */}
+              <div className="lightbox-image-viewport">
+                <div className="lightbox-image-wrapper" style={{ transform: `scale(${zoom})` }} onClick={(e) => e.stopPropagation()}>
+                  <img 
+                    src={student.photos[photoIndex].url} 
+                    alt={student.photos[photoIndex].caption || `Gallery view ${photoIndex + 1}`} 
+                  />
+                </div>
+              </div>
+
+              {/* Next Button */}
+              {student.photos.length > 1 && (
+                <button className="lightbox-nav-btn next" onClick={(e) => { e.stopPropagation(); nextPhoto(); }} aria-label="Next Photo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '24px', height: '24px' }}>
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            {/* Right: Info Sidebar Panel */}
+            <div className="lightbox-info-panel">
+              <div className="lightbox-info-header">
+                <div className="lightbox-uploader-info">
+                  <div className="lightbox-uploader-avatar">
+                    <AvatarImage avatarId={student.avatarId || 'avatar-1'} id="lightbox-sidebar-avatar" />
+                  </div>
+                  <div className="lightbox-uploader-details">
+                    <div className="uploader-name">{student.name}</div>
+                    <div className="uploader-meta">{student.program || 'Student'}</div>
+                  </div>
+                </div>
+                <button className="sidebar-close-btn" onClick={closeLightbox} title="Close Lightbox">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ width: '16px', height: '16px' }}>
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="lightbox-info-body">
+                <div className="lightbox-counter-badge">
+                  Image {photoIndex + 1} of {student.photos.length}
+                </div>
+
+                <div className="lightbox-caption-section">
+                  <h3>Description</h3>
+                  <p className="lightbox-caption-text">
+                    {student.photos[photoIndex].caption || <em style={{ opacity: 0.6 }}>No description provided.</em>}
+                  </p>
+                </div>
+
+                {canEdit && (
+                  <div className="lightbox-owner-actions">
+                    <button className="sidebar-action-btn edit-btn" onClick={() => handleInPlaceEditCaption(student.photos[photoIndex].id, student.photos[photoIndex].caption)}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" style={{ width: '16px', height: '16px' }}>
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                      </svg>
+                      Edit Caption
+                    </button>
+                    <button className="sidebar-action-btn delete-btn" onClick={() => handleInPlaceRemovePhotoInsideLightbox(student.photos[photoIndex].id)}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" style={{ width: '16px', height: '16px' }}>
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      </svg>
+                      Delete Photo
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {student.photos.length > 1 && (
+                <div className="lightbox-info-footer">
+                  <div className="footer-title">All Photos ({student.photos.length})</div>
+                  <div className="lightbox-sidebar-thumbnails">
+                    {student.photos.map((photo, idx) => (
+                      <div 
+                        key={photo.id || idx}
+                        className={`sidebar-thumbnail-item ${idx === photoIndex ? 'active' : ''}`}
+                        onClick={() => handleThumbnailClick(idx)}
+                      >
+                        <img src={photo.url} alt="" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
           </div>
         </div>
       )}
