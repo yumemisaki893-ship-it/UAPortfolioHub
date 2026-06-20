@@ -17,6 +17,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [zoom, setZoom] = useState(1);
+  const [theaterMode, setTheaterMode] = useState(false);
   const lightboxRef = useRef(null);
 
   // Image Viewer for profile picture / banner
@@ -157,12 +158,14 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
   const openLightbox = (index) => {
     setPhotoIndex(index);
     setZoom(1);
+    setTheaterMode(false);
     setLightboxOpen(true);
   };
 
   const closeLightbox = () => {
     setLightboxOpen(false);
     setZoom(1);
+    setTheaterMode(false);
   };
 
   const prevPhoto = (e) => {
@@ -181,17 +184,32 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
 
   const zoomIn = (e) => {
     e?.stopPropagation();
-    setZoom(prev => Math.min(prev + 0.25, 3));
+    setZoom(prev => {
+      const nextZoom = Math.min(prev + 0.25, 3);
+      if (lightboxOpen && nextZoom > 1) {
+        setTheaterMode(true);
+      }
+      return nextZoom;
+    });
   };
 
   const zoomOut = (e) => {
     e?.stopPropagation();
-    setZoom(prev => Math.max(prev - 0.25, 0.5));
+    setZoom(prev => {
+      const nextZoom = Math.max(prev - 0.25, 0.5);
+      if (lightboxOpen && nextZoom <= 1) {
+        setTheaterMode(false);
+      }
+      return nextZoom;
+    });
   };
 
   const resetZoom = (e) => {
     e?.stopPropagation();
     setZoom(1);
+    if (lightboxOpen) {
+      setTheaterMode(false);
+    }
   };
 
   const toggleFullscreen = (e) => {
@@ -2183,6 +2201,12 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                     <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
                   </svg>
                 </button>
+                <button className="toolbar-btn close" onClick={closeLightbox} title="Close Lightbox" style={{ background: '#ef4444', borderColor: '#ef4444' }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
               </div>
 
               {/* Prev Button */}
@@ -2207,13 +2231,20 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                   <img 
                     src={student.photos[photoIndex].url} 
                     alt={student.photos[photoIndex].caption || `Gallery view ${photoIndex + 1}`} 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const nextZoom = zoom === 1 ? 1.5 : 1;
+                      setZoom(nextZoom);
+                      setTheaterMode(nextZoom > 1);
+                    }}
                     style={{ 
                       maxWidth: zoom === 1 ? '100%' : 'none', 
                       maxHeight: zoom === 1 ? '85vh' : 'none',
                       width: zoom === 1 ? 'auto' : `${zoom * 100}%`,
                       height: zoom === 1 ? 'auto' : 'auto',
                       objectFit: 'contain',
-                      transition: 'width 0.2s ease, max-width 0.2s ease, max-height 0.2s ease'
+                      transition: 'width 0.2s ease, max-width 0.2s ease, max-height 0.2s ease',
+                      cursor: zoom === 1 ? 'zoom-in' : 'zoom-out'
                     }}
                   />
                 </div>
@@ -2230,7 +2261,8 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
             </div>
 
             {/* Right: Info Sidebar Panel */}
-            <div className="lightbox-info-panel">
+            {!theaterMode && (
+              <div className="lightbox-info-panel">
               <div className="lightbox-info-header">
                 <div className="lightbox-uploader-info">
                   <div className="lightbox-uploader-avatar">
@@ -2298,6 +2330,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                 </div>
               )}
             </div>
+            )}
 
           </div>
         </div>
@@ -2346,29 +2379,41 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
             <div className="lightbox-image-viewport">
               <div className="lightbox-image-wrapper" onClick={(e) => e.stopPropagation()}>
                 {viewerIsAvatar ? (
-                  <div style={{ 
-                    width: zoom === 1 ? '280px' : `${280 * zoom}px`, 
-                    height: zoom === 1 ? '280px' : `${280 * zoom}px`, 
-                    background: 'var(--bg-card)', 
-                    borderRadius: '50%', 
-                    border: '6px solid rgba(255,255,255,0.1)', 
-                    overflow: 'hidden', 
-                    boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
-                    transition: 'width 0.2s ease, height 0.2s ease'
-                  }}>
+                  <div 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setZoom(prev => prev === 1 ? 1.5 : 1);
+                    }}
+                    style={{ 
+                      width: zoom === 1 ? '280px' : `${280 * zoom}px`, 
+                      height: zoom === 1 ? '280px' : `${280 * zoom}px`, 
+                      background: 'var(--bg-card)', 
+                      borderRadius: '50%', 
+                      border: '6px solid rgba(255,255,255,0.1)', 
+                      overflow: 'hidden', 
+                      boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+                      transition: 'width 0.2s ease, height 0.2s ease',
+                      cursor: zoom === 1 ? 'zoom-in' : 'zoom-out'
+                    }}
+                  >
                     <AvatarImage avatarId={viewerImage} id="viewer-avatar-display" />
                   </div>
                 ) : (
                   <img 
                     src={viewerImage} 
                     alt={viewerCaption || 'Full size view'} 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setZoom(prev => prev === 1 ? 1.5 : 1);
+                    }}
                     style={{ 
                       maxWidth: zoom === 1 ? '100%' : 'none', 
                       maxHeight: zoom === 1 ? '85vh' : 'none',
                       width: zoom === 1 ? 'auto' : `${zoom * 100}%`,
                       height: zoom === 1 ? 'auto' : 'auto',
                       objectFit: 'contain',
-                      transition: 'width 0.2s ease, max-width 0.2s ease, max-height 0.2s ease'
+                      transition: 'width 0.2s ease, max-width 0.2s ease, max-height 0.2s ease',
+                      cursor: zoom === 1 ? 'zoom-in' : 'zoom-out'
                     }}
                   />
                 )}
