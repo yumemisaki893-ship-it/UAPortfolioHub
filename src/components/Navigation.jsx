@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { signOut } from '../utils/storage';
+import { AvatarImage } from './AvatarPicker';
 
 export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateTo, onLogoutSuccess, currentPage }) => {
   const [flyoutOpen, setFlyoutOpen] = useState(false);
@@ -60,111 +61,39 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
             <span>PortfolioHub</span>
           </a>
 
-          {/* Desktop Inline Nav Links */}
-          <div className="navbar-nav-links">
-            <button 
-              className={`navbar-nav-link ${isActive('home') ? 'active' : ''}`}
-              onClick={() => handleNav('home')}
-            >
-              Home
-            </button>
-            <button 
-              className={`navbar-nav-link ${isActive('directory') ? 'active' : ''}`}
-              onClick={() => handleNav(currentUser ? 'directory' : 'auth')}
-            >
-              Portfolios
-            </button>
-            <button 
-              className={`navbar-nav-link ${isActive('office-promotion') ? 'active' : ''}`}
-              onClick={() => handleNav('office-promotion')}
-            >
-              BSOAD
-            </button>
-            {currentUser && !currentUser.isAdmin && (
-              <button 
-                className={`navbar-nav-link ${isActive('profile-detail') ? 'active' : ''}`}
-                onClick={() => handleNav('profile-detail', { id: currentUser.studentId })}
-              >
-                My Profile
-              </button>
-            )}
-            {currentUser && currentUser.isAdmin && (
-              <button 
-                className={`navbar-nav-link ${isActive('office-admin') ? 'active' : ''}`}
-                onClick={() => handleNav('office-admin')}
-                style={{ color: 'var(--primary)', fontWeight: 600 }}
-              >
-                Admin
-              </button>
-            )}
-          </div>
-
-          {/* Right side: Theme toggle + Hamburger */}
+          {/* Right side: User avatar + Hamburger (Minimalist Navbar) */}
           <div className="navbar-menu">
-            {/* Quick theme toggle button for desktop */}
-            <button
-              className="user-menu-btn theme-quick-toggle"
-              onClick={onThemeToggle}
-              aria-label={currentTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              style={{ width: '36px', height: '36px', justifyContent: 'center', padding: 0 }}
-            >
-              {currentTheme === 'dark' ? (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}>
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                </svg>
-              ) : (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}>
-                  <circle cx="12" cy="12" r="5" />
-                  <line x1="12" y1="1" x2="12" y2="3" />
-                  <line x1="12" y1="21" x2="12" y2="23" />
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                  <line x1="1" y1="12" x2="3" y2="12" />
-                  <line x1="21" y1="12" x2="23" y2="12" />
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                </svg>
-              )}
-            </button>
-
-            {/* User avatar / Sign In button */}
-            {currentUser ? (
+            {/* User avatar (logged in only) - direct shortcut to profile or admin */}
+            {currentUser && (
               <button 
                 className="user-menu-btn"
-                onClick={() => setFlyoutOpen(true)}
-                aria-label="Open Menu"
-                style={{ padding: '0.25rem 0.5rem', gap: '0.4rem' }}
+                onClick={() => {
+                  if (currentUser.isAdmin) {
+                    navigateTo('office-admin');
+                  } else {
+                    navigateTo('profile-detail', { id: currentUser.studentId });
+                  }
+                }}
+                aria-label={currentUser.isAdmin ? "Go to Admin Panel" : "Go to My Profile"}
+                style={{ padding: '0.25rem', borderRadius: '50%', width: '36px', height: '36px', justifyContent: 'center' }}
               >
                 <div style={{
                   width: '28px',
                   height: '28px',
                   borderRadius: '50%',
-                  background: 'var(--primary)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  color: '#fff',
-                  flexShrink: 0
+                  overflow: 'hidden',
+                  flexShrink: 0,
+                  display: 'flex'
                 }}>
-                  {(currentUser.student?.name || currentUser.name || 'U').charAt(0).toUpperCase()}
+                  <AvatarImage 
+                    avatarId={currentUser.student?.avatarId || 'avatar-1'} 
+                    id={`nav-avatar-${currentUser.studentId || 'admin'}`} 
+                  />
                 </div>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '14px', height: '14px', opacity: 0.6 }}>
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </button>
-            ) : (
-              <button 
-                className="user-menu-btn"
-                onClick={() => handleNav('auth')}
-                style={{ padding: '0.4rem 0.85rem', fontSize: '0.825rem', fontWeight: 600 }}
-              >
-                Sign In
               </button>
             )}
 
-            {/* Hamburger (mobile only or for full menu) */}
+            {/* Hamburger */}
             <button 
               className="user-menu-btn hamburger-btn"
               onClick={() => setFlyoutOpen(true)}
@@ -186,7 +115,7 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
         className={`flyout-overlay ${flyoutOpen ? 'open' : ''}`} 
         onClick={() => setFlyoutOpen(false)}
       >
-        <div className="flyout-menu glass" onClick={(e) => e.stopPropagation()}>
+        <div className="flyout-menu" onClick={(e) => e.stopPropagation()}>
           <div className="flyout-header">
             <div className="navbar-logo" style={{ pointerEvents: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <img 
@@ -215,16 +144,14 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
                 width: '40px',
                 height: '40px',
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1rem',
-                fontWeight: 700,
-                color: '#fff',
-                flexShrink: 0
+                overflow: 'hidden',
+                flexShrink: 0,
+                display: 'flex'
               }}>
-                {(currentUser.student?.name || currentUser.name || 'U').charAt(0).toUpperCase()}
+                <AvatarImage 
+                  avatarId={currentUser.student?.avatarId || 'avatar-1'} 
+                  id={`flyout-avatar-${currentUser.studentId || 'admin'}`} 
+                />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div className="flyout-user-name" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -263,6 +190,18 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
                   <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
                 </svg>
                 Browse Portfolios
+              </a>
+
+              {/* Programs Offered */}
+              <a 
+                href="#" 
+                onClick={(e) => { e.preventDefault(); handleNav('programs-offered'); }}
+                className={`flyout-link ${isActive('programs-offered') ? 'active' : ''}`}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flyout-link-icon">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+                Programs Offered
               </a>
 
               {/* BSOAD */}
@@ -432,4 +371,5 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
     </>
   );
 };
+
 export default Navigation;

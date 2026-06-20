@@ -539,16 +539,20 @@ a:hover {
   font-weight: 600;
 }
 
-@media (max-width: 768px) {
-  .navbar-nav-links {
-    display: none;
-  }
-}
-
 .navbar-nav-links {
   display: flex;
   align-items: center;
   gap: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .navbar-nav-links {
+    display: none;
+  }
+  
+  .theme-quick-toggle {
+    display: none !important;
+  }
 }
 
 /* User Profile Badge in Nav */
@@ -2424,13 +2428,17 @@ a {
   pointer-events: auto;
 }
 
-/* Flyout Panel */
+/* ========================================
+   Flyout Side Panel — Premium Glass UI
+   ======================================== */
+
+/* Overlay backdrop */
 .flyout-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px) saturate(140%);
+  -webkit-backdrop-filter: blur(6px) saturate(140%);
   z-index: 1000;
   opacity: 0;
   pointer-events: none;
@@ -2442,109 +2450,81 @@ a {
   pointer-events: auto;
 }
 
+/* Flyout menu panel */
 .flyout-menu {
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
-  width: 320px;
-  max-width: 85vw;
+  width: 340px;
+  max-width: 88vw;
   background: var(--bg-card);
   border-left: 1px solid var(--border-color);
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+  box-shadow: -16px 0 48px rgba(0, 0, 0, 0.18), -4px 0 12px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   transform: translateX(100%);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+[data-theme="dark"] .flyout-menu {
+  background: rgba(18, 22, 30, 0.96);
+  border-left-color: rgba(255, 255, 255, 0.06);
+  box-shadow: -16px 0 48px rgba(0, 0, 0, 0.4), -4px 0 12px rgba(0, 0, 0, 0.2);
 }
 
 .flyout-overlay.open .flyout-menu {
   transform: translateX(0);
 }
 
+/* Header */
 .flyout-header {
-  padding: 1.5rem 2rem;
+  padding: 1.25rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 
+/* Close button */
 .flyout-close {
-  background: transparent;
-  border: none;
-  color: var(--text-primary);
-  font-size: 2rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
   cursor: pointer;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--border-radius-md);
   display: flex;
   justify-content: center;
   align-items: center;
-  opacity: 0.7;
   transition: all 0.2s ease;
+  padding: 0;
+  flex-shrink: 0;
 }
 
 .flyout-close:hover {
-  opacity: 1;
-  transform: scale(1.1);
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+  color: var(--danger);
+  transform: scale(1.05);
 }
 
-.flyout-content {
-  flex: 1;
-  padding: 2.5rem 2rem;
+.flyout-close:active {
+  transform: scale(0.95);
+}
+
+/* User info section */
+.flyout-user-section {
   display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  overflow-y: auto;
-}
-
-.flyout-nav-links {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.flyout-link {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  text-decoration: none;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  display: inline-flex;
+  gap: 0.85rem;
   align-items: center;
-  position: relative;
-  left: 0;
-}
-
-.flyout-link:hover {
-  color: var(--accent);
-  left: 6px;
-}
-
-.flyout-link.active {
-  color: var(--accent);
-  font-weight: 700;
-}
-
-.flyout-divider {
-  border: none;
-  border-top: 1px solid var(--border-color);
-  margin: 0;
-}
-
-.flyout-section {
-  display: flex;
-  flex-direction: column;
-}
-
-.flyout-section-title {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  letter-spacing: 0.1em;
-  margin-bottom: 0.5rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  flex-shrink: 0;
 }
 
 .flyout-user-info {
@@ -2554,27 +2534,150 @@ a {
 }
 
 .flyout-user-name {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-primary);
+  line-height: 1.3;
 }
 
 .flyout-user-email {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.3;
 }
 
+/* Content area */
+.flyout-content {
+  flex: 1;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Subtle custom scrollbar inside flyout */
+.flyout-content::-webkit-scrollbar {
+  width: 4px;
+}
+.flyout-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.flyout-content::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+/* Nav links container */
+.flyout-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Individual flyout link */
+.flyout-link {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--border-radius-md);
+  position: relative;
+}
+
+.flyout-link:hover {
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.flyout-link.active {
+  color: var(--accent);
+  font-weight: 600;
+  background: var(--accent-glow);
+}
+
+.flyout-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: var(--accent);
+  border-radius: 0 3px 3px 0;
+}
+
+/* Flyout link icons */
+.flyout-link-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  opacity: 0.65;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.flyout-link:hover .flyout-link-icon {
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.flyout-link.active .flyout-link-icon {
+  opacity: 1;
+}
+
+/* Divider */
+.flyout-divider {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 0.5rem 0;
+}
+
+/* Section */
+.flyout-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.flyout-section-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.35rem;
+  padding-left: 0.85rem;
+}
+
+/* Theme toggle button inside flyout */
+.flyout-theme-btn {
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.flyout-theme-btn:hover {
+  background: var(--bg-secondary) !important;
+}
+
+/* Footer */
 .flyout-footer {
-  padding: 1.5rem 2rem;
+  padding: 1.25rem 1.5rem;
   border-top: 1px solid var(--border-color);
   background: var(--bg-secondary);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
+  flex-shrink: 0;
 }
 
 .flyout-footer p {
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;
 }
 
 .flyout-footer span {
@@ -2583,8 +2686,58 @@ a {
   display: block;
 }
 
+/* Hamburger button */
 .hamburger-btn {
-  margin-left: 0.5rem;
+  margin-left: 0.25rem;
+}
+
+/* Flyout animation — links stagger in */
+.flyout-overlay.open .flyout-link {
+  animation: flyoutLinkIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.flyout-overlay.open .flyout-nav-links .flyout-link:nth-child(1) { animation-delay: 0.05s; }
+.flyout-overlay.open .flyout-nav-links .flyout-link:nth-child(2) { animation-delay: 0.08s; }
+.flyout-overlay.open .flyout-nav-links .flyout-link:nth-child(3) { animation-delay: 0.11s; }
+.flyout-overlay.open .flyout-nav-links .flyout-link:nth-child(4) { animation-delay: 0.14s; }
+.flyout-overlay.open .flyout-nav-links .flyout-link:nth-child(5) { animation-delay: 0.17s; }
+.flyout-overlay.open .flyout-nav-links .flyout-link:nth-child(6) { animation-delay: 0.20s; }
+.flyout-overlay.open .flyout-nav-links .flyout-link:nth-child(7) { animation-delay: 0.23s; }
+.flyout-overlay.open .flyout-nav-links .flyout-link:nth-child(8) { animation-delay: 0.26s; }
+
+@keyframes flyoutLinkIn {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Mobile flyout adjustments */
+@media (max-width: 480px) {
+  .flyout-menu {
+    width: 100%;
+    max-width: 100vw;
+    border-left: none;
+  }
+  
+  .flyout-header {
+    padding: 1rem 1.25rem;
+  }
+  
+  .flyout-user-section {
+    padding: 1rem 1.25rem;
+  }
+  
+  .flyout-content {
+    padding: 1.25rem;
+  }
+  
+  .flyout-footer {
+    padding: 1rem 1.25rem;
+  }
 }
 
 /* Goals & Objectives Section */

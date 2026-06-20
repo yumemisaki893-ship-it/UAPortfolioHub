@@ -8,7 +8,6 @@ import Home from './pages/Home';
 import { OfficeAdmin } from './pages/OfficeAdmin';
 import { OfficePromotion } from './pages/OfficePromotion';
 import { ProgramsOffered } from './pages/ProgramsOffered';
-import RegistrarPortal from './pages/RegistrarPortal';
 import { getCurrentSession, getSessionData, getStudentById } from './utils/storage';
 import { auth, isConfigured } from './utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -205,21 +204,6 @@ function App() {
         return (
           <ProgramsOffered 
             navigateTo={navigateTo} 
-          />
-        );
-      case 'registrar-portal':
-        if (!currentUser) {
-          return (
-            <Auth 
-              navigateTo={navigateTo} 
-              onLoginSuccess={handleLoginSuccess} 
-            />
-          );
-        }
-        return (
-          <RegistrarPortal 
-            currentUser={currentUser} 
-            onProfileUpdate={handleProfileUpdate}
           />
         );
       default:
