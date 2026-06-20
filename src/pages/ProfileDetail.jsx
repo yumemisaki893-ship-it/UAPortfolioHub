@@ -22,6 +22,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
   // Image Viewer for profile picture / banner
   const [viewerImage, setViewerImage] = useState(null);
   const [viewerCaption, setViewerCaption] = useState('');
+  const [viewerIsAvatar, setViewerIsAvatar] = useState(false);
 
   // States for in-place About Me editing
   const [isEditingAboutMe, setIsEditingAboutMe] = useState(false);
@@ -228,9 +229,10 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
     setZoom(1);
   };
 
-  const openImageViewer = (imageUrl, caption) => {
+  const openImageViewer = (imageUrl, caption, isAvatar = false) => {
     setViewerImage(imageUrl);
     setViewerCaption(caption);
+    setViewerIsAvatar(isAvatar);
     setZoom(1);
   };
 
@@ -672,7 +674,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                 transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
               }}
               className="profile-avatar-container"
-              onClick={() => { if (student.avatarId) { openImageViewer(student.avatarId, student.name + "'s Profile Photo"); } }}
+              onClick={() => { if (student.avatarId) { openImageViewer(student.avatarId, student.name + "'s Profile Photo", true); } }}
               title={student.avatarId ? 'Click to view full size' : ''}
               onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.025)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; }}
@@ -2194,7 +2196,14 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
 
               {/* Image Viewport */}
               <div className="lightbox-image-viewport">
-                <div className="lightbox-image-wrapper" onClick={(e) => e.stopPropagation()}>
+                <div 
+                  className="lightbox-image-wrapper" 
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    width: zoom === 1 ? '100%' : 'auto',
+                    height: zoom === 1 ? '100%' : 'auto'
+                  }}
+                >
                   <img 
                     src={student.photos[photoIndex].url} 
                     alt={student.photos[photoIndex].caption || `Gallery view ${photoIndex + 1}`} 
@@ -2297,7 +2306,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
       {/* Image Viewer Modal for Profile Picture / Banner */}
       {viewerImage && (
         <div ref={lightboxRef} className="lightbox-overlay" onClick={() => { setViewerImage(null); setViewerCaption(''); }}>
-          <div className="lightbox-media-panel" onClick={() => { setViewerImage(null); setViewerCaption(''); }}>
+          <div className="lightbox-media-panel" onClick={() => { setViewerImage(null); setViewerCaption(''); }} style={{ width: '100%', height: '100%' }}>
             
             {/* Toolbar floating at the top */}
             <div className="lightbox-media-toolbar" onClick={(e) => e.stopPropagation()}>
@@ -2336,7 +2345,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
 
             <div className="lightbox-image-viewport">
               <div className="lightbox-image-wrapper" onClick={(e) => e.stopPropagation()}>
-                {viewerImage.startsWith('avatar-') || viewerImage.startsWith('data:image/') ? (
+                {viewerIsAvatar ? (
                   <div style={{ 
                     width: zoom === 1 ? '280px' : `${280 * zoom}px`, 
                     height: zoom === 1 ? '280px' : `${280 * zoom}px`, 
