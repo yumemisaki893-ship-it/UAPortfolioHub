@@ -1322,7 +1322,8 @@ a:hover {
 
 @media (max-width: 768px) {
   .home-container::before {
-    background-size: auto 90vh;
+    background-size: 250% auto;
+    background-position: 80% bottom;
   }
 }
 
