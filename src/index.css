@@ -1323,6 +1323,7 @@ a:hover {
 @media (max-width: 768px) {
   .home-container::before {
     background-size: cover;
+    background-position: center center;
   }
 }
 
