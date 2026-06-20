@@ -226,7 +226,7 @@ const AVATARS = {
 };
 
 // Component to render a static SVG avatar image by ID or custom image Base64 string
-export const AvatarImage = ({ avatarId, className = '', id = '' }) => {
+export const AvatarImage = ({ avatarId, className = '', id = '', style = {} }) => {
   const isCustom = avatarId && avatarId.startsWith('data:image/');
   
   if (isCustom) {
@@ -241,7 +241,8 @@ export const AvatarImage = ({ avatarId, className = '', id = '' }) => {
           borderRadius: '50%',
           objectFit: 'cover',
           display: 'block',
-          border: '1px solid var(--border-color)'
+          border: '1px solid var(--border-color)',
+          ...style
         }}
       />
     );
@@ -250,7 +251,7 @@ export const AvatarImage = ({ avatarId, className = '', id = '' }) => {
   const avatar = AVATARS[avatarId] || AVATARS["avatar-1"];
   const uniqId = id || avatarId;
   return (
-    <div className={`avatar-container-svg ${className}`} style={{ width: '100%', height: '100%', display: 'flex' }}>
+    <div className={`avatar-container-svg ${className}`} style={{ width: '100%', height: '100%', display: 'flex', ...style }}>
       {avatar.svg(uniqId)}
     </div>
   );

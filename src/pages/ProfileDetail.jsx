@@ -219,9 +219,12 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
   };
 
   const handleWheel = (e) => {
-    if (e.ctrlKey || e.metaKey) return;
-    if (e.deltaY < 0) zoomIn(e);
-    else if (e.deltaY > 0) zoomOut(e);
+    // Zoom only when holding Ctrl or Meta key (e.g. pinch-zooming on trackpads or Ctrl+scroll wheel)
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      if (e.deltaY < 0) zoomIn(e);
+      else if (e.deltaY > 0) zoomOut(e);
+    }
   };
 
   const handleMouseDown = (e) => {
@@ -291,6 +294,31 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
 
   const handleDownloadImage = async (e, url, defaultFilename) => {
     e?.stopPropagation();
+    
+    // Check if it's a built-in vector avatar SVG in the viewer
+    if (viewerIsAvatar && url && !url.startsWith('data:image/')) {
+      try {
+        const svgElement = document.querySelector('.lightbox-image-wrapper svg');
+        if (svgElement) {
+          const serializer = new XMLSerializer();
+          const svgString = serializer.serializeToString(svgElement);
+          const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+          const blobUrl = URL.createObjectURL(svgBlob);
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = defaultFilename || 'avatar.svg';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(blobUrl);
+          return;
+        }
+      } catch (err) {
+        console.error('Error exporting SVG avatar:', err);
+      }
+    }
+
+    // Default download logic for normal URLs and data URLs
     try {
       const response = await fetch(url);
       const blob = await response.blob();
@@ -2439,15 +2467,17 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                   <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
                 </svg>
               </button>
-              {!viewerIsAvatar && (
-                <button className="toolbar-btn" onClick={(e) => handleDownloadImage(e, viewerImage, 'profile-banner.jpg')} title="Download Image">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
-                </button>
-              )}
+              <button 
+                className="toolbar-btn" 
+                onClick={(e) => handleDownloadImage(e, viewerImage, viewerIsAvatar ? (viewerImage.startsWith('data:image/') ? 'profile-photo.jpg' : 'avatar.svg') : 'profile-banner.jpg')} 
+                title="Download Image"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+              </button>
               <button className="toolbar-btn" onClick={toggleFullscreen} title="Toggle Fullscreen">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
                   <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
@@ -2483,6 +2513,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                       e.stopPropagation();
                       setZoom(prev => prev === 1 ? 1.5 : 1);
                     }}
+                    onDragStart={(e) => e.preventDefault()}
                     style={{ 
                       width: zoom === 1 ? '280px' : `${280 * zoom}px`, 
                       height: zoom === 1 ? '280px' : `${280 * zoom}px`, 
@@ -2495,7 +2526,11 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                       cursor: zoom <= 1 ? 'zoom-in' : (isDragging ? 'grabbing' : 'grab')
                     }}
                   >
-                    <AvatarImage avatarId={viewerImage} id="viewer-avatar-display" />
+                    <AvatarImage 
+                      avatarId={viewerImage} 
+                      id="viewer-avatar-display" 
+                      style={{ borderRadius: 'inherit' }} 
+                    />
                   </div>
                 ) : (
                   <img 
