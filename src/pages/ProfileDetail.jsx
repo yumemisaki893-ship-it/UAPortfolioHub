@@ -25,6 +25,12 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
   const [viewerCaption, setViewerCaption] = useState('');
   const [viewerIsAvatar, setViewerIsAvatar] = useState(false);
 
+  // Drag-to-Pan States
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [scrollStart, setScrollStart] = useState({ left: 0, top: 0 });
+
+
   // States for in-place About Me editing
   const [isEditingAboutMe, setIsEditingAboutMe] = useState(false);
   const [aboutMeText, setAboutMeText] = useState(initialStudent?.aboutMe || '');
@@ -210,6 +216,35 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
     if (lightboxOpen) {
       setTheaterMode(false);
     }
+  };
+
+  const handleWheel = (e) => {
+    if (e.ctrlKey || e.metaKey) return;
+    if (e.deltaY < 0) zoomIn(e);
+    else if (e.deltaY > 0) zoomOut(e);
+  };
+
+  const handleMouseDown = (e) => {
+    if (zoom <= 1) return;
+    setIsDragging(true);
+    setDragStart({ x: e.clientX, y: e.clientY });
+    setScrollStart({
+      left: e.currentTarget.scrollLeft,
+      top: e.currentTarget.scrollTop
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging || zoom <= 1) return;
+    e.preventDefault(); // prevent native image dragging
+    const dx = e.clientX - dragStart.x;
+    const dy = e.clientY - dragStart.y;
+    e.currentTarget.scrollLeft = scrollStart.left - dx;
+    e.currentTarget.scrollTop = scrollStart.top - dy;
+  };
+
+  const handleMouseUpOrLeave = () => {
+    if (isDragging) setIsDragging(false);
   };
 
   const toggleFullscreen = (e) => {
@@ -2252,7 +2287,14 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
               )}
 
               {/* Image Viewport */}
-              <div className="lightbox-image-viewport">
+              <div 
+                className="lightbox-image-viewport"
+                onWheel={handleWheel}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUpOrLeave}
+                onMouseLeave={handleMouseUpOrLeave}
+              >
                 <div 
                   className="lightbox-image-wrapper" 
                   onClick={(e) => e.stopPropagation()}
@@ -2277,8 +2319,9 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                       height: zoom === 1 ? 'auto' : 'auto',
                       objectFit: 'contain',
                       transition: 'width 0.2s ease, max-width 0.2s ease, max-height 0.2s ease',
-                      cursor: zoom === 1 ? 'zoom-in' : 'zoom-out'
+                      cursor: zoom <= 1 ? 'zoom-in' : (isDragging ? 'grabbing' : 'grab')
                     }}
+                    onDragStart={(e) => e.preventDefault()}
                   />
                 </div>
               </div>
@@ -2418,7 +2461,14 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
               </button>
             </div>
 
-            <div className="lightbox-image-viewport">
+            <div 
+              className="lightbox-image-viewport"
+              onWheel={handleWheel}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUpOrLeave}
+              onMouseLeave={handleMouseUpOrLeave}
+            >
               <div 
                 className="lightbox-image-wrapper" 
                 onClick={(e) => e.stopPropagation()}
@@ -2437,12 +2487,12 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                       width: zoom === 1 ? '280px' : `${280 * zoom}px`, 
                       height: zoom === 1 ? '280px' : `${280 * zoom}px`, 
                       background: 'var(--bg-card)', 
-                      borderRadius: '50%', 
+                      borderRadius: 'var(--border-radius-lg)', 
                       border: '6px solid rgba(255,255,255,0.1)', 
                       overflow: 'hidden', 
                       boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
                       transition: 'width 0.2s ease, height 0.2s ease',
-                      cursor: zoom === 1 ? 'zoom-in' : 'zoom-out'
+                      cursor: zoom <= 1 ? 'zoom-in' : (isDragging ? 'grabbing' : 'grab')
                     }}
                   >
                     <AvatarImage avatarId={viewerImage} id="viewer-avatar-display" />
@@ -2462,8 +2512,9 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                       height: zoom === 1 ? 'auto' : 'auto',
                       objectFit: 'contain',
                       transition: 'width 0.2s ease, max-width 0.2s ease, max-height 0.2s ease',
-                      cursor: zoom === 1 ? 'zoom-in' : 'zoom-out'
+                      cursor: zoom <= 1 ? 'zoom-in' : (isDragging ? 'grabbing' : 'grab')
                     }}
+                    onDragStart={(e) => e.preventDefault()}
                   />
                 )}
               </div>
