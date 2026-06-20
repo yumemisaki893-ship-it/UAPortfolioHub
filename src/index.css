@@ -2284,9 +2284,7 @@ a {
 
 .lightbox-image-wrapper {
   margin: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: block;
 }
 
 .lightbox-image-wrapper img {

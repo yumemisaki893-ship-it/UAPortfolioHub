@@ -254,6 +254,25 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
     setZoom(1);
   };
 
+  const handleDownloadImage = async (e, url, defaultFilename) => {
+    e?.stopPropagation();
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = defaultFilename || 'portfolio-image.jpg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Error downloading image:', error);
+      window.open(url, '_blank');
+    }
+  };
+
   useEffect(() => {
     if (lightboxOpen || viewerImage) {
       document.body.style.overflow = 'hidden';
@@ -261,12 +280,19 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
       document.body.style.overflow = '';
     }
 
-    if (!lightboxOpen) return;
-
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') closeLightbox();
-      if (e.key === 'ArrowLeft') prevPhoto(e);
-      if (e.key === 'ArrowRight') nextPhoto(e);
+      if (e.key === 'Escape') {
+        if (lightboxOpen) closeLightbox();
+        if (viewerImage) {
+          setViewerImage(null);
+          setViewerCaption('');
+          setZoom(1);
+        }
+      }
+      if (lightboxOpen && student?.photos) {
+        if (e.key === 'ArrowLeft') prevPhoto(e);
+        if (e.key === 'ArrowRight') nextPhoto(e);
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -2196,6 +2222,13 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                     <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
                   </svg>
                 </button>
+                <button className="toolbar-btn" onClick={(e) => handleDownloadImage(e, student.photos[photoIndex].url, `photo-${student.photos[photoIndex].id}.jpg`)} title="Download Image">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                </button>
                 <button className="toolbar-btn" onClick={toggleFullscreen} title="Toggle Fullscreen">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
                     <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
@@ -2363,6 +2396,15 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                   <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
                 </svg>
               </button>
+              {!viewerIsAvatar && (
+                <button className="toolbar-btn" onClick={(e) => handleDownloadImage(e, viewerImage, 'profile-banner.jpg')} title="Download Image">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                </button>
+              )}
               <button className="toolbar-btn" onClick={toggleFullscreen} title="Toggle Fullscreen">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
                   <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
@@ -2377,7 +2419,14 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
             </div>
 
             <div className="lightbox-image-viewport">
-              <div className="lightbox-image-wrapper" onClick={(e) => e.stopPropagation()}>
+              <div 
+                className="lightbox-image-wrapper" 
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  width: zoom === 1 ? '100%' : 'auto',
+                  height: zoom === 1 ? '100%' : 'auto'
+                }}
+              >
                 {viewerIsAvatar ? (
                   <div 
                     onClick={(e) => {
