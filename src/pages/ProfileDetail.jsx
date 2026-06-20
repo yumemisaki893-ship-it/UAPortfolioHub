@@ -19,6 +19,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
   const [zoom, setZoom] = useState(1);
   const [theaterMode, setTheaterMode] = useState(false);
   const lightboxRef = useRef(null);
+  const draggedRef = useRef(false);
 
   // Image Viewer for profile picture / banner
   const [viewerImage, setViewerImage] = useState(null);
@@ -230,6 +231,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
   const handleMouseDown = (e) => {
     if (zoom <= 1) return;
     setIsDragging(true);
+    draggedRef.current = false;
     setDragStart({ x: e.clientX, y: e.clientY });
     setScrollStart({
       left: e.currentTarget.scrollLeft,
@@ -242,12 +244,22 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
     e.preventDefault(); // prevent native image dragging
     const dx = e.clientX - dragStart.x;
     const dy = e.clientY - dragStart.y;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+      draggedRef.current = true;
+    }
     e.currentTarget.scrollLeft = scrollStart.left - dx;
     e.currentTarget.scrollTop = scrollStart.top - dy;
   };
 
   const handleMouseUpOrLeave = () => {
     if (isDragging) setIsDragging(false);
+  };
+
+  const handleViewportClick = (e) => {
+    if (draggedRef.current) {
+      e.stopPropagation();
+      draggedRef.current = false;
+    }
   };
 
   const toggleFullscreen = (e) => {
@@ -2322,6 +2334,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUpOrLeave}
                 onMouseLeave={handleMouseUpOrLeave}
+                onClick={handleViewportClick}
               >
                 <div 
                   className="lightbox-image-wrapper" 
@@ -2337,6 +2350,10 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                     alt={student.photos[photoIndex].caption || `Gallery view ${photoIndex + 1}`} 
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (draggedRef.current) {
+                        draggedRef.current = false;
+                        return;
+                      }
                       const nextZoom = zoom === 1 ? 1.5 : 1;
                       setZoom(nextZoom);
                       setTheaterMode(nextZoom > 1);
@@ -2499,6 +2516,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUpOrLeave}
               onMouseLeave={handleMouseUpOrLeave}
+              onClick={handleViewportClick}
             >
               <div 
                 className="lightbox-image-wrapper" 
@@ -2513,6 +2531,10 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                   <div 
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (draggedRef.current) {
+                        draggedRef.current = false;
+                        return;
+                      }
                       setZoom(prev => prev === 1 ? 1.5 : 1);
                     }}
                     onDragStart={(e) => e.preventDefault()}
@@ -2540,6 +2562,10 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                     alt={viewerCaption || 'Full size view'} 
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (draggedRef.current) {
+                        draggedRef.current = false;
+                        return;
+                      }
                       setZoom(prev => prev === 1 ? 1.5 : 1);
                     }}
                     style={{ 
