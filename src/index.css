@@ -1320,7 +1320,11 @@ a:hover {
   pointer-events: none;
 }
 
-
+@media (max-width: 768px) {
+  .home-container::before {
+    background-size: auto 90vh;
+  }
+}
 
 .home-hero {
   position: relative;
