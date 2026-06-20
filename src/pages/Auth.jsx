@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { signIn, signUp, resetUserPasswordByEmail, signInWithGoogle } from '../utils/storage';
 import { isConfigured } from '../utils/firebase';
 
-export const Auth = ({ navigateTo, onLoginSuccess }) => {
+export const Auth = ({ params, navigateTo, onLoginSuccess }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -137,6 +137,46 @@ export const Auth = ({ navigateTo, onLoginSuccess }) => {
       setErrorMessage(err.message || 'Google authentication failed.');
     }
   };
+
+  if (params?.deleted) {
+    return (
+      <div className="auth-page-container">
+        <div className="auth-centered-wrapper animate-fade-in">
+          <div className="auth-card animate-slide-up-delay-1" style={{ textAlign: 'center', padding: '3rem 2rem' }}>
+            <div style={{ background: 'rgba(239, 68, 68, 0.1)', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem auto' }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '40px', height: '40px' }}>
+                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </div>
+            <h2 style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>Profile Deleted</h2>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', lineHeight: '1.6' }}>
+              Your account and portfolio have been permanently deleted from the system. We're sorry to see you go!
+            </p>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => navigateTo('home')}
+              >
+                Go to Homepage
+              </button>
+              <button 
+                className="btn btn-primary" 
+                onClick={() => {
+                  // Re-enter auth with sign up mode
+                  navigateTo('auth');
+                  setIsLogin(false);
+                }}
+              >
+                Create New Profile
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="auth-page-container">

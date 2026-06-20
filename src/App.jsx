@@ -145,6 +145,7 @@ function App() {
         }
         return (
           <Auth 
+            params={route.params}
             navigateTo={navigateTo} 
             onLoginSuccess={handleLoginSuccess} 
           />

@@ -656,7 +656,7 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
           if (onProfileUpdate) {
             onProfileUpdate();
           }
-          navigateTo('home');
+          navigateTo('auth', { deleted: true });
         } catch (err) {
           alert(err.message || 'Failed to delete portfolio and account.');
         }
