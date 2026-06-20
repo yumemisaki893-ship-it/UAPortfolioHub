@@ -2376,8 +2376,8 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                     style={{ 
                       maxWidth: zoom === 1 ? '100%' : 'none', 
                       maxHeight: zoom === 1 ? '85vh' : 'none',
-                      width: zoom === 1 ? 'auto' : `${zoom * 100}%`,
-                      height: zoom === 1 ? 'auto' : 'auto',
+                      width: zoom === 1 ? '100%' : `${zoom * 100}%`,
+                      height: zoom === 1 ? '100%' : 'auto',
                       objectFit: 'contain',
                       transition: 'width 0.2s ease, max-width 0.2s ease, max-height 0.2s ease',
                       cursor: zoom <= 1 ? 'zoom-in' : (isDragging ? 'grabbing' : 'grab')
@@ -2586,8 +2586,8 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                     style={{ 
                       maxWidth: zoom === 1 ? '100%' : 'none', 
                       maxHeight: zoom === 1 ? '85vh' : 'none',
-                      width: zoom === 1 ? 'auto' : `${zoom * 100}%`,
-                      height: zoom === 1 ? 'auto' : 'auto',
+                      width: zoom === 1 ? '100%' : `${zoom * 100}%`,
+                      height: zoom === 1 ? '100%' : 'auto',
                       objectFit: 'contain',
                       transition: 'width 0.2s ease, max-width 0.2s ease, max-height 0.2s ease',
                       cursor: zoom <= 1 ? 'zoom-in' : (isDragging ? 'grabbing' : 'grab')
