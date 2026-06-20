@@ -1320,6 +1320,12 @@ a:hover {
   pointer-events: none;
 }
 
+@media (max-width: 768px) {
+  .home-container::before {
+    background-size: auto 65vh;
+  }
+}
+
 .home-hero {
   position: relative;
   background-image: url('/ua-gate.jpg');
