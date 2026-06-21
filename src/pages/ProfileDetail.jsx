@@ -711,7 +711,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
         )}
       </div>
 
-      <div className="container profile-detail" style={{ marginTop: '-80px' }}>
+      <div className="container profile-detail" style={{ marginTop: '0', paddingTop: '1rem' }}>
 
         {/* Owner / Admin Management Banner */}
         {showManagementBanner && (
@@ -802,7 +802,7 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                 border: '6px solid var(--bg-card)',
                 background: 'transparent',
                 boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-                marginTop: '-60px',
+                marginTop: '-90px',
                 position: 'relative',
                 cursor: student.avatarId ? 'pointer' : 'default',
                 transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
