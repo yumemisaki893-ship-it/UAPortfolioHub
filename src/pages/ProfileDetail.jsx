@@ -670,7 +670,6 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
                 : 'linear-gradient(to bottom, var(--primary-glow), var(--accent-glow))',
               backdropFilter: student.coverPhotoUrl ? 'none' : 'blur(10px) saturate(120%)',
               WebkitBackdropFilter: student.coverPhotoUrl ? 'none' : 'blur(10px) saturate(120%)',
-              borderBottom: '1px solid var(--border-color)',
               cursor: student.coverPhotoUrl ? 'pointer' : 'default',
               transition: 'filter 0.2s ease'
             }}
@@ -678,6 +677,19 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
             onMouseEnter={(e) => { if (student.coverPhotoUrl) e.currentTarget.style.filter = 'brightness(0.85)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.filter = ''; }}
             title={student.coverPhotoUrl ? 'Click to view full size' : ''}
+          ></div>
+          {/* Seamless Fade Overlay */}
+          <div 
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: '80px',
+              background: 'linear-gradient(to bottom, transparent, var(--bg-primary))',
+              pointerEvents: 'none',
+              zIndex: 1
+            }}
           ></div>
         {canEdit && (
           <div className="cover-edit-actions">

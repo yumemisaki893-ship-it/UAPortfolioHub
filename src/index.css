@@ -777,11 +777,18 @@ a:hover {
 }
 
 @media (max-width: 768px) {
+  .profile-detail {
+    margin-top: 0 !important;
+    padding-top: 1rem !important;
+  }
   .profile-header-card {
     flex-direction: column;
     text-align: center;
     padding: 1.5rem;
     gap: 1.5rem;
+  }
+  .profile-avatar-container {
+    margin-top: -60px !important;
   }
 }
 
