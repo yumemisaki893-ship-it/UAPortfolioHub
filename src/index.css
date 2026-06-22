@@ -1409,7 +1409,7 @@ a:hover {
   display: inline-block;
   padding: 0.5rem 1.25rem;
   border-radius: var(--border-radius-sm);
-  background: rgba(255, 255, 255, 0.80);
+  background: rgba(255, 255, 255, 0.10);
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
   border: 1px solid rgba(244, 180, 0, 0.45);
@@ -1422,7 +1422,7 @@ a:hover {
 }
 
 [data-theme="dark"] .badge-promo {
-  background: rgba(10, 10, 10, 0.80);
+  background: rgba(10, 10, 10, 0.10);
   border: 1px solid rgba(255, 200, 0, 0.3);
   color: var(--logo-gold);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.05);
