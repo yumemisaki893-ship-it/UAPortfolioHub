@@ -71,7 +71,7 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
         className={`flyout-overlay ${flyoutOpen ? 'open' : ''}`} 
         onClick={() => setFlyoutOpen(false)}
       >
-        <div className="flyout-menu glass" onClick={(e) => e.stopPropagation()}>
+        <div className="flyout-menu glass" onClick={(e) => e.stopPropagation()} onMouseLeave={() => setFlyoutOpen(false)}>
           <div className="flyout-header">
             <div className="navbar-logo" style={{ pointerEvents: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <img 
