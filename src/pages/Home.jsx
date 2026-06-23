@@ -199,7 +199,7 @@ const Home = ({ navigateTo, currentUser }) => {
               </button>
             ) : currentUser.isAdmin ? (
               <button
-                className="btn btn-primary btn-lg-premium btn-view-portfolio"
+                className="btn btn-primary btn-lg-premium btn-view-portfolio btn-create-profile-home"
                 onClick={() => navigateTo('directory')}
               >
                 Manage Portfolios
