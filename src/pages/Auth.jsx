@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { signIn, signUp, resetUserPasswordByEmail, signInWithGoogle } from '../utils/storage';
+import { signIn, signUp, resetUserPasswordByEmail, signInWithGoogle, signOut } from '../utils/storage';
 import { isConfigured } from '../utils/firebase';
 
 export const Auth = ({ params, navigateTo, onLoginSuccess }) => {
@@ -163,7 +163,10 @@ export const Auth = ({ params, navigateTo, onLoginSuccess }) => {
               </button>
               <button 
                 className="btn btn-primary" 
-                onClick={() => {
+                onClick={async () => {
+                  try {
+                    await signOut();
+                  } catch(e) {}
                   // Re-enter auth with sign up mode
                   navigateTo('auth');
                   setIsLogin(false);

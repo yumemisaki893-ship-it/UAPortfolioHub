@@ -414,13 +414,29 @@ export const ProfileDetail = ({ params, currentUser, navigateTo, onLogoutSuccess
         <p style={{ marginTop: '0.5rem', marginBottom: '2rem' }}>
           The student profile you are looking for might have been removed or does not exist.
         </p>
-        <button className="btn btn-primary" onClick={() => navigateTo('directory')} style={{ gap: '0.6rem' }}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-          Browse Portfolios
-        </button>
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <button className="btn btn-primary" onClick={() => navigateTo('directory')} style={{ gap: '0.6rem' }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+            Browse Portfolios
+          </button>
+          
+          {currentUser && currentUser.studentId === studentId && (
+            <button 
+              className="btn btn-primary" 
+              onClick={() => navigateTo('edit-profile')} 
+              style={{ gap: '0.6rem', background: 'var(--logo-gold)', color: '#000', borderColor: 'var(--logo-gold)' }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}>
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+              Recreate My Profile
+            </button>
+          )}
+        </div>
       </div>
     );
   }
