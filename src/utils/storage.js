@@ -255,7 +255,7 @@ export const signIn = async (email, password) => {
       const userCredential = await signInWithEmailAndPassword(auth, cleanEmail, password);
       let sessionData = await getSessionData(userCredential.user);
       
-      // Auto-provision admin user document in Firestore if it was cleared
+      // Auto-provision or update admin user document in Firestore
       if (!sessionData) {
         sessionData = {
           email: cleanEmail,
@@ -264,6 +264,9 @@ export const signIn = async (email, password) => {
           createdAt: new Date().toISOString()
         };
         await setDoc(doc(db, 'users', userCredential.user.uid), sessionData);
+      } else if (!sessionData.isAdmin) {
+        sessionData.isAdmin = true;
+        await setDoc(doc(db, 'users', userCredential.user.uid), sessionData, { merge: true });
       }
       
       const student = await getStudentById(sessionData.studentId);
