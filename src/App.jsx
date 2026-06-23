@@ -137,9 +137,9 @@ function App() {
         );
       case 'auth':
         if (currentUser) {
-          // Returning/old user lands in profile detail page
-          const targetPage = 'profile-detail';
-          const targetParams = { id: currentUser.studentId };
+          // Check if profile exists; if not, route to profile builder
+          const targetPage = currentUser.student ? 'profile-detail' : 'edit-profile';
+          const targetParams = currentUser.student ? { id: currentUser.studentId } : {};
           setTimeout(() => navigateTo(targetPage, targetParams), 0);
           return null;
         }

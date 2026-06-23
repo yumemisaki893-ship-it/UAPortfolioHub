@@ -141,7 +141,8 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
       
       if (!profile) {
         // Auto-recreate missing profile if deleted
-        const namePart = currentUser.email.split('@')[0];
+        const userEmail = currentUser?.email || 'student@ua.edu.ph';
+        const namePart = userEmail.split('@')[0];
         const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
         profile = {
           id: targetStudentId,
@@ -152,7 +153,7 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
           shortBio: "Welcome to my new student portfolio! Click edit to fill in details.",
           aboutMe: "I haven't written my bio yet. Stay tuned!",
           skills: [],
-          email: currentUser.email,
+          email: userEmail,
           isPublic: true,
           github: "",
           linkedin: "",
@@ -165,7 +166,11 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
           projects: [],
           resume: null
         };
-        await updateStudentProfile(targetStudentId, profile);
+        try {
+          await updateStudentProfile(targetStudentId, profile);
+        } catch (err) {
+          console.warn("Failed to auto-save initial profile, but continuing to render builder.", err);
+        }
       }
       
       if (profile) {
