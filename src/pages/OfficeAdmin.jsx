@@ -11,6 +11,8 @@ export const OfficeAdmin = ({ currentUser, navigateTo }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMajor, setSelectedMajor] = useState('All');
   const [sortBy, setSortBy] = useState('name-asc');
+  const [studentToDelete, setStudentToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Load students on mount and whenever updates happen
   const loadData = async () => {
@@ -65,19 +67,22 @@ export const OfficeAdmin = ({ currentUser, navigateTo }) => {
     }
   };
 
-  const handleDeleteStudent = async (student) => {
-    const confirmMsg = `WARNING: You are about to permanently delete ${student.name}'s portfolio and user account. This action cannot be undone.\n\nDo you want to proceed?`;
-    if (window.confirm(confirmMsg)) {
-      if (window.confirm(`FINAL CONFIRMATION: Are you absolutely certain you want to delete the account for ${student.name}?`)) {
-        try {
-          await deleteStudentProfileAndAccount(student.id);
-          alert(`${student.name}'s account and portfolio were successfully deleted.`);
-          loadData();
-        } catch (error) {
-          console.error('Error deleting student:', error);
-          alert('Failed to delete student account. Please try again.');
-        }
-      }
+  const handleDeleteStudent = (student) => {
+    setStudentToDelete(student);
+  };
+
+  const confirmDeleteStudent = async () => {
+    if (!studentToDelete) return;
+    setIsDeleting(true);
+    try {
+      await deleteStudentProfileAndAccount(studentToDelete.id);
+      loadData();
+    } catch (error) {
+      console.error('Error deleting student:', error);
+      alert('Failed to delete student account. Please try again.');
+    } finally {
+      setIsDeleting(false);
+      setStudentToDelete(null);
     }
   };
 
@@ -609,6 +614,46 @@ export const OfficeAdmin = ({ currentUser, navigateTo }) => {
             </div>
           )}
         </>
+      )}
+
+      {/* Delete Student Modal Overlay */}
+      {studentToDelete && (
+        <div className="modal-overlay animate-fade-in" style={{ zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }}>
+          <div className="modal-content glass animate-slide-up" style={{ padding: '2.5rem', maxWidth: '450px', width: '90%', borderRadius: '1rem', textAlign: 'center', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+            <div style={{ background: 'rgba(239, 68, 68, 0.15)', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem auto' }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '32px', height: '32px' }}>
+                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </div>
+            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Delete {studentToDelete.name}?</h2>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem', lineHeight: '1.5' }}>
+              You are about to permanently delete this student's portfolio and user account. This action cannot be undone.
+            </p>
+            <p style={{ color: '#ef4444', fontWeight: 'bold', marginBottom: '2rem' }}>
+              Are you absolutely certain you want to proceed?
+            </p>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => setStudentToDelete(null)}
+                style={{ flex: 1 }}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn btn-primary" 
+                onClick={confirmDeleteStudent}
+                style={{ flex: 1, background: '#ef4444', borderColor: '#ef4444', color: '#fff', opacity: isDeleting ? 0.7 : 1 }}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Deleting...' : 'Yes, Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

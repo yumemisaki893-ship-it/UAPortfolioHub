@@ -86,11 +86,11 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
   const [errorMessage, setErrorMessage] = useState('');
   const [isInitialized, setIsInitialized] = useState(false);
   const [autoSaveStatus, setAutoSaveStatus] = useState(''); // '' | 'saving' | 'saved' | 'error'
-  // Extra validation error states
   const [websiteError, setWebsiteError] = useState('');
   const [linkedinError, setLinkedinError] = useState('');
   const [twitterError, setTwitterError] = useState('');
   const [contactError, setContactError] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // Set initialized to true once the profile is loaded and states are filled
   useEffect(() => {
@@ -645,22 +645,22 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
   };
 
   // Delete profile
-  const handleDeleteProfile = async () => {
-    const confirmMessage = "Are you sure you want to permanently delete your portfolio profile and user account? This will sign you out and cannot be undone.";
+  const handleDeleteProfile = () => {
+    setShowDeleteModal(true);
+  };
 
-    if (window.confirm(confirmMessage)) {
-      if (window.confirm("FINAL CONFIRMATION: Are you absolutely certain you want to proceed?")) {
-        try {
-          await deleteStudentProfileAndAccount(student.id);
-          await signOut();
-          if (onProfileUpdate) {
-            onProfileUpdate();
-          }
-          navigateTo('auth', { deleted: true });
-        } catch (err) {
-          alert(err.message || 'Failed to delete portfolio and account.');
-        }
+  const confirmDeleteProfile = async () => {
+    try {
+      await deleteStudentProfileAndAccount(student.id);
+      await signOut();
+      if (onProfileUpdate) {
+        onProfileUpdate();
       }
+      navigateTo('auth', { deleted: true });
+    } catch (err) {
+      alert(err.message || 'Failed to delete portfolio and account.');
+    } finally {
+      setShowDeleteModal(false);
     }
   };
 
@@ -1914,6 +1914,41 @@ export const AccountSettings = ({ currentUser, params, navigateTo, onProfileUpda
           </div>
         </div>
       )}
+
+        {/* Delete Modal Overlay */}
+        {showDeleteModal && (
+          <div className="modal-overlay animate-fade-in" style={{ zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }}>
+            <div className="modal-content glass animate-slide-up" style={{ padding: '2.5rem', maxWidth: '400px', width: '90%', borderRadius: '1rem', textAlign: 'center', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+              <div style={{ background: 'rgba(239, 68, 68, 0.15)', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem auto' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '32px', height: '32px' }}>
+                  <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+              </div>
+              <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Delete Profile?</h2>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', lineHeight: '1.5' }}>
+                Are you absolutely sure you want to permanently delete your portfolio profile and user account? This action cannot be undone.
+              </p>
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                <button 
+                  className="btn btn-secondary" 
+                  onClick={() => setShowDeleteModal(false)}
+                  style={{ flex: 1 }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  className="btn btn-primary" 
+                  onClick={confirmDeleteProfile}
+                  style={{ flex: 1, background: '#ef4444', borderColor: '#ef4444', color: '#fff' }}
+                >
+                  Yes, Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
     </div>
   </div>
