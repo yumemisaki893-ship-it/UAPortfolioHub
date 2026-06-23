@@ -154,15 +154,15 @@ export const Navigation = ({ currentUser, currentTheme, onThemeToggle, navigateT
                       >
                         My Profile
                       </a>
+                      <a 
+                        href="#" 
+                        onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo('edit-profile'); }}
+                        className="flyout-link"
+                      >
+                        Settings
+                      </a>
                     </>
                   )}
-                  <a 
-                    href="#" 
-                    onClick={(e) => { e.preventDefault(); setFlyoutOpen(false); navigateTo('edit-profile'); }}
-                    className="flyout-link"
-                  >
-                    Settings
-                  </a>
                   <a 
                     href="#" 
                     onClick={(e) => { e.preventDefault(); handleLogout(); }}
